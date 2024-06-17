@@ -6,7 +6,11 @@ import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 
 
-class InterfaceGenerator(val docs: ApiDocs) {
+fun Documentable.Builder<*>.addDescription(description: String) {
+    if (description.isNotEmpty()) addKdoc(description.replace("%", "%%"))
+}
+
+class InterfaceGenerator(private val docs: ApiDocs) {
     init {
         require(
             docs.application == "factorio" &&
@@ -15,7 +19,8 @@ class InterfaceGenerator(val docs: ApiDocs) {
         )
     }
 
-    val builder: FileSpec.Builder = FileSpec.builder("", "FactorioApi")
+
+    private val builder: FileSpec.Builder = FileSpec.builder("", "FactorioApi")
 
     fun generate(): FileSpec {
         docs.prototypes
@@ -41,113 +46,135 @@ class InterfaceGenerator(val docs: ApiDocs) {
     }
 
     private fun generateTypeInterface(type: Type) {
+        if (type.name in builtinMap || type.name in toIgnore) return
         val isRootStructType = type.type is StructType
         if (type.properties != null) {
-            val name = if (isRootStructType) type.name else type.name + "Values"
-            val structType = mapStructType(name, type.properties)
+            val structType = mapStructType(type, isRootStructType)
+                .apply { addDescription(type.description) }
+                .build()
             builder.addType(structType)
         }
         if (!isRootStructType) {
-            val resType = mapTypeDefinition(type.type, type.name)
+            val resType = mapTypeDefinition(type.type, type, true)
             if (resType.declaration == null) {
-                val result = TypeAliasSpec.builder(type.name, resType.noDec()).build()
+                val result = TypeAliasSpec.builder(type.name, resType.noDec()).apply {
+                    addDescription(type.description)
+                }.build()
                 builder.addTypeAlias(result)
             }
         }
     }
 
     private data class TypeDefinitionResult(
-        val type: TypeName,
+        val typeName: TypeName,
         val declaration: TypeSpec?
     ) {
         fun noDec(): TypeName {
-            require(declaration == null) { "Declaration already set" }
-            return type
+            require(declaration == null) {
+                "Declaration already set"
+            }
+            return typeName
         }
     }
 
     private fun mapTypeDefinition(
         typeDefinition: TypeDefinition,
-        rootTypeName: String?
+        typeName: Type?,
+        isRoot: Boolean = false
     ): TypeDefinitionResult {
         fun TypeName.res(): TypeDefinitionResult = TypeDefinitionResult(this, null)
 
         return when (typeDefinition) {
-            is BasicType -> ClassName("", typeDefinition.value).res()
+            is BasicType -> {
+                val value = typeDefinition.value
+                builtinMap.getOrElse(value) { ClassName("", value) }.res()
+            }
+
             is ArrayType -> List::class.asClassName()
-                .parameterizedBy(mapTypeDefinition(typeDefinition.value, rootTypeName).noDec())
+                .parameterizedBy(mapTypeDefinition(typeDefinition.value, typeName).typeName)
                 .res()
 
             is DictType -> Map::class.asClassName().parameterizedBy(
-                mapTypeDefinition(typeDefinition.key, rootTypeName).noDec(),
-                mapTypeDefinition(typeDefinition.value, rootTypeName).noDec()
+                mapTypeDefinition(typeDefinition.key, typeName).noDec(),
+                mapTypeDefinition(typeDefinition.value, typeName).noDec()
             ).res()
 
             is LiteralType -> {
                 val v = typeDefinition.value
                 when {
-                    v.isString -> String::class.asClassName()
-                    v.booleanOrNull != null -> Boolean::class.asClassName()
-                    v.intOrNull != null -> Int::class.asClassName()
-                    v.doubleOrNull != null -> Double::class.asClassName()
+                    v.isString -> ClassName("", "UnknownStringLiteral").res()
+                    v.booleanOrNull != null -> ClassName("", "UnknownBooleanLiteral").res()
+                    v.intOrNull != null -> ClassName("", "UnknownIntegerLiteral").res()
+                    v.doubleOrNull != null -> ClassName("", "UnknownDoubleLiteral").res()
                     else -> throw IllegalArgumentException("Unknown literal type: $v")
-                }.res()
+                }
             }
 
             StructType -> {
-                require(rootTypeName != null) { "StructType must have a name" }
-                ClassName("", rootTypeName + "Values").res()
+                require(typeName != null) { "StructType must have a name" }
+                ClassName("", typeName.name + "Values").res()
             }
 
             is TupleType -> {
                 val numEls = typeDefinition.values.size
-                val typeNames = typeDefinition.values.map { mapTypeDefinition(it, rootTypeName).noDec() }
+                val typeNames = typeDefinition.values.map { mapTypeDefinition(it, typeName).noDec() }
                 when (numEls) {
-                    0 -> Unit::class.asClassName()
-                    1 -> typeNames[0]
-                    2 -> Pair::class.asClassName().parameterizedBy(typeNames)
-                    3 -> Triple::class.asClassName().parameterizedBy(typeNames)
-                    else -> Any::class.asClassName()
-                }.res()
+                    0 -> throw IllegalArgumentException("Empty tuple")
+                    1 -> List::class.asClassName().parameterizedBy(typeNames[0]).res()
+                    else -> ClassName("", "UnknownTuple").res()
+                }
             }
 
-            is TypeType -> mapTypeDefinition(typeDefinition.value, rootTypeName)
+            is TypeType -> mapTypeDefinition(typeDefinition.value, typeName)
             is UnionType -> {
                 // check if is string union
                 val isStringUnion = typeDefinition.options.all { it is LiteralType && it.value.isString }
-                if (!isStringUnion || rootTypeName==null) {
-                    return UnknownUnion::class.asClassName().res()
+                if (!isStringUnion) {
+                    return ClassName("", "UnknownUnion").res()
                 }
-                val builder = TypeSpec.enumBuilder(ClassName("", rootTypeName))
-                for (option in typeDefinition.options) {
-                    val value = (option as LiteralType).value.content
-                    builder.addEnumConstant(value)
+                if (typeName == null) {
+                    return ClassName("", "InnerStringUnion").res()
                 }
-                builder.addAnnotation(Serializable::class)
-                val enumType = builder.build()
+                val className = ClassName(
+                    "",
+                    if (isRoot) typeName.name else typeName.name + "Values"
+                )
+                val enumType = TypeSpec.enumBuilder(className).apply {
+                    for (option in typeDefinition.options) {
+                        val value = (option as LiteralType).value.content
+                        addEnumConstant(value)
+                    }
+                    addAnnotation(Serializable::class)
+                    addDescription(typeName.description)
+                }.build()
                 this.builder.addType(enumType)
-                ClassName("", rootTypeName).res()
+                return TypeDefinitionResult(className, enumType)
             }
         }
     }
 
-    fun mapProperty(property: Property): PropertySpec {
+    private fun mapProperty(property: Property): PropertySpec {
         val type = mapTypeDefinition(property.type, null).noDec()
             .copy(nullable = property.optional)
         return PropertySpec.builder(property.name, type).apply {
             if (property.override) addModifiers(KModifier.OVERRIDE)
+            addDescription(property.description)
         }.build()
     }
 
-    fun mapStructType(
-        name: String,
-        properties: List<Property>
-    ): TypeSpec {
+    private fun mapStructType(
+        type: Type,
+        isRoot: Boolean
+    ): TypeSpec.Builder {
+        val name = if (isRoot) type.name else type.name + "Values"
         return TypeSpec.interfaceBuilder(name).apply {
-            for (property in properties.sortedBy { it.order }) {
+            for (property in type.properties!!.sortedBy { it.order }) {
                 addProperty(mapProperty(property))
             }
-        }.build()
+            if (type.parent != null) {
+                addSuperinterface(ClassName("", type.parent))
+            }
+        }
     }
 
 }

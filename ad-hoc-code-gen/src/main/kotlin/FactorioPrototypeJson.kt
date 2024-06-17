@@ -127,6 +127,11 @@ data class TypeType(val value: TypeDefinition) : TypeDefinition
 @Serializable
 data object StructType : TypeDefinition
 
+fun TypeDefinition.innerType(): TypeDefinition = when (this) {
+    is TypeType -> value
+    else -> this
+}
+
 object TypeDefinitionSerializer : KSerializer<TypeDefinition> {
     override val descriptor: SerialDescriptor
         get() = buildSerialDescriptor("TypeDefinition", SerialKind.CONTEXTUAL)
