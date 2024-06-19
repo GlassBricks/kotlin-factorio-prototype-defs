@@ -31,17 +31,16 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         return null
     }
 
-    val childOverridesAsNullable = mutableMapOf<String, MutableSet<String>>()
-    val overrideIgnore = mutableMapOf<String, MutableSet<String>>()
-    val unknownOverrides = mutableMapOf<String, MutableSet<String>>()
+    val childOverridesAsNullable = mutableMapOf<ProtoOrConcept, MutableSet<String>>()
+    val overrideIgnore = mutableMapOf<ProtoOrConcept, MutableSet<String>>()
+    val unknownOverrides = mutableMapOf<ProtoOrConcept, MutableSet<String>>()
     fun findOverriddes() {
         tailrec fun findParentProp(
-            protoName: String,
+            prototype: ProtoOrConcept,
             propName: String
         ): Property {
-            val prototype = byName[protoName]!!
             return prototype.properties!!.find { it.name == propName } ?: findParentProp(
-                prototype.parent ?: error("No parent for $protoName"),
+                byName[prototype.parent!!]!!,
                 propName
             )
         }
@@ -51,8 +50,9 @@ class DeclarationGenerator(private val docs: ApiDocs) {
             if (prototype.name in visited) return
             visited.add(prototype.name)
 
-            val parent = prototype.parent ?: return
-            visit(byName[parent]!!)
+            val parentName = prototype.parent ?: return
+            val parent = byName[parentName]!!
+            visit(parent)
             val properties = prototype.properties ?: return
             for (prop in properties.filter { it.override }) {
                 val parentProp = findParentProp(parent, prop.name)
@@ -63,7 +63,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
                             .add(prop.name)
                     } else if (prop.optional == parentProp.optional) {
                         if (overrideIgnore[parent]?.contains(prop.name) == true) {
-                            overrideIgnore.getOrPut(prototype.name, ::mutableSetOf)
+                            overrideIgnore.getOrPut(prototype, ::mutableSetOf)
                                 .add(prop.name)
                         }
                     }
@@ -71,14 +71,14 @@ class DeclarationGenerator(private val docs: ApiDocs) {
                     || parentProp.type.isBoolish() && prop.type.isBoolish()
                 ) {
                     overrideIgnore
-                        .getOrPut(prototype.name, ::mutableSetOf)
+                        .getOrPut(prototype, ::mutableSetOf)
                         .add(prop.name)
                 } else {
                     unknownOverrides
                         .getOrPut(parent, ::mutableSetOf)
                         .add(prop.name)
                     unknownOverrides
-                        .getOrPut(prototype.name, ::mutableSetOf)
+                        .getOrPut(prototype, ::mutableSetOf)
                         .add(prop.name)
                 }
             }
@@ -109,10 +109,10 @@ class DeclarationGenerator(private val docs: ApiDocs) {
                 addSuperinterface(ClassName("", prototype.parent))
             }
             for (property in prototype.properties.sortedBy { it.order }) {
-                if (overrideIgnore[prototype.name]?.contains(property.name) == true) {
+                if (overrideIgnore[prototype]?.contains(property.name) == true) {
                     continue
                 }
-                addProperty(mapProperty(prototype.name, property))
+                addProperty(mapProperty(prototype, property))
             }
         }.build()
         file.addType(result)
@@ -128,7 +128,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
             file.addType(structType)
         }
         if (!isRootStructType) {
-            val resType = mapTypeDefinition(concept.type, concept, true)
+            val resType = mapTypeDefinition(concept.type, concept, null, true)
             if (resType.declaration == null) {
                 val result = TypeAliasSpec.builder(concept.name, resType.noDec()).apply {
                     addDescription(concept.description)
@@ -136,6 +136,23 @@ class DeclarationGenerator(private val docs: ApiDocs) {
                 file.addTypeAlias(result)
             }
         }
+    }
+
+    val innerStringUnions = mutableMapOf<Set<String>, ClassName>()
+    private fun makeInnerStringUnion(
+        source: ProtoOrConcept,
+        property: Property,
+        values: Set<String>
+    ): ClassName = innerStringUnions.getOrPut(values) {
+        val className = ClassName("", source.name + property.name.toCamelCase())
+        val enumType = TypeSpec.enumBuilder(className).apply {
+            for (value in values) {
+                addEnumConstant(value)
+            }
+            addAnnotation(Serializable::class)
+        }.build()
+        this.file.addType(enumType)
+        className
     }
 
     private data class TypeDefinitionResult(
@@ -150,12 +167,13 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         }
     }
 
+    private fun TypeName.res(): TypeDefinitionResult = TypeDefinitionResult(this, null)
     private fun mapTypeDefinition(
         typeDefinition: TypeDefinition,
-        conceptName: Concept?,
+        source: ProtoOrConcept,
+        property: Property?,
         isRoot: Boolean = false
     ): TypeDefinitionResult {
-        fun TypeName.res(): TypeDefinitionResult = TypeDefinitionResult(this, null)
 
         return when (typeDefinition) {
             is BasicType -> {
@@ -164,12 +182,12 @@ class DeclarationGenerator(private val docs: ApiDocs) {
             }
 
             is ArrayType -> List::class.asClassName()
-                .parameterizedBy(mapTypeDefinition(typeDefinition.value, conceptName).typeName)
+                .parameterizedBy(mapTypeDefinition(typeDefinition.value, source, property).typeName)
                 .res()
 
             is DictType -> Map::class.asClassName().parameterizedBy(
-                mapTypeDefinition(typeDefinition.key, conceptName).noDec(),
-                mapTypeDefinition(typeDefinition.value, conceptName).noDec()
+                mapTypeDefinition(typeDefinition.key, source, property).noDec(),
+                mapTypeDefinition(typeDefinition.value, source, property).noDec()
             ).res()
 
             is LiteralType -> {
@@ -184,13 +202,13 @@ class DeclarationGenerator(private val docs: ApiDocs) {
             }
 
             StructType -> {
-                require(conceptName != null) { "StructType must have a name" }
-                ClassName("", conceptName.name + "Values").res()
+                require(source is Concept)
+                ClassName("", source.name + "Values").res()
             }
 
             is TupleType -> {
                 val numEls = typeDefinition.values.size
-                val typeNames = typeDefinition.values.map { mapTypeDefinition(it, conceptName).noDec() }
+                val typeNames = typeDefinition.values.map { mapTypeDefinition(it, source, property).noDec() }
                 when (numEls) {
                     0 -> throw IllegalArgumentException("Empty tuple")
                     1 -> List::class.asClassName().parameterizedBy(typeNames[0]).res()
@@ -198,41 +216,54 @@ class DeclarationGenerator(private val docs: ApiDocs) {
                 }
             }
 
-            is TypeType -> mapTypeDefinition(typeDefinition.value, conceptName)
+            is TypeType -> mapTypeDefinition(typeDefinition.value, source, property)
             is UnionType -> {
                 // check if is string union
                 val isStringUnion = typeDefinition.options.all { it is LiteralType && it.value.isString }
                 if (!isStringUnion) {
                     return ClassName("", "UnknownUnion").res()
                 }
-                if (conceptName == null) {
-                    return ClassName("", "InnerStringUnion").res()
-                }
-                val className = ClassName(
-                    "",
-                    if (isRoot) conceptName.name else conceptName.name + "Values"
-                )
-                val enumType = TypeSpec.enumBuilder(className).apply {
-                    for (option in typeDefinition.options) {
-                        val value = (option as LiteralType).value.content
-                        addEnumConstant(value)
-                    }
-                    addAnnotation(Serializable::class)
-                    addDescription(conceptName.description)
-                }.build()
-                this.file.addType(enumType)
-                return TypeDefinitionResult(className, enumType)
+                return makeEnum(source, property, isRoot, typeDefinition)
             }
         }
     }
 
-    private fun mapProperty(from: String, property: Property): PropertySpec {
+    private fun makeEnum(
+        source: ProtoOrConcept,
+        property: Property?,
+        isRootConcept: Boolean,
+        typeDefinition: UnionType
+    ): TypeDefinitionResult {
+        if (source is Concept && property == null) {
+            val className = ClassName(
+                "",
+                if (isRootConcept) source.name else source.name + "Values"
+            )
+            val enumType = TypeSpec.enumBuilder(className).apply {
+                for (option in typeDefinition.options) {
+                    val value = (option as LiteralType).value.content
+                    addEnumConstant(value)
+                }
+                addAnnotation(Serializable::class)
+                addDescription(source.description)
+            }.build()
+            this.file.addType(enumType)
+            return TypeDefinitionResult(className, enumType)
+        } else {
+            requireNotNull(property)
+            val values = typeDefinition.options.map { (it as LiteralType).value.content }.toSet()
+            val className = makeInnerStringUnion(source, property, values)
+            return TypeDefinitionResult(className, null)
+        }
+    }
+
+    private fun mapProperty(from: ProtoOrConcept, property: Property): PropertySpec {
         require(property.visibility == null)
         val nullable = property.optional || childOverridesAsNullable[from]?.contains(property.name) == true
         val isUnknown = unknownOverrides[from]?.contains(property.name) == true
         val type =
             (if (!isUnknown)
-                mapTypeDefinition(property.type, null).noDec()
+                mapTypeDefinition(property.type, from, property).noDec()
             else
                 ClassName("", "UnknownOverriddenType"))
                 .copy(nullable = nullable)
@@ -249,7 +280,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         val name = if (isRoot) concept.name else concept.name + "Values"
         return TypeSpec.interfaceBuilder(name).apply {
             for (property in concept.properties!!.sortedBy { it.order }) {
-                addProperty(mapProperty(concept.name, property))
+                addProperty(mapProperty(concept, property))
             }
             if (concept.parent != null) {
                 addSuperinterface(ClassName("", concept.parent))
@@ -302,4 +333,8 @@ class DeclarationGenerator(private val docs: ApiDocs) {
 
 private fun Documentable.Builder<*>.addDescription(description: String) {
     if (description.isNotEmpty()) addKdoc(description.replace("%", "%%"))
+}
+
+private fun String.toCamelCase(): String {
+    return this.split("_").joinToString("") { it.capitalize() }
 }

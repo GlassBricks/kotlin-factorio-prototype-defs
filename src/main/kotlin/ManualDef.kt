@@ -10,7 +10,6 @@ import kotlinx.serialization.json.*
 typealias UnknownOverriddenType = JsonElement
 typealias UnknownUnion = JsonElement
 typealias UnknownTuple = JsonArray
-typealias InnerStringUnion = String
 typealias UnknownStringLiteral = String
 
 @Serializable(with = VectorSerializer::class)
