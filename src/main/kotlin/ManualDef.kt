@@ -1,4 +1,3 @@
-import com.squareup.kotlinpoet.asClassName
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
@@ -8,32 +7,14 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
 
+typealias UnknownOverriddenType = JsonElement
 typealias UnknownUnion = JsonElement
 typealias UnknownTuple = JsonArray
 typealias InnerStringUnion = String
 typealias UnknownStringLiteral = String
-typealias UnknownBooleanLiteral = Boolean
-typealias UnknownIntegerLiteral = Number
-
-val builtinMap = mapOf(
-    "bool" to Boolean::class.asClassName(),
-    "double" to Double::class.asClassName(),
-    "float" to Float::class.asClassName(),
-    "int8" to Byte::class.asClassName(),
-    "int16" to Short::class.asClassName(),
-    "int32" to Int::class.asClassName(),
-    "string" to String::class.asClassName(),
-    "uint8" to UByte::class.asClassName(),
-    "uint16" to UShort::class.asClassName(),
-    "uint32" to UInt::class.asClassName(),
-    "uint64" to ULong::class.asClassName(),
-    "Vector" to Vector::class.asClassName(),
-    "Vector3D" to Vector3D::class.asClassName(),
-)
-val toIgnore = setOf("DataExtendMethod")
 
 @Serializable(with = VectorSerializer::class)
-class Vector(
+data class Vector(
     val x: Double,
     val y: Double,
 )
@@ -70,7 +51,7 @@ object VectorSerializer : KSerializer<Vector> {
 }
 
 @Serializable(with = Vector3DSerializer::class)
-class Vector3D(
+data class Vector3D(
     val x: Double,
     val y: Double,
     val z: Double,
@@ -108,5 +89,43 @@ object Vector3DSerializer : KSerializer<Vector3D> {
             else -> throw IllegalArgumentException("Unknown literal type: $json")
         }
         return Vector3D(x, y, z)
+    }
+}
+
+@Serializable(with = BoundingBoxSerializer::class)
+data class BoundingBox(
+    val left_top: Vector,
+    val right_bottom: Vector,
+)
+
+object BoundingBoxSerializer : KSerializer<BoundingBox> {
+    override val descriptor = buildClassSerialDescriptor("BoundingBox") {
+        element("left_top", Vector.serializer().descriptor)
+        element("right_bottom", Vector.serializer().descriptor)
+    }
+
+    override fun serialize(encoder: Encoder, value: BoundingBox) {
+        throw NotImplementedError("Not implemented")
+    }
+
+    override fun deserialize(decoder: Decoder): BoundingBox {
+        require(decoder is JsonDecoder)
+        val left_top: Vector
+        val right_bottom: Vector
+        when (val json = decoder.decodeJsonElement()) {
+            is JsonObject -> {
+                left_top = json["left_top"]!!.let { decoder.json.decodeFromJsonElement(Vector.serializer(), it) }
+                right_bottom =
+                    json["right_bottom"]!!.let { decoder.json.decodeFromJsonElement(Vector.serializer(), it) }
+            }
+
+            is JsonArray -> {
+                left_top = decoder.json.decodeFromJsonElement(Vector.serializer(), json[0])
+                right_bottom = decoder.json.decodeFromJsonElement(Vector.serializer(), json[1])
+            }
+
+            else -> throw IllegalArgumentException("Unknown literal type: $json")
+        }
+        return BoundingBox(left_top, right_bottom)
     }
 }

@@ -8,10 +8,8 @@ class DeserializeJsonDocsTest {
         val url = URL("https://lua-api.factorio.com/latest/prototype-api.json")
         val docs: ApiDocs = json.decodeFromString(url.readText())
 
-        val result = InterfaceGenerator(docs).generate()
+        val result = DeclarationGenerator(docs).generate()
         // write to file
-        File("FactorioPrototypes.kt").writeText(result.toString())
+        File("../src/main/kotlin/FactorioPrototypes.kt").writeText(result.toString())
     }
-
-
 }

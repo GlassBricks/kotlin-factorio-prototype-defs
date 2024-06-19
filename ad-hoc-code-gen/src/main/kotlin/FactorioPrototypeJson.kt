@@ -12,50 +12,62 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
 @Serializable
-data class ApiDocs(
+class ApiDocs(
     val application: String,
     val application_version: String,
     val api_version: Int,
     val stage: String,
     val prototypes: List<Prototype>,
-    val types: List<Type>
+    val types: List<Concept>
 )
 
+sealed interface ProtoOrConcept {
+    val name: String
+    val order: Int
+    val description: String
+    val lists: List<String>?
+    val examples: List<String>?
+    val images: List<Image>?
+    val parent: String?
+    val abstract: Boolean
+    val properties: List<Property>?
+}
+
 @Serializable
-data class Prototype(
-    val name: String,
-    val order: Int,
-    val description: String,
-    val lists: List<String>? = null,
-    val examples: List<String>? = null,
-    val images: List<Image>? = null,
+class Prototype(
+    override val name: String,
+    override val order: Int,
+    override val description: String,
+    override val lists: List<String>? = null,
+    override val examples: List<String>? = null,
+    override val images: List<Image>? = null,
     val visibility: List<String>? = null,
-    val parent: String? = null,
-    val abstract: Boolean,
+    override val parent: String? = null,
+    override val abstract: Boolean,
     val typename: String? = null,
     val instance_limit: Int? = null,
     val deprecated: Boolean,
-    val properties: List<Property>,
+    override val properties: List<Property>,
     val custom_properties: CustomProperties? = null
-)
+) : ProtoOrConcept
 
 @Serializable
-data class Type(
-    val name: String,
-    val order: Int,
-    val description: String,
-    val lists: List<String>? = null,
-    val examples: List<String>? = null,
-    val images: List<Image>? = null,
-    val parent: String? = null,
-    val abstract: Boolean,
+class Concept(
+    override val name: String,
+    override val order: Int,
+    override val description: String,
+    override val lists: List<String>? = null,
+    override val examples: List<String>? = null,
+    override val images: List<Image>? = null,
+    override val parent: String? = null,
+    override val abstract: Boolean,
     val inline: Boolean,
     val type: TypeDefinition,
-    val properties: List<Property>? = null
-)
+    override val properties: List<Property>? = null
+) : ProtoOrConcept
 
 @Serializable
-data class Property(
+class Property(
     val name: String,
     val order: Int,
     val description: String,
@@ -74,10 +86,10 @@ data class Property(
 sealed interface DefaultValue
 
 @Serializable
-class DescriptionDefault(val value: String) : DefaultValue
+data class DescriptionDefault(val value: String) : DefaultValue
 
 @Serializable
-class LiteralDefault(val value: JsonPrimitive) : DefaultValue
+data class LiteralDefault(val value: JsonPrimitive) : DefaultValue
 
 object DefaultValueSerializer : KSerializer<DefaultValue> {
     override val descriptor: SerialDescriptor
@@ -127,11 +139,6 @@ data class TypeType(val value: TypeDefinition) : TypeDefinition
 @Serializable
 data object StructType : TypeDefinition
 
-fun TypeDefinition.innerType(): TypeDefinition = when (this) {
-    is TypeType -> value
-    else -> this
-}
-
 object TypeDefinitionSerializer : KSerializer<TypeDefinition> {
     override val descriptor: SerialDescriptor
         get() = buildSerialDescriptor("TypeDefinition", SerialKind.CONTEXTUAL)
@@ -163,13 +170,13 @@ object TypeDefinitionSerializer : KSerializer<TypeDefinition> {
 
 
 @Serializable
-data class Image(
+class Image(
     val filename: String,
     val caption: String? = null
 )
 
 @Serializable
-data class CustomProperties(
+class CustomProperties(
     val description: String,
     val lists: List<String>? = null,
     val examples: List<String>? = null,
@@ -181,4 +188,27 @@ data class CustomProperties(
 
 val json = Json {
     ignoreUnknownKeys = true
+}
+
+fun TypeDefinition.innerType(): TypeDefinition = when (this) {
+    is TypeType -> value
+    else -> this
+}
+
+inline fun <T> List<T>.pairwiseEquals(other: List<T>, predicate: (T, T) -> Boolean): Boolean {
+    if (size != other.size) return false
+    return zip(other).all { (a, b) -> predicate(a, b) }
+}
+
+fun TypeDefinition.typeEquals(other: TypeDefinition): Boolean {
+    val other = other.innerType()
+    return when (val t = innerType()) {
+        is BasicType -> other is BasicType && t.value == other.value
+        is ArrayType -> other is ArrayType && t.value.typeEquals(other.value)
+        is DictType -> other is DictType && t.key.typeEquals(other.key) && t.value.typeEquals(other.value)
+        is TupleType -> other is TupleType && t.values.pairwiseEquals(other.values) { a, b -> a.typeEquals(b) }
+        is UnionType -> other is UnionType && t.options.pairwiseEquals(other.options) { a, b -> a.typeEquals(b) }
+        is LiteralType -> other is LiteralType && t.value == other.value
+        is TypeType, StructType -> false
+    }
 }
