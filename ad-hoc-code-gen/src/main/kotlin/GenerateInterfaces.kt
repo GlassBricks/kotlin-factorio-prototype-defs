@@ -68,8 +68,9 @@ class DeclarationGenerator(private val docs: ApiDocs) {
                                 .add(prop.name)
                         }
                     }
-                } else if (parentProp.type.isNumerical() && prop.type.isNumerical()
+                } else if (parentProp.type.isNumeric() && prop.type.isNumeric()
                     || parentProp.type.isBoolish() && prop.type.isBoolish()
+                    || parentProp.type.isString() && prop.type.isString()
                 ) {
                     overrideIgnore
                         .getOrPut(prototype, ::mutableSetOf)
@@ -323,7 +324,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         val toIgnore = setOf("DataExtendMethod", "Data")
     }
 
-    private fun TypeDefinition.isNumerical(): Boolean {
+    private fun TypeDefinition.isNumeric(): Boolean {
         val referenced = getReferencedType(this)
         if (referenced != null) {
             return "int" in referenced || referenced == "float" || referenced == "double"
@@ -344,6 +345,9 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         }
         return false
     }
+
+    private fun TypeDefinition.isString(): Boolean = this is BasicType && value == "string"
+            || this is LiteralType && value.isString
 }
 
 private fun Documentable.Builder<*>.addDescription(description: String) {

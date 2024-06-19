@@ -9,6 +9,7 @@ import kotlinx.serialization.json.*
 
 typealias UnknownOverriddenType = JsonElement
 typealias UnknownUnion = JsonElement
+
 typealias UnknownStringLiteral = String
 
 typealias UnknownTuple = JsonArray
