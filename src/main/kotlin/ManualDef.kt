@@ -9,8 +9,13 @@ import kotlinx.serialization.json.*
 
 typealias UnknownOverriddenType = JsonElement
 typealias UnknownUnion = JsonElement
-typealias UnknownTuple = JsonArray
 typealias UnknownStringLiteral = String
+
+typealias UnknownTuple = JsonArray
+typealias Tuple1<T> = List<T>
+typealias Tuple2<T> = List<T>
+typealias Tuple3<T> = List<T>
+typealias Tuple4<T> = List<T>
 
 @Serializable(with = VectorSerializer::class)
 data class Vector(

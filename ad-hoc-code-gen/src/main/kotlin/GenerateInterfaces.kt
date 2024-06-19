@@ -16,25 +16,26 @@ class DeclarationGenerator(private val docs: ApiDocs) {
 
     //    val prototypesByName = docs.prototypes.associateBy { it.name }
 //    val conceptsByName = docs.types.associateBy { it.name }
-    val byName = (docs.prototypes + docs.types).associateBy { it.name }
+    private val byName = (docs.prototypes + docs.types).associateBy { it.name }
 
-    tailrec fun getReferencedType(type: TypeDefinition): String? {
-        val type = type.innerType()
-        if (type is BasicType) {
-            val value = type.value
+    private tailrec fun getReferencedType(type: TypeDefinition): String? {
+        val innerType = type.innerType()
+        if (innerType is BasicType) {
+            val value = innerType.value
             if (value in builtins) return value
             val concept = byName[value]
             if (concept is Concept) {
                 return getReferencedType(concept.type)
             }
+            return value
         }
         return null
     }
 
-    val childOverridesAsNullable = mutableMapOf<ProtoOrConcept, MutableSet<String>>()
-    val overrideIgnore = mutableMapOf<ProtoOrConcept, MutableSet<String>>()
-    val unknownOverrides = mutableMapOf<ProtoOrConcept, MutableSet<String>>()
-    fun findOverriddes() {
+    private val childOverridesAsNullable = mutableMapOf<ProtoOrConcept, MutableSet<String>>()
+    private val overrideIgnore = mutableMapOf<ProtoOrConcept, MutableSet<String>>()
+    private val unknownOverrides = mutableMapOf<ProtoOrConcept, MutableSet<String>>()
+    private fun findOverriddes() {
         tailrec fun findParentProp(
             prototype: ProtoOrConcept,
             propName: String
@@ -138,21 +139,33 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         }
     }
 
-    val innerStringUnions = mutableMapOf<Set<String>, ClassName>()
+    private val innerStringUnions = mutableMapOf<Set<String>, ClassName>()
+    private val noSourcePrefix = setOf(
+        "filter_mode",
+        "gui_mode",
+        "logistic_mode",
+        "research_queue_setting"
+    )
+
     private fun makeInnerStringUnion(
         source: ProtoOrConcept,
         property: Property,
         values: Set<String>
-    ): ClassName = innerStringUnions.getOrPut(values) {
-        val className = ClassName("", source.name + property.name.toCamelCase())
-        val enumType = TypeSpec.enumBuilder(className).apply {
-            for (value in values) {
-                addEnumConstant(value)
-            }
-            addAnnotation(Serializable::class)
-        }.build()
-        this.file.addType(enumType)
-        className
+    ): ClassName {
+        return innerStringUnions.getOrPut(values) {
+            val noPrefix = noSourcePrefix.any { property.name.endsWith(it) }
+            val name = if (noPrefix) property.name.toCamelCase()
+            else source.name + property.name.toCamelCase()
+            val className = ClassName("", name)
+            val enumType = TypeSpec.enumBuilder(className).apply {
+                for (value in values) {
+                    addEnumConstant(value)
+                }
+                addAnnotation(Serializable::class)
+            }.build()
+            this.file.addType(enumType)
+            className
+        }
     }
 
     private data class TypeDefinitionResult(
@@ -208,11 +221,13 @@ class DeclarationGenerator(private val docs: ApiDocs) {
 
             is TupleType -> {
                 val numEls = typeDefinition.values.size
-                val typeNames = typeDefinition.values.map { mapTypeDefinition(it, source, property).noDec() }
-                when (numEls) {
-                    0 -> throw IllegalArgumentException("Empty tuple")
-                    1 -> List::class.asClassName().parameterizedBy(typeNames[0]).res()
-                    else -> ClassName("", "UnknownTuple").res()
+                val value0 = getReferencedType(typeDefinition.values[0])
+                if (typeDefinition.values.all { getReferencedType(it) == value0 }) {
+                    ClassName("", "Tuple$numEls").parameterizedBy(
+                        mapTypeDefinition(typeDefinition.values[0], source, property).noDec()
+                    ).res()
+                } else {
+                    ClassName("", "UnknownTuple").res()
                 }
             }
 
@@ -308,7 +323,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         val toIgnore = setOf("DataExtendMethod", "Data")
     }
 
-    fun TypeDefinition.isNumerical(): Boolean {
+    private fun TypeDefinition.isNumerical(): Boolean {
         val referenced = getReferencedType(this)
         if (referenced != null) {
             return "int" in referenced || referenced == "float" || referenced == "double"
@@ -320,7 +335,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         return false
     }
 
-    fun TypeDefinition.isBoolish(): Boolean {
+    private fun TypeDefinition.isBoolish(): Boolean {
         val referenced = getReferencedType(this)
         if (referenced == "bool") return true
         val innerType = innerType()
