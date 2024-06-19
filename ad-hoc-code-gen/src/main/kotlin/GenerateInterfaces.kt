@@ -76,12 +76,22 @@ class DeclarationGenerator(private val docs: ApiDocs) {
                         .getOrPut(prototype, ::mutableSetOf)
                         .add(prop.name)
                 } else {
-                    unknownOverrides
-                        .getOrPut(parent, ::mutableSetOf)
-                        .add(prop.name)
-                    unknownOverrides
-                        .getOrPut(prototype, ::mutableSetOf)
-                        .add(prop.name)
+                    if (
+                        prototype.name == "TurretPrototype" &&
+                        prop.name == "corpse"
+                    ) {
+                        // ignore manually
+                        overrideIgnore
+                            .getOrPut(prototype, ::mutableSetOf)
+                            .add(prop.name)
+                    } else {
+                        unknownOverrides
+                            .getOrPut(parent, ::mutableSetOf)
+                            .add(prop.name)
+                        unknownOverrides
+                            .getOrPut(prototype, ::mutableSetOf)
+                            .add(prop.name)
+                    }
                 }
             }
         }
@@ -236,12 +246,33 @@ class DeclarationGenerator(private val docs: ApiDocs) {
             is UnionType -> {
                 // check if is string union
                 val isStringUnion = typeDefinition.options.all { it is LiteralType && it.value.isString }
-                if (!isStringUnion) {
-                    return ClassName("", "UnknownUnion").res()
+                if (isStringUnion) {
+                    return makeEnum(source, property, isRoot, typeDefinition)
                 }
-                return makeEnum(source, property, isRoot, typeDefinition)
+                return tryMakeItemOrList(source, property, typeDefinition) ?: ClassName("", "UnknownUnion").res()
             }
         }
+    }
+
+    private fun tryMakeItemOrList(
+        source: ProtoOrConcept,
+        property: Property?,
+        typeDefinition: UnionType
+    ): TypeDefinitionResult? {
+        if (typeDefinition.options.size != 2) return null
+        val first = typeDefinition.options[0]
+        val second = typeDefinition.options[1]
+        if (second is ArrayType && second.value == first) {
+            return ClassName("", "ItemOrList").parameterizedBy(
+                mapTypeDefinition(first, source, property).typeName // allow declaration here
+            ).res()
+        }
+        if (second is TupleType && second.values.all { it == first }) {
+            return ClassName("", "ItemOrTuple${second.values.size}").parameterizedBy(
+                mapTypeDefinition(first, source, property).noDec()
+            ).res()
+        }
+        return null
     }
 
     private fun makeEnum(

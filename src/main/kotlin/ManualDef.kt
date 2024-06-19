@@ -1,7 +1,9 @@
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.listSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
@@ -17,6 +19,32 @@ typealias Tuple1<T> = List<T>
 typealias Tuple2<T> = List<T>
 typealias Tuple3<T> = List<T>
 typealias Tuple4<T> = List<T>
+
+@Serializable(with = ItemOrListSerializer::class)
+data class ItemOrList<T>(private val values: List<T>) : List<T> by values
+
+class ItemOrListSerializer<T>(private val itemSerializer: KSerializer<T>) : KSerializer<ItemOrList<T>> {
+    @OptIn(ExperimentalSerializationApi::class)
+    override val descriptor = listSerialDescriptor(itemSerializer.descriptor)
+
+    override fun serialize(encoder: Encoder, value: ItemOrList<T>) {
+        throw NotImplementedError("Not implemented")
+    }
+
+    override fun deserialize(decoder: Decoder): ItemOrList<T> {
+        require(decoder is JsonDecoder)
+        val json = decoder.decodeJsonElement()
+        if (json is JsonArray) {
+            val values = json.map { decoder.json.decodeFromJsonElement(itemSerializer, it) }
+            return ItemOrList(values)
+        } else {
+            val value = decoder.json.decodeFromJsonElement(itemSerializer, json)
+            return ItemOrList(listOf(value))
+        }
+    }
+}
+
+typealias ItemOrTuple2<T> = ItemOrList<T>
 
 @Serializable(with = VectorSerializer::class)
 data class Vector(
