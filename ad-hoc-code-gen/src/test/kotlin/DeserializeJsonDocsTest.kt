@@ -5,7 +5,8 @@ import kotlin.test.Test
 class DeserializeJsonDocsTest {
     @Test
     fun run() {
-        val url = URL("https://lua-api.factorio.com/latest/prototype-api.json")
+//        val url = URL("https://lua-api.factorio.com/latest/prototype-api.json")
+        val url = this.javaClass.classLoader.getResource("prototype-api.json")!!
         val docs: ApiDocs = json.decodeFromString(url.readText())
 
         val result = DeclarationGenerator(docs).generate()
