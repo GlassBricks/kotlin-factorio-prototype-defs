@@ -1,3 +1,5 @@
+package factorioprototype.gen
+
 import com.squareup.kotlinpoet.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties

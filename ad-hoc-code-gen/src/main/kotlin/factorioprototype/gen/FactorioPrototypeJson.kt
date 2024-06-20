@@ -1,5 +1,7 @@
 @file:OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 
+package factorioprototype.gen
+
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer

@@ -1,6 +1,9 @@
+package factorioprototype
+
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.listSerialDescriptor
@@ -20,27 +23,18 @@ typealias Tuple2<T> = List<T>
 typealias Tuple3<T> = List<T>
 typealias Tuple4<T> = List<T>
 
-@Serializable(with = ItemOrListSerializer::class)
-data class ItemOrList<T>(private val values: List<T>) : List<T> by values
+typealias ItemOrList<T> = @Serializable(with = ItemOrListSerializer::class) List<T>
 
-class ItemOrListSerializer<T>(private val itemSerializer: KSerializer<T>) : KSerializer<ItemOrList<T>> {
-    @OptIn(ExperimentalSerializationApi::class)
+@OptIn(ExperimentalSerializationApi::class)
+class ItemOrListSerializer<T>(
+    itemSerializer: KSerializer<T>
+) : JsonTransformingSerializer<ItemOrList<T>>(ListSerializer(itemSerializer)) {
     override val descriptor = listSerialDescriptor(itemSerializer.descriptor)
 
-    override fun serialize(encoder: Encoder, value: ItemOrList<T>) {
-        throw NotImplementedError("Not implemented")
-    }
-
-    override fun deserialize(decoder: Decoder): ItemOrList<T> {
-        require(decoder is JsonDecoder)
-        val json = decoder.decodeJsonElement()
-        if (json is JsonArray) {
-            val values = json.map { decoder.json.decodeFromJsonElement(itemSerializer, it) }
-            return ItemOrList(values)
-        } else {
-            val value = decoder.json.decodeFromJsonElement(itemSerializer, json)
-            return ItemOrList(listOf(value))
-        }
+    override fun transformDeserialize(element: JsonElement): JsonElement = when (element) {
+        is JsonObject -> JsonArray(listOf(element))
+        is JsonArray -> element
+        else -> throw IllegalArgumentException("Unknown literal type: $element")
     }
 }
 

@@ -1,3 +1,5 @@
+package factorioprototype.gen
+
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import kotlinx.serialization.Serializable
@@ -5,7 +7,22 @@ import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 
-class DeclarationGenerator(private val docs: ApiDocs) {
+private const val packageName = "factorioprototype"
+
+class Declarations(
+    val types: Map<String, TypeSpec>,
+    val typeAliases: Map<String, TypeAliasSpec>,
+    val declarationsFile: FileSpec
+) {
+    val intfs get() = types.filterValues { it.kind == TypeSpec.Kind.INTERFACE }
+}
+
+
+class InterfaceGenerator(private val docs: ApiDocs) {
+
+    private val intfs = mutableMapOf<String, TypeSpec>()
+    private val typeAliases = mutableMapOf<String, TypeAliasSpec>()
+
     init {
         require(
             docs.application == "factorio" &&
@@ -14,8 +31,6 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         )
     }
 
-    //    val prototypesByName = docs.prototypes.associateBy { it.name }
-//    val conceptsByName = docs.types.associateBy { it.name }
     private val byName = (docs.prototypes + docs.types).associateBy { it.name }
 
     private tailrec fun getReferencedType(type: TypeDefinition): String? {
@@ -100,10 +115,21 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         }
     }
 
+    private val file: FileSpec.Builder = FileSpec.builder("factorioprototype", "FactorioPrototypes")
 
-    private val file: FileSpec.Builder = FileSpec.builder("", "FactorioApi")
+    private fun addType(type: TypeSpec) {
+        file.addType(type)
+        intfs[type.name!!] = type
+    }
 
-    fun generate(): FileSpec {
+    private fun addTypeAlias(typeAlias: TypeAliasSpec) {
+        file.addTypeAlias(typeAlias)
+        typeAliases[typeAlias.name] = typeAlias
+    }
+
+    fun generate(): Declarations {
+        file.addFileComment("Automatically generated file, do not edit")
+        file.addKotlinDefaultImports()
         findOverriddes()
         docs.prototypes
             .sortedBy { it.order }
@@ -111,14 +137,14 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         docs.types
             .sortedBy { it.order }
             .forEach { generateTypeInterface(it) }
-        return file.build()
+        return Declarations(intfs, typeAliases, file.build())
     }
 
     private fun generatePrototypeInterface(prototype: Prototype) {
         require(prototype.visibility == null)
         val result = TypeSpec.interfaceBuilder(prototype.name).apply {
             if (prototype.parent != null) {
-                addSuperinterface(ClassName("", prototype.parent))
+                addSuperinterface(ClassName(packageName, prototype.parent))
             }
             for (property in prototype.properties.sortedBy { it.order }) {
                 if (overrideIgnore[prototype]?.contains(property.name) == true) {
@@ -127,7 +153,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
                 addProperty(mapProperty(prototype, property))
             }
         }.build()
-        file.addType(result)
+        addType(result)
     }
 
     private fun generateTypeInterface(concept: Concept) {
@@ -137,7 +163,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
             val structType = mapStructType(concept, isRootStructType)
                 .apply { addDescription(concept.description) }
                 .build()
-            file.addType(structType)
+            addType(structType)
         }
         if (!isRootStructType) {
             val resType = mapTypeDefinition(concept.type, concept, null, true)
@@ -145,7 +171,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
                 val result = TypeAliasSpec.builder(concept.name, resType.noDec()).apply {
                     addDescription(concept.description)
                 }.build()
-                file.addTypeAlias(result)
+                addTypeAlias(result)
             }
         }
     }
@@ -162,21 +188,20 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         source: ProtoOrConcept,
         property: Property,
         values: Set<String>
-    ): ClassName {
-        return innerStringUnions.getOrPut(values) {
-            val noPrefix = noSourcePrefix.any { property.name.endsWith(it) }
-            val name = if (noPrefix) property.name.toCamelCase()
-            else source.name + property.name.toCamelCase()
-            val className = ClassName("", name)
-            val enumType = TypeSpec.enumBuilder(className).apply {
-                for (value in values) {
-                    addEnumConstant(value)
-                }
-                addAnnotation(Serializable::class)
-            }.build()
-            this.file.addType(enumType)
-            className
-        }
+    ): ClassName = innerStringUnions.getOrPut(values) {
+        val noPrefix = noSourcePrefix.any { property.name.endsWith(it) }
+        val name = if (noPrefix) property.name.toCamelCase()
+        else source.name + property.name.toCamelCase()
+        println(name)
+        val className = ClassName(packageName, name)
+        val enumType = TypeSpec.enumBuilder(className).apply {
+            for (value in values) {
+                addEnumConstant(value)
+            }
+            addAnnotation(Serializable::class)
+        }.build()
+        this.addType(enumType)
+        className
     }
 
     private data class TypeDefinitionResult(
@@ -202,7 +227,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         return when (typeDefinition) {
             is BasicType -> {
                 val value = typeDefinition.value
-                builtins.getOrElse(value) { ClassName("", value) }.res()
+                builtins.getOrElse(value) { ClassName(packageName, value) }.res()
             }
 
             is ArrayType -> List::class.asClassName()
@@ -217,28 +242,28 @@ class DeclarationGenerator(private val docs: ApiDocs) {
             is LiteralType -> {
                 val v = typeDefinition.value
                 when {
-                    v.isString -> ClassName("", "UnknownStringLiteral").res()
-                    v.booleanOrNull != null -> ClassName("", "UnknownBooleanLiteral").res()
-                    v.intOrNull != null -> ClassName("", "UnknownIntegerLiteral").res()
-                    v.doubleOrNull != null -> ClassName("", "UnknownDoubleLiteral").res()
+                    v.isString -> ClassName(packageName, "UnknownStringLiteral").res()
+                    v.booleanOrNull != null -> ClassName(packageName, "UnknownBooleanLiteral").res()
+                    v.intOrNull != null -> ClassName(packageName, "UnknownIntegerLiteral").res()
+                    v.doubleOrNull != null -> ClassName(packageName, "UnknownDoubleLiteral").res()
                     else -> throw IllegalArgumentException("Unknown literal type: $v")
                 }
             }
 
             StructType -> {
                 require(source is Concept)
-                ClassName("", source.name + "Values").res()
+                ClassName(packageName, source.name + "Values").res()
             }
 
             is TupleType -> {
                 val numEls = typeDefinition.values.size
                 val value0 = getReferencedType(typeDefinition.values[0])
                 if (typeDefinition.values.all { getReferencedType(it) == value0 }) {
-                    ClassName("", "Tuple$numEls").parameterizedBy(
+                    ClassName(packageName, "Tuple$numEls").parameterizedBy(
                         mapTypeDefinition(typeDefinition.values[0], source, property).noDec()
                     ).res()
                 } else {
-                    ClassName("", "UnknownTuple").res()
+                    ClassName(packageName, "UnknownTuple").res()
                 }
             }
 
@@ -249,7 +274,10 @@ class DeclarationGenerator(private val docs: ApiDocs) {
                 if (isStringUnion) {
                     return makeEnum(source, property, isRoot, typeDefinition)
                 }
-                return tryMakeItemOrList(source, property, typeDefinition) ?: ClassName("", "UnknownUnion").res()
+                return tryMakeItemOrList(source, property, typeDefinition) ?: ClassName(
+                    packageName,
+                    "UnknownUnion"
+                ).res()
             }
         }
     }
@@ -263,12 +291,12 @@ class DeclarationGenerator(private val docs: ApiDocs) {
         val first = typeDefinition.options[0]
         val second = typeDefinition.options[1]
         if (second is ArrayType && second.value == first) {
-            return ClassName("", "ItemOrList").parameterizedBy(
+            return ClassName(packageName, "ItemOrList").parameterizedBy(
                 mapTypeDefinition(first, source, property).typeName // allow declaration here
             ).res()
         }
         if (second is TupleType && second.values.all { it == first }) {
-            return ClassName("", "ItemOrTuple${second.values.size}").parameterizedBy(
+            return ClassName(packageName, "ItemOrTuple${second.values.size}").parameterizedBy(
                 mapTypeDefinition(first, source, property).noDec()
             ).res()
         }
@@ -283,7 +311,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
     ): TypeDefinitionResult {
         if (source is Concept && property == null) {
             val className = ClassName(
-                "",
+                packageName,
                 if (isRootConcept) source.name else source.name + "Values"
             )
             val enumType = TypeSpec.enumBuilder(className).apply {
@@ -294,7 +322,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
                 addAnnotation(Serializable::class)
                 addDescription(source.description)
             }.build()
-            this.file.addType(enumType)
+            this.addType(enumType)
             return TypeDefinitionResult(className, enumType)
         } else {
             requireNotNull(property)
@@ -312,7 +340,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
             (if (!isUnknown)
                 mapTypeDefinition(property.type, from, property).noDec()
             else
-                ClassName("", "UnknownOverriddenType"))
+                ClassName(packageName, "UnknownOverriddenType"))
                 .copy(nullable = nullable)
         return PropertySpec.builder(property.name, type).apply {
             addDescription(property.description)
@@ -330,7 +358,7 @@ class DeclarationGenerator(private val docs: ApiDocs) {
                 addProperty(mapProperty(concept, property))
             }
             if (concept.parent != null) {
-                addSuperinterface(ClassName("", concept.parent))
+                addSuperinterface(ClassName(packageName, concept.parent))
             }
         }
     }
@@ -348,9 +376,9 @@ class DeclarationGenerator(private val docs: ApiDocs) {
             "uint16" to UShort::class.asClassName(),
             "uint32" to UInt::class.asClassName(),
             "uint64" to ULong::class.asClassName(),
-            "Vector" to ClassName("", "Vector"),
-            "Vector3D" to ClassName("", "Vector3D"),
-            "BoundingBox" to ClassName("", "BoundingBox"),
+            "Vector" to ClassName(packageName, "Vector"),
+            "Vector3D" to ClassName(packageName, "Vector3D"),
+            "BoundingBox" to ClassName(packageName, "BoundingBox"),
         )
         val toIgnore = setOf("DataExtendMethod", "Data")
     }
