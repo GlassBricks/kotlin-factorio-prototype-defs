@@ -1,5 +1,6 @@
 package factorioprototype
 
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
@@ -8,10 +9,11 @@ import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
+import kotlinx.serialization.modules.SerializersModule
 
 
-typealias UnknownOverriddenType = JsonElement?
-typealias UnknownUnion = JsonElement?
+typealias UnknownOverriddenType = JsonElement
+typealias UnknownUnion = JsonElement
 
 typealias UnknownStringLiteral = String
 
@@ -166,4 +168,28 @@ object BoundingBoxSerializer : KSerializer<BoundingBox> {
         }
         return BoundingBox(left_top, right_bottom)
     }
+}
+
+internal object NoiseFunctionApplicationDeserializer : DeserializationStrategy<NoiseFunctionApplication> {
+    override val descriptor get() = NoiseFunctionApplication.serializer().descriptor
+    override fun deserialize(decoder: Decoder): NoiseFunctionApplication {
+        require(decoder is JsonDecoder)
+        val element = decoder.decodeJsonElement()
+        return json.decodeFromJsonElement(NoiseFunctionApplication.serializer(), element)
+    }
+}
+
+// hacky workaround
+val factorioPrototypeSerializersModule = SerializersModule {
+    fun maybeNoiseFunction(it: String?) = if (it == "function-application")
+        NoiseFunctionApplicationDeserializer
+    else null
+    polymorphicDefaultDeserializer(NoiseNumber::class, ::maybeNoiseFunction)
+    polymorphicDefaultDeserializer(NoiseExpression::class, ::maybeNoiseFunction)
+
+}
+
+val json = Json {
+    serializersModule = factorioPrototypeSerializersModule
+    allowSpecialFloatingPointValues = true
 }

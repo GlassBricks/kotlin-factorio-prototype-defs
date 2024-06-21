@@ -86,6 +86,7 @@ abstract class JsonReader {
     override fun toString(): String = "${this::class.simpleName}()"
 }
 
+
 private val intDescriptors = arrayOf(
     Byte.serializer(),
     Short.serializer(),
@@ -97,6 +98,12 @@ private val intDescriptors = arrayOf(
     ULong.serializer()
 ).map { it.descriptor }.toSet()
 
+private val floatDescriptors = arrayOf(
+    Float.serializer().descriptor,
+    Double.serializer().descriptor
+)
+
+
 val a = UByte.serializer().descriptor
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -105,9 +112,6 @@ fun tryManuallyDeserializing(
     el: JsonElement,
     serializer: KSerializer<*>
 ): Any? {
-    if (el is JsonPrimitive && el.content == "487.5") {
-        println()
-    }
     val descriptor = serializer.descriptor.nonNullOriginal
     return when {
         descriptor.kind == StructureKind.LIST && el is JsonObject && (el.isEmpty() || "1" in el) -> {
@@ -129,18 +133,29 @@ fun tryManuallyDeserializing(
             json.decodeFromJsonElement(serializer, JsonPrimitive(newVal))
         }
 
+        descriptor in floatDescriptors
+                && el is JsonPrimitive
+                && el.content.endsWith("inf")
+            -> {
+            val newVal = if (el.content == "-inf") Double.NEGATIVE_INFINITY else Double.POSITIVE_INFINITY
+            json.decodeFromJsonElement(serializer, JsonPrimitive(newVal))
+        }
+
         else -> null
     }
 }
 
-@OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
-@Suppress("FunctionName")
-fun <T : JsonReader> JsonReaderDeserializer(klass: KClass<T>): KSerializer<T> = object : KSerializer<T> {
-    override val descriptor: SerialDescriptor
-        get() = buildSerialDescriptor(
-            klass.simpleName ?: "JsonReader",
-            SerialKind.CONTEXTUAL
-        )
+@OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
+open class JsonReaderSerializer<T : JsonReader>(private val klass: KClass<T>) : KSerializer<T> {
+    override val descriptor: SerialDescriptor = buildSerialDescriptor(
+        getSerialName(klass),
+        SerialKind.CONTEXTUAL
+    )
+
+    private fun getSerialName(klass: KClass<T>): String {
+        return (klass.annotations.find { it is SerialName } as? SerialName)?.value
+            ?: klass.simpleName!!
+    }
 
     override fun deserialize(decoder: Decoder): T {
         val element = (decoder as JsonDecoder).decodeJsonElement()
@@ -151,6 +166,3 @@ fun <T : JsonReader> JsonReaderDeserializer(klass: KClass<T>): KSerializer<T> = 
 
     override fun serialize(encoder: Encoder, value: T) = throw NotImplementedError()
 }
-
-@Suppress("FunctionName")
-inline fun <reified T : JsonReader> JsonReaderDeserializer(): KSerializer<T> = JsonReaderDeserializer(T::class)
