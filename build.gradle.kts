@@ -12,6 +12,7 @@ fun kotlinx(module: String, version: String? = null): String =
 
 dependencies {
     implementation(kotlinx("serialization-json", "1.7.0"))
+    implementation(kotlin("reflect"))
     testImplementation(kotlin("test"))
 }
 

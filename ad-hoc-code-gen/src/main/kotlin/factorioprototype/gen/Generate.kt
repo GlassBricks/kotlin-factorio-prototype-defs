@@ -2,25 +2,13 @@ package factorioprototype.gen
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 
 public const val packageName = "factorioprototype"
-
-class Declarations(
-//    val types: Map<String, TypeSpec>,
-    val docs: ApiDocs,
-    val prototypes: Map<String, TypeSpec>,
-    val concepts: Map<String, TypeSpec>,
-    val otherTypes: Map<String, TypeSpec>,
-    val typeAliases: Map<String, TypeAliasSpec>,
-    val declarationsFile: FileSpec
-) {
-    val allTypes: Map<String, TypeSpec> = prototypes + concepts + otherTypes
-}
-
 
 class DeclarationsGenerator(private val docs: ApiDocs) {
     init {
@@ -31,15 +19,10 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         )
     }
 
-    private val prototypes = mutableMapOf<String, TypeSpec>()
-    private val concepts = mutableMapOf<String, TypeSpec>()
-    private val otherTypes = mutableMapOf<String, TypeSpec>()
-    private val typeAliases = mutableMapOf<String, TypeAliasSpec>()
-
     private val byName = (docs.prototypes + docs.types).associateBy { it.name }
     private val file: FileSpec.Builder = FileSpec.builder("factorioprototype", "FactorioPrototypes")
 
-    fun generate(): Declarations {
+    fun generate(): FileSpec {
         file.addFileComment("Automatically generated file, do not edit")
         file.addKotlinDefaultImports()
         findOverriddes()
@@ -49,7 +32,9 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         docs.types
             .sortedBy { it.order }
             .forEach { generateTypeInterface(it) }
-        return Declarations(docs, prototypes, concepts, otherTypes, typeAliases, file.build())
+
+        generatePrototypeDataClass()
+        return file.build()
     }
 
     private tailrec fun getReferencedType(type: TypeDefinition): String? {
@@ -129,30 +114,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         }
     }
 
-
-    private fun addPrototypeIntf(intf: TypeSpec) {
-        file.addType(intf)
-        prototypes[intf.name!!] = intf
-    }
-
-    private fun addConceptIntf(intf: TypeSpec) {
-        file.addType(intf)
-        concepts[intf.name!!] = intf
-    }
-
-    private fun addOtherType(type: TypeSpec) {
-        file.addType(type)
-        otherTypes[type.name!!] = type
-    }
-
-    private fun addTypeAlias(typeAlias: TypeAliasSpec) {
-        file.addTypeAlias(typeAlias)
-        typeAliases[typeAlias.name] = typeAlias
-    }
-
-    private fun TypeSpec.Builder.commonSetup(
-        value: ProtoOrConcept
-    ) {
+    private fun TypeSpec.Builder.commonSetup(value: ProtoOrConcept) {
         if (value.abstract) {
             addModifiers(KModifier.ABSTRACT)
         } else {
@@ -166,6 +128,19 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         if (value.description.isNotEmpty()) {
             addDescription(value.description)
         }
+        addType(TypeSpec.companionObjectBuilder().apply {
+            if (!value.abstract) addSerializerMethod(this@commonSetup.build().name!!)
+        }.build())
+    }
+
+    private fun TypeSpec.Builder.addSerializerMethod(className: String) {
+        addFunction(FunSpec.builder("serializer").apply {
+            returns(
+                KSerializer::class.asClassName()
+                    .parameterizedBy(ClassName(packageName, className))
+            )
+            addStatement("return JsonReaderDeserializer()")
+        }.build())
     }
 
     private fun generatePrototype(prototype: Prototype) {
@@ -177,14 +152,14 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 addProperty(mapProperty(prototype, property))
             }
         }.build()
-        addPrototypeIntf(result)
+        file.addType(result)
     }
 
     private fun generateTypeInterface(concept: Concept) {
         if (concept.name in builtins || concept.name in toIgnore) return
         val isRootStructType = concept.type is StructType
         if (concept.properties != null) {
-            addConceptIntf(mapStructType(concept, isRootStructType))
+            file.addType(mapStructType(concept, isRootStructType))
         }
         if (!isRootStructType) {
             val resType = mapTypeDefinition(concept.type, concept, null, true)
@@ -192,7 +167,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 val result = TypeAliasSpec.builder(concept.name, resType.noDec()).apply {
                     addDescription(concept.description)
                 }.build()
-                addTypeAlias(result)
+                file.addTypeAlias(result)
             }
         }
     }
@@ -230,7 +205,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             }
             addAnnotation(Serializable::class)
         }.build()
-        addOtherType(enumType)
+        file.addType(enumType)
         className
     }
 
@@ -352,7 +327,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 addAnnotation(Serializable::class)
                 addDescription(source.description)
             }.build()
-            this.addConceptIntf(enumType)
+            this.file.addType(enumType)
             return TypeDefinitionResult(className, enumType)
         } else {
             requireNotNull(property)
@@ -365,21 +340,31 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private fun mapProperty(from: ProtoOrConcept, property: Property): PropertySpec {
         require(property.visibility == null)
         val nullable = property.optional ||
+                property.default != null ||
                 childOverrides[from]?.get(property.name) == OverrideType.AsNullable
         val isUnknown = overriddes[from]?.get(property.name) == OverrideType.Unknown ||
                 childOverrides[from]?.get(property.name) == OverrideType.Unknown
         val laterOverridden = childOverrides[from]?.contains(property.name) == true
+
         val type =
             (if (!isUnknown)
                 mapTypeDefinition(property.type, from, property).noDec()
             else
                 ClassName(packageName, "UnknownOverriddenType"))
                 .copy(nullable = nullable)
+
+
+
         return PropertySpec.builder(property.name, type).apply {
             addDescription(property.description)
             if (property.override) addModifiers(KModifier.OVERRIDE)
             if (laterOverridden) addModifiers(KModifier.OPEN)
-            delegate("fromJson()")
+            val altName = property.alt_name
+            if (altName != null) {
+                delegate("fromJson(%S)", altName)
+            } else {
+                delegate("fromJson()")
+            }
         }.build()
     }
 
@@ -394,6 +379,34 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 addProperty(mapProperty(concept, property))
             }
         }.build()
+    }
+
+    private fun generatePrototypeDataClass() {
+        val result = TypeSpec.classBuilder("PrototypeData").apply {
+            superclass(ClassName(packageName, "JsonReader"))
+            addType(TypeSpec.companionObjectBuilder().apply {
+                addSerializerMethod("PrototypeData")
+            }.build())
+
+            for (prototype in docs.prototypes.sortedBy { it.order }) {
+                val typename = prototype.typename ?: continue
+                // val `typename`: Map<String, Type> by fromJson()
+                addProperty(
+                    PropertySpec.builder(
+                        typename, Map::class.asClassName().parameterizedBy(
+                            String::class.asClassName(),
+                            ClassName(packageName, prototype.name)
+                        ).copy(nullable = true)
+                    )
+                        .delegate("fromJson()")
+                        .build()
+                )
+
+            }
+
+
+        }.build()
+        file.addType(result)
     }
 
     companion object {
@@ -447,5 +460,6 @@ private fun Documentable.Builder<*>.addDescription(description: String?) {
 }
 
 private fun String.toCamelCase(): String {
-    return this.split("_").joinToString("") { it.capitalize() }
+    return this.split("_")
+        .joinToString("") { s -> s.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } }
 }

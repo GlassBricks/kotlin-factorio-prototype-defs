@@ -1,6 +1,7 @@
 // Automatically generated file, do not edit
 package factorioprototype
 
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 
 /**
@@ -64,6 +65,10 @@ public open class AccumulatorPrototype : EntityWithOwnerPrototype() {
    * network.
    */
   public val default_output_signal: SignalIDConnector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AccumulatorPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -107,6 +112,10 @@ public open class AchievementPrototype : PrototypeBase() {
   public val allowed_without_fight: Boolean? by fromJson()
 
   public val hidden: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AchievementPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -117,6 +126,10 @@ public open class ActiveDefenseEquipmentPrototype : EquipmentPrototype() {
   public val automatic: Boolean by fromJson()
 
   public val attack_parameters: AttackParameters by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ActiveDefenseEquipmentPrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -170,6 +183,10 @@ public open class AmbientSound : JsonReader() {
   public val track_type: AmbientSoundTrackType by fromJson()
 
   public val weight: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AmbientSound> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -178,6 +195,10 @@ public open class AmbientSound : JsonReader() {
  */
 public open class AmmoCategory : PrototypeBase() {
   public val bonus_gui_order: Order? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AmmoCategory> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -203,6 +224,10 @@ public open class AmmoItemPrototype : ItemPrototype() {
    * Must be >= `0`.
    */
   public val reload_time: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AmmoItemPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -217,6 +242,10 @@ public open class AmmoTurretPrototype : TurretPrototype() {
    * Shift of the "alt-mode icon" relative to the turret's position.
    */
   public val entity_info_icon_shift: Vector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AmmoTurretPrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -489,6 +518,10 @@ public open class AnimationPrototype : JsonReader() {
    * Only loaded if `layers` is not defined.
    */
   public val stripes: List<Stripe>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AnimationPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -516,6 +549,10 @@ public open class ArithmeticCombinatorPrototype : CombinatorPrototype() {
   public val or_symbol_sprites: Sprite4Way? by fromJson()
 
   public val xor_symbol_sprites: Sprite4Way? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ArithmeticCombinatorPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -536,6 +573,10 @@ public open class ArmorPrototype : ToolPrototype() {
    * By how many slots the inventory of the player is expanded when the armor is worn.
    */
   public val inventory_size_bonus: ItemStackIndex? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ArmorPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -552,6 +593,10 @@ public open class ArrowPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ArrowPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -621,6 +666,10 @@ public open class ArtilleryFlarePrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ArtilleryFlarePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -657,6 +706,10 @@ public open class ArtilleryProjectilePrototype : EntityPrototype() {
    * Must have a collision box size of zero.
    */
   override val collision_box: BoundingBox? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ArtilleryProjectilePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -730,6 +783,10 @@ public open class ArtilleryTurretPrototype : EntityWithOwnerPrototype() {
    * and structures](https://wiki.factorio.com/Military_units_and_structures).
    */
   override val is_military_target: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ArtilleryTurretPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -790,6 +847,10 @@ public open class ArtilleryWagonPrototype : RollingStockPrototype() {
    * Only loaded if `cannon_barrel_recoil_shiftings` is loaded.
    */
   public val cannon_barrel_light_direction: Vector3D? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ArtilleryWagonPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -823,6 +884,10 @@ public open class AssemblingMachinePrototype : CraftingMachinePrototype() {
    * Shift of the "alt-mode icon" relative to the machine's center.
    */
   override val entity_info_icon_shift: Vector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AssemblingMachinePrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -855,12 +920,20 @@ public open class AutoplaceControl : PrototypeBase() {
    * this is false, the autoplace control cannot be disabled from the GUI.
    */
   public val can_be_disabled: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AutoplaceControl> = JsonReaderDeserializer()
+  }
 }
 
 /**
  * Used by [personal battery](https://wiki.factorio.com/Personal_battery).
  */
-public open class BatteryEquipmentPrototype : EquipmentPrototype()
+public open class BatteryEquipmentPrototype : EquipmentPrototype() {
+  public companion object {
+    public fun serializer(): KSerializer<BatteryEquipmentPrototype> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * Entity with the ability to transfer [module](prototype:ModulePrototype) effects to its
@@ -915,6 +988,10 @@ public open class BeaconPrototype : EntityWithOwnerPrototype() {
    * The types of [modules](prototype:ModulePrototype) that a player can place inside of the beacon.
    */
   public val allowed_effects: EffectTypeLimitation? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BeaconPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1001,6 +1078,10 @@ public open class BeamPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BeamPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1011,6 +1092,10 @@ public open class BeltImmunityEquipmentPrototype : EquipmentPrototype() {
    * The continuous power consumption of the belt immunity equipment.
    */
   public val energy_consumption: Energy by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BeltImmunityEquipmentPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1026,6 +1111,10 @@ public open class BlueprintBookPrototype : ItemWithInventoryPrototype() {
    * If the item will draw its label when held in the cursor in place of the item count.
    */
   override val draw_label_for_cursor_render: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BlueprintBookPrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -1107,6 +1196,10 @@ public open class BlueprintItemPrototype : SelectionToolPrototype() {
    * This property is parsed, but then ignored.
    */
   override val alt_tile_filter_mode: EntityFilterMode? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BlueprintItemPrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -1215,6 +1308,10 @@ public open class BoilerPrototype : EntityWithOwnerPrototype() {
    * May be useful to correct problems with neighboring pipes overlapping the structure graphics.
    */
   public val patch: BoilerPatch? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BoilerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1242,6 +1339,10 @@ public open class BuildEntityAchievementPrototype : AchievementPrototype() {
    * achievement. 0 means infinite time.
    */
   public val until_second: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BuildEntityAchievementPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1287,6 +1388,10 @@ public open class BurnerGeneratorPrototype : EntityWithOwnerPrototype() {
   public val min_perceived_performance: Double? by fromJson()
 
   public val performance_to_sound_speedup: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BurnerGeneratorPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1300,6 +1405,10 @@ public open class CapsulePrototype : ItemPrototype() {
    * Color of the range radius that is shown around the player when they hold the capsule.
    */
   public val radius_color: Color? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CapsulePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1324,7 +1433,7 @@ public open class CarPrototype : VehiclePrototype() {
    * Must be a burner energy source when using `"burner"`, otherwise it can also be a void energy
    * source.
    */
-  public val energy_source: UnknownUnion by fromJson()
+  public val energy_source: UnknownUnion by fromJson("burner")
 
   /**
    * Size of the car inventory.
@@ -1394,6 +1503,10 @@ public open class CarPrototype : VehiclePrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CarPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1405,6 +1518,10 @@ public open class CargoWagonPrototype : RollingStockPrototype() {
    * filtered. This functionality cannot be turned off.
    */
   public val inventory_size: ItemStackIndex by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CargoWagonPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1436,6 +1553,10 @@ public open class CharacterCorpsePrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterCorpsePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1583,6 +1704,10 @@ public open class CharacterPrototype : EntityWithOwnerPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1606,6 +1731,10 @@ public open class CliffPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CliffPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1617,6 +1746,11 @@ public open class CombatRobotCountAchievementPrototype : AchievementPrototype() 
    * This will trigger the achievement, if player's current robot count is over this amount.
    */
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CombatRobotCountAchievementPrototype> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1647,6 +1781,10 @@ public open class CombatRobotPrototype : FlyingRobotPrototype() {
   public val follows_player: Boolean? by fromJson()
 
   public val light: LightDefinition? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CombatRobotPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1687,6 +1825,8 @@ public abstract class CombinatorPrototype : EntityWithOwnerPrototype() {
   public val draw_copper_wires: Boolean? by fromJson()
 
   public val draw_circuit_wires: Boolean? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -1713,6 +1853,10 @@ public open class ConstantCombinatorPrototype : EntityWithOwnerPrototype() {
   public val draw_copper_wires: Boolean? by fromJson()
 
   public val draw_circuit_wires: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ConstantCombinatorPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1732,6 +1876,11 @@ public open class ConstructWithRobotsAchievementPrototype : AchievementPrototype
   public val amount: UInt? by fromJson()
 
   public val more_than_manually: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ConstructWithRobotsAchievementPrototype> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1756,6 +1905,10 @@ public open class ConstructionRobotPrototype : RobotWithLogisticInterfacePrototy
    * Must have a collision box size of zero.
    */
   override val collision_box: BoundingBox? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ConstructionRobotPrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -1813,6 +1966,10 @@ public open class ContainerPrototype : EntityWithOwnerPrototype() {
    * The pictures displayed for circuit connections to this container.
    */
   public val circuit_connector_sprites: CircuitConnectorSprites? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ContainerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1875,6 +2032,10 @@ public open class CopyPasteToolPrototype : SelectionToolPrototype() {
    * This property is parsed, but then ignored.
    */
   override val alt_tile_filter_mode: EntityFilterMode? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CopyPasteToolPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -1962,6 +2123,10 @@ public open class CorpsePrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CorpsePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2134,6 +2299,8 @@ public abstract class CraftingMachinePrototype : EntityWithOwnerPrototype() {
    * animation speed of 1 means one animation frame per 2 ticks (30 fps) instead of the usual 60 fps.
    */
   public val working_visualisations: List<WorkingVisualisation>? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -2141,6 +2308,10 @@ public abstract class CraftingMachinePrototype : EntityWithOwnerPrototype() {
  */
 public open class CurvedRailPrototype : RailPrototype() {
   public val bending_type: UnknownStringLiteral? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CurvedRailPrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -2252,6 +2423,10 @@ public open class CustomInputPrototype : PrototypeBase() {
    * A [Lua event](runtime:CustomInputEvent) is only raised if the action is "lua".
    */
   public val action: CustomInputPrototypeAction? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CustomInputPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2260,6 +2435,10 @@ public open class CustomInputPrototype : PrototypeBase() {
  */
 public open class DamageType : PrototypeBase() {
   public val hidden: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DamageType> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2277,6 +2456,10 @@ public open class DeciderCombinatorPrototype : CombinatorPrototype() {
   public val greater_or_equal_symbol_sprites: Sprite4Way? by fromJson()
 
   public val less_or_equal_symbol_sprites: Sprite4Way? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DeciderCombinatorPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2289,6 +2472,11 @@ public open class DeconstructWithRobotsAchievementPrototype : AchievementPrototy
    * robots.
    */
   public val amount: UInt by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DeconstructWithRobotsAchievementPrototype> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2299,6 +2487,11 @@ public open class DeconstructibleTileProxyPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DeconstructibleTileProxyPrototype> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2379,6 +2572,10 @@ public open class DeconstructionItemPrototype : SelectionToolPrototype() {
    * This property is parsed, but then ignored.
    */
   override val alt_tile_filter_mode: EntityFilterMode? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DeconstructionItemPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2421,6 +2618,10 @@ public open class DecorativePrototype : PrototypeBase() {
   public val autoplace: AutoplaceSpecification? by fromJson()
 
   public val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DecorativePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2433,6 +2634,11 @@ public open class DeliverByRobotsAchievementPrototype : AchievementPrototype() {
    * robots.
    */
   public val amount: MaterialAmountType by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DeliverByRobotsAchievementPrototype> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2447,6 +2653,11 @@ public open class DontBuildEntityAchievementPrototype : AchievementPrototype() {
   public val dont_build: ItemOrList<EntityID> by fromJson()
 
   public val amount: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DontBuildEntityAchievementPrototype> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2458,6 +2669,11 @@ public open class DontCraftManuallyAchievementPrototype : AchievementPrototype()
    * This will disable the achievement, if the player crafts more than this.
    */
   public val amount: MaterialAmountType by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DontCraftManuallyAchievementPrototype> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2481,6 +2697,11 @@ public open class DontUseEntityInEnergyProductionAchievementPrototype : Achievem
   public val last_hour_only: Boolean? by fromJson()
 
   public val minimum_energy_produced: Energy? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DontUseEntityInEnergyProductionAchievementPrototype> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2542,6 +2763,10 @@ public open class EditorControllerPrototype : JsonReader() {
   public val show_infinity_filters_in_controller_gui: Boolean by fromJson()
 
   public val placed_corpses_never_expire: Boolean by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EditorControllerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -2595,6 +2820,11 @@ public open class ElectricEnergyInterfacePrototype : EntityWithOwnerPrototype() 
   public val animations: Animation4Way? by fromJson()
 
   override val allow_copy_paste: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ElectricEnergyInterfacePrototype> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2639,6 +2869,10 @@ public open class ElectricPolePrototype : EntityWithOwnerPrototype() {
   public val light: LightDefinition? by fromJson()
 
   public val track_coverage_during_build_by_moving: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ElectricPolePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2646,6 +2880,10 @@ public open class ElectricPolePrototype : EntityWithOwnerPrototype() {
  */
 public open class ElectricTurretPrototype : TurretPrototype() {
   public val energy_source: UnknownUnion by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ElectricTurretPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2728,6 +2966,10 @@ public open class EnemySpawnerPrototype : EntityWithOwnerPrototype() {
    * `spawn_decorations_on_expansion` is set to true.
    */
   public val spawn_decoration: ItemOrList<CreateDecorativesTriggerEffectItem>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EnemySpawnerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2737,6 +2979,10 @@ public open class EnergyShieldEquipmentPrototype : EquipmentPrototype() {
   public val max_shield_value: Float by fromJson()
 
   public val energy_per_shield: Energy by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EnergyShieldEquipmentPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2752,6 +2998,10 @@ public open class EntityGhostPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EntityGhostPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -2763,6 +3013,10 @@ public open class EntityParticlePrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EntityParticlePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3060,6 +3314,8 @@ public abstract class EntityPrototype : PrototypeBase() {
    * has its [place_result](prototype:ItemPrototype::place_result) set to this entity.
    */
   override val order: Order? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -3134,6 +3390,8 @@ public abstract class EntityWithHealthPrototype : EntityPrototype() {
    * Sprite drawn on ground under the entity to make it feel more integrated into the ground.
    */
   public val integration_patch: Sprite4Way? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -3153,13 +3411,19 @@ public abstract class EntityWithOwnerPrototype : EntityWithHealthPrototype() {
    * the entity, not on the prototype itself).
    */
   public open val allow_run_time_change_of_is_military_target: Boolean? by fromJson()
+
+  public companion object
 }
 
 /**
  * Defines a category to be available to [equipment](prototype:EquipmentPrototype) and [equipment
  * grids](prototype:EquipmentGridPrototype).
  */
-public open class EquipmentCategory : PrototypeBase()
+public open class EquipmentCategory : PrototypeBase() {
+  public companion object {
+    public fun serializer(): KSerializer<EquipmentCategory> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * The prototype of an equipment grid, for example the one used in a [power
@@ -3181,6 +3445,10 @@ public open class EquipmentGridPrototype : PrototypeBase() {
    * or take equipment from this equipment grid.
    */
   public val locked: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EquipmentGridPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3231,6 +3499,8 @@ public abstract class EquipmentPrototype : PrototypeBase() {
    * hovering over an equipment grid.
    */
   public val grabbed_background_color: Color? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -3316,6 +3586,10 @@ public open class ExplosionPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ExplosionPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3327,6 +3601,11 @@ public open class FinishTheGameAchievementPrototype : AchievementPrototype() {
    * achievement. 0 means infinite time.
    */
   public val until_second: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FinishTheGameAchievementPrototype> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3450,6 +3729,10 @@ public open class FireFlamePrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FireFlamePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3463,6 +3746,10 @@ public open class FishPrototype : EntityWithHealthPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FishPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3474,6 +3761,10 @@ public open class FlameThrowerExplosionPrototype : ExplosionPrototype() {
   public val slow_down_factor: Double by fromJson()
 
   override val height: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FlameThrowerExplosionPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3561,6 +3852,10 @@ public open class FluidPrototype : PrototypeBase() {
    * This means it is discarded by the game engine after loading finishes.
    */
   public val auto_barrel: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FluidPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3668,6 +3963,10 @@ public open class FluidStreamPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FluidStreamPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3723,6 +4022,10 @@ public open class FluidTurretPrototype : TurretPrototype() {
    * Requires ammo_type in attack_parameters.
    */
   override val attack_parameters: UnknownOverriddenType by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FluidTurretPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3735,6 +4038,10 @@ public open class FluidWagonPrototype : RollingStockPrototype() {
    * Must be 1, 2 or 3.
    */
   public val tank_count: UByte? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FluidWagonPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3805,6 +4112,8 @@ public abstract class FlyingRobotPrototype : EntityWithOwnerPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object
 }
 
 @Serializable
@@ -3835,6 +4144,10 @@ public open class FlyingTextPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FlyingTextPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3872,13 +4185,21 @@ public open class FontPrototype : JsonReader() {
    * The color of the border, if enabled.
    */
   public val border_color: Color? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FontPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
  * Each item which has a fuel_value must have a fuel category. The fuel categories are used to allow
  * only certain fuels to be used in [EnergySource](prototype:EnergySource).
  */
-public open class FuelCategory : PrototypeBase()
+public open class FuelCategory : PrototypeBase() {
+  public companion object {
+    public fun serializer(): KSerializer<FuelCategory> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * A furnace. Normal furnaces only process "smelting" category recipes, but you can make furnaces
@@ -3907,6 +4228,10 @@ public open class FurnacePrototype : CraftingMachinePrototype() {
    * which is the localised name of the item.
    */
   public val cant_insert_at_source_message_key: String? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FurnacePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3958,6 +4283,10 @@ public open class GatePrototype : EntityWithOwnerPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GatePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -3974,6 +4303,10 @@ public open class GeneratorEquipmentPrototype : EquipmentPrototype() {
    * If not defined, this equipment produces power for free.
    */
   public val burner: BurnerEnergySource? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GeneratorEquipmentPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4061,6 +4394,10 @@ public open class GeneratorPrototype : EntityWithOwnerPrototype() {
    * `fluid_box` must have a filter if this is not defined.
    */
   public val max_power_output: Energy? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GeneratorPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4096,6 +4433,10 @@ public open class GodControllerPrototype : JsonReader() {
    * Names of the resource categories the player can mine resources from.
    */
   public val mining_categories: List<ResourceCategoryID>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GodControllerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4109,6 +4450,10 @@ public open class GroupAttackAchievementPrototype : AchievementPrototype() {
    * attacked once.)
    */
   public val amount: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GroupAttackAchievementPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4120,6 +4465,10 @@ public open class GuiStyle : PrototypeBase() {
   public val default_sprite_scale: Double? by fromJson()
 
   public val default_sprite_priority: SpritePriority? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GuiStyle> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4131,6 +4480,10 @@ public open class GunPrototype : ItemPrototype() {
    * range.
    */
   public val attack_parameters: AttackParameters by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GunPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4142,6 +4495,10 @@ public open class HeatInterfacePrototype : EntityWithOwnerPrototype() {
   public val picture: Sprite? by fromJson()
 
   public val gui_mode: GuiMode? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<HeatInterfacePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4158,6 +4515,10 @@ public open class HeatPipePrototype : EntityWithOwnerPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<HeatPipePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4175,6 +4536,10 @@ public open class HighlightBoxEntityPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<HighlightBoxEntityPrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -4213,6 +4578,10 @@ public open class InfinityContainerPrototype : LogisticContainerPrototype() {
    * The number of slots in this container. May not be zero.
    */
   override val inventory_size: ItemStackIndex by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<InfinityContainerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4220,6 +4589,10 @@ public open class InfinityContainerPrototype : LogisticContainerPrototype() {
  */
 public open class InfinityPipePrototype : PipePrototype() {
   public val gui_mode: GuiMode? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<InfinityPipePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4330,6 +4703,10 @@ public open class InserterPrototype : EntityWithOwnerPrototype() {
   public val circuit_wire_connection_points: Tuple4<WireConnectionPoint>? by fromJson()
 
   public val circuit_connector_sprites: Tuple4<CircuitConnectorSprites>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<InserterPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4356,6 +4733,10 @@ public open class ItemEntityPrototype : EntityPrototype() {
    * poles/inserters etc.
    */
   override val collision_box: BoundingBox? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ItemEntityPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4398,6 +4779,10 @@ public open class ItemGroup : PrototypeBase() {
    * used to specify the ordering in recipes without affecting the inventory order.
    */
   public val order_in_recipe: Order? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ItemGroup> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4547,6 +4932,10 @@ public open class ItemPrototype : PrototypeBase() {
    * Only loaded if `rocket_launch_products` is not defined.
    */
   public val rocket_launch_product: ItemProductPrototype? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ItemPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4562,6 +4951,10 @@ public open class ItemRequestProxyPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ItemRequestProxyPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4577,6 +4970,10 @@ public open class ItemSubGroup : PrototypeBase() {
    * The item group this subgroup is located in.
    */
   public val group: ItemGroupID by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ItemSubGroup> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4622,6 +5019,10 @@ public open class ItemWithEntityDataPrototype : ItemPrototype() {
    * Uses `icon_size` and `icon_mipmaps` from its [ItemPrototype](prototype:ItemPrototype) parent.
    */
   public val icon_tintable: FileName? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ItemWithEntityDataPrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -4696,6 +5097,10 @@ public open class ItemWithInventoryPrototype : ItemWithLabelPrototype() {
    * the parent inventory.
    */
   public val insertion_priority_mode: ItemWithInventoryPrototypeInsertionPriorityMode? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ItemWithInventoryPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4711,13 +5116,21 @@ public open class ItemWithLabelPrototype : ItemPrototype() {
    * If the item will draw its label when held in the cursor in place of the item count.
    */
   public open val draw_label_for_cursor_render: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ItemWithLabelPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
  * Item type that can store any basic arbitrary Lua data, see
  * [LuaItemStack::tags](runtime:LuaItemStack::tags).
  */
-public open class ItemWithTagsPrototype : ItemWithLabelPrototype()
+public open class ItemWithTagsPrototype : ItemWithLabelPrototype() {
+  public companion object {
+    public fun serializer(): KSerializer<ItemWithTagsPrototype> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * This prototype is used for receiving an achievement when the player destroys a certain amount of
@@ -4755,6 +5168,10 @@ public open class KillAchievementPrototype : AchievementPrototype() {
    * automated train.
    */
   public val personally: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<KillAchievementPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4813,6 +5230,10 @@ public open class LabPrototype : EntityWithOwnerPrototype() {
    * The number of module slots.
    */
   public val module_specification: ModuleSpecification? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LabPrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -4897,6 +5318,10 @@ public open class LampPrototype : EntityWithOwnerPrototype() {
   public val signal_to_color_mapping: List<SignalColorMapping>? by fromJson()
 
   public val glow_render_mode: LampPrototypeGlowRenderMode? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LampPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4951,6 +5376,10 @@ public open class LandMinePrototype : EntityWithOwnerPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LandMinePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -4958,7 +5387,11 @@ public open class LandMinePrototype : EntityWithOwnerPrototype() {
  * "leaf-particle" has been obsoleted and cannot be created. See
  * [ParticlePrototype](prototype:ParticlePrototype) for particles.
  */
-public open class LeafParticlePrototype : EntityParticlePrototype()
+public open class LeafParticlePrototype : EntityParticlePrototype() {
+  public companion object {
+    public fun serializer(): KSerializer<LeafParticlePrototype> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * A belt that can be connected to a belt anywhere else, including on a different surface. The
@@ -4982,6 +5415,10 @@ public open class LinkedBeltPrototype : TransportBeltConnectablePrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LinkedBeltPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5028,6 +5465,10 @@ public open class LinkedContainerPrototype : EntityWithOwnerPrototype() {
    * The pictures displayed for circuit connections to this linked container.
    */
   public val circuit_connector_sprites: CircuitConnectorSprites? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LinkedContainerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5041,7 +5482,11 @@ public open class LinkedContainerPrototype : EntityWithOwnerPrototype() {
  * For a loader type with a belt_distance of 0.5, see
  * [Loader1x2Prototype](prototype:Loader1x2Prototype).
  */
-public open class Loader1x1Prototype : LoaderPrototype()
+public open class Loader1x1Prototype : LoaderPrototype() {
+  public companion object {
+    public fun serializer(): KSerializer<Loader1x1Prototype> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * Continuously loads and unloads machines, as an alternative to inserters.
@@ -5054,7 +5499,11 @@ public open class Loader1x1Prototype : LoaderPrototype()
  * total. For a loader type with a belt_distance of 0, see
  * [Loader1x1Prototype](prototype:Loader1x1Prototype).
  */
-public open class Loader1x2Prototype : LoaderPrototype()
+public open class Loader1x2Prototype : LoaderPrototype() {
+  public companion object {
+    public fun serializer(): KSerializer<Loader1x2Prototype> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * Continuously loads and unloads machines, as an alternative to inserters.
@@ -5105,6 +5554,8 @@ public abstract class LoaderPrototype : TransportBeltConnectablePrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -5119,7 +5570,7 @@ public open class LocomotivePrototype : RollingStockPrototype() {
    * Must be a burner energy source when using "burner", otherwise it can also be a void energy
    * source.
    */
-  public val energy_source: UnknownUnion by fromJson()
+  public val energy_source: UnknownUnion by fromJson("burner")
 
   public val front_light: LightDefinition? by fromJson()
 
@@ -5132,6 +5583,10 @@ public open class LocomotivePrototype : RollingStockPrototype() {
    * distance to the stop.
    */
   public val max_snap_to_train_stop_distance: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LocomotivePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5183,6 +5638,10 @@ public open class LogisticContainerPrototype : ContainerPrototype() {
    * The picture displayed for this entity.
    */
   override val picture: Sprite? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LogisticContainerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5217,6 +5676,10 @@ public open class LogisticRobotPrototype : RobotWithLogisticInterfacePrototype()
    * Must have a collision box size of zero.
    */
   override val collision_box: BoundingBox? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LogisticRobotPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5229,6 +5692,10 @@ public open class MapGenPresets : JsonReader() {
    * Name of the map gen presets. Base game uses "default".
    */
   public val name: String by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MapGenPresets> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5261,6 +5728,10 @@ public open class MapSettings : JsonReader() {
   public val max_failed_behavior_count: UInt by fromJson()
 
   public val difficulty_settings: DifficultySettings by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MapSettings> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5274,6 +5745,10 @@ public open class MarketPrototype : EntityWithOwnerPrototype() {
    * Whether all forces are allowed to open this market.
    */
   public val allow_access_to_all_forces: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MarketPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5394,19 +5869,31 @@ public open class MiningDrillPrototype : EntityWithOwnerPrototype() {
   public val circuit_connector_sprites: Tuple4<CircuitConnectorSprites>? by fromJson()
 
   public val module_specification: ModuleSpecification? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MiningDrillPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
  * Exists only for migration, cannot be used by mods.
  */
-public open class MiningToolPrototype : ToolPrototype()
+public open class MiningToolPrototype : ToolPrototype() {
+  public companion object {
+    public fun serializer(): KSerializer<MiningToolPrototype> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * A module category. The built-in categories can be found
  * [here](https://wiki.factorio.com/Data.raw#module-category). See
  * [ModulePrototype::category](prototype:ModulePrototype::category).
  */
-public open class ModuleCategory : PrototypeBase()
+public open class ModuleCategory : PrototypeBase() {
+  public companion object {
+    public fun serializer(): KSerializer<ModuleCategory> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * A [module](https://wiki.factorio.com/Module). They are used to affect the capabilities of
@@ -5466,6 +5953,10 @@ public open class ModulePrototype : ItemPrototype() {
   public val art_style: String? by fromJson()
 
   public val beacon_tint: BeaconVisualizationTints? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ModulePrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -5509,6 +6000,10 @@ public open class MouseCursor : JsonReader() {
    * Mandatory if `system_cursor` is not defined.
    */
   public val hot_pixel_y: Short? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MouseCursor> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5522,6 +6017,10 @@ public open class MovementBonusEquipmentPrototype : EquipmentPrototype() {
    * Multiplier of the character speed/vehicle acceleration.
    */
   public val movement_bonus: Double by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MovementBonusEquipmentPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5646,6 +6145,10 @@ public open class NamedNoiseExpression : PrototypeBase() {
    * existing maps.
    */
   override val order: Order? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NamedNoiseExpression> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5664,13 +6167,21 @@ public open class NightVisionEquipmentPrototype : EquipmentPrototype() {
   public val activate_sound: Sound? by fromJson()
 
   public val deactivate_sound: Sound? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NightVisionEquipmentPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
  * A noise layer used by the [autoplace system](prototype:AutoplacePeak::noise_layer). For a list of
  * built-in layers, see [here](https://wiki.factorio.com/Data.raw#noise-layer).
  */
-public open class NoiseLayer : PrototypeBase()
+public open class NoiseLayer : PrototypeBase() {
+  public companion object {
+    public fun serializer(): KSerializer<NoiseLayer> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * An [offshore pump](https://wiki.factorio.com/Offshore_pump).
@@ -5761,6 +6272,10 @@ public open class OffshorePumpPrototype : EntityWithOwnerPrototype() {
    * Mandatory if circuit_wire_max_distance > 0.
    */
   public val circuit_connector_sprites: Tuple4<CircuitConnectorSprites>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<OffshorePumpPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5815,6 +6330,10 @@ public open class ParticlePrototype : PrototypeBase() {
    * Defaults to `life_time` / 5, but at most 60. If this is 0, it is silently changed to 1.
    */
   public val fade_away_duration: UShort? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ParticlePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5855,6 +6374,10 @@ public open class ParticleSourcePrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ParticleSourcePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5874,6 +6397,10 @@ public open class PipePrototype : EntityWithOwnerPrototype() {
    * All graphics for this pipe.
    */
   public val pictures: PipePictures by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PipePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5888,6 +6415,10 @@ public open class PipeToGroundPrototype : EntityWithOwnerPrototype() {
    * Causes fluid icon to always be drawn, ignoring the usual pair requirement.
    */
   public val draw_fluid_icon_override: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PipeToGroundPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5910,6 +6441,11 @@ public open class PlayerDamagedAchievementPrototype : AchievementPrototype() {
    * This will trigger the achievement, if the player takes damage from this specific entity type.
    */
   public val type_of_dealer: String? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PlayerDamagedAchievementPrototype> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5930,6 +6466,10 @@ public open class PlayerPortPrototype : EntityWithOwnerPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PlayerPortPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5959,6 +6499,10 @@ public open class PowerSwitchPrototype : EntityWithOwnerPrototype() {
   public val draw_copper_wires: Boolean? by fromJson()
 
   public val draw_circuit_wires: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PowerSwitchPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -5991,6 +6535,10 @@ public open class ProduceAchievementPrototype : AchievementPrototype() {
    * This will tell the achievement what fluid the player needs to craft, to get the achievement.
    */
   public val fluid_product: FluidID? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ProduceAchievementPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6016,6 +6564,11 @@ public open class ProducePerHourAchievementPrototype : AchievementPrototype() {
    * This will tell the achievement what fluid the player needs to craft, to get the achievement.
    */
   public val fluid_product: FluidID? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ProducePerHourAchievementPrototype> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6043,6 +6596,10 @@ public open class ProgrammableSpeakerPrototype : EntityWithOwnerPrototype() {
   public val draw_circuit_wires: Boolean? by fromJson()
 
   public val circuit_connector_sprites: CircuitConnectorSprites? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ProgrammableSpeakerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6122,6 +6679,10 @@ public open class ProjectilePrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ProjectilePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6163,6 +6724,8 @@ public abstract class PrototypeBase : JsonReader() {
    * tooltip of the prototype.
    */
   public val localised_description: LocalisedString? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -6221,6 +6784,10 @@ public open class PumpPrototype : EntityWithOwnerPrototype() {
   public val circuit_connector_sprites: Tuple4<CircuitConnectorSprites>? by fromJson()
 
   public val fluid_wagon_connector_graphics: FluidWagonConnectorGraphics? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PumpPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6276,6 +6843,10 @@ public open class RadarPrototype : EntityWithOwnerPrototype() {
    * and structures](https://wiki.factorio.com/Military_units_and_structures).
    */
   override val is_military_target: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RadarPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6290,6 +6861,10 @@ public open class RailChainSignalPrototype : RailSignalBasePrototype() {
   public val blue_light: LightDefinition? by fromJson()
 
   public val default_blue_output_signal: SignalIDConnector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RailChainSignalPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6307,6 +6882,10 @@ public open class RailPlannerPrototype : ItemPrototype() {
    * this rail planner.
    */
   public val curved_rail: EntityID by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RailPlannerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6336,6 +6915,8 @@ public abstract class RailPrototype : EntityWithOwnerPrototype() {
    * automatically calculated from the bounding boxes, so effectively also hardcoded.
    */
   override val selection_box: BoundingBox? by fromJson()
+
+  public companion object
 }
 
 @Serializable
@@ -6363,6 +6944,10 @@ public open class RailRemnantsPrototype : CorpsePrototype() {
    * automatically calculated from the bounding boxes, so effectively also hardcoded.
    */
   override val selection_box: BoundingBox? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RailRemnantsPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6422,12 +7007,18 @@ public abstract class RailSignalBasePrototype : EntityWithOwnerPrototype() {
    * The "placeable-off-grid" flag will be ignored for rail signals.
    */
   override val flags: EntityPrototypeFlags? by fromJson()
+
+  public companion object
 }
 
 /**
  * A [rail signal](https://wiki.factorio.com/Rail_signal).
  */
-public open class RailSignalPrototype : RailSignalBasePrototype()
+public open class RailSignalPrototype : RailSignalBasePrototype() {
+  public companion object {
+    public fun serializer(): KSerializer<RailSignalPrototype> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * A [reactor](https://wiki.factorio.com/Reactor).
@@ -6514,6 +7105,10 @@ public open class ReactorPrototype : EntityWithOwnerPrototype() {
    * fuels that don't have glow color defined.
    */
   public val default_fuel_glow_color: Color? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ReactorPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6526,7 +7121,11 @@ public open class ReactorPrototype : EntityWithOwnerPrototype() {
  * The recipe category with the name "crafting" cannot contain recipes with fluid ingredients or
  * products.
  */
-public open class RecipeCategory : PrototypeBase()
+public open class RecipeCategory : PrototypeBase() {
+  public companion object {
+    public fun serializer(): KSerializer<RecipeCategory> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * A recipe. It can be a crafting recipe, a smelting recipe, or a custom type of recipe, see
@@ -6795,6 +7394,10 @@ public open class RecipePrototype : PrototypeBase() {
    * Only loaded if neither `normal` nor `expensive` are defined.
    */
   public val unlock_results: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RecipePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6817,6 +7420,10 @@ public open class RepairToolPrototype : ToolPrototype() {
    * This does nothing, it is never triggered.
    */
   public val repair_result: Trigger? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RepairToolPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6837,6 +7444,10 @@ public open class ResearchAchievementPrototype : AchievementPrototype() {
    * This will only trigger if the player has learned every research in the game.
    */
   public val research_all: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ResearchAchievementPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -6844,7 +7455,11 @@ public open class ResearchAchievementPrototype : AchievementPrototype() {
  * [here](https://wiki.factorio.com/Data.raw#resource-category). See
  * [ResourceEntityPrototype::category](prototype:ResourceEntityPrototype::category).
  */
-public open class ResourceCategory : PrototypeBase()
+public open class ResourceCategory : PrototypeBase() {
+  public companion object {
+    public fun serializer(): KSerializer<ResourceCategory> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * A mineable/gatherable entity. Its [collision_mask](prototype:EntityPrototype::collision_mask)
@@ -6979,6 +7594,10 @@ public open class ResourceEntityPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ResourceEntityPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -7077,6 +7696,10 @@ public open class RoboportEquipmentPrototype : EquipmentPrototype() {
    * energy source can produce per tick.
    */
   public val power: Energy? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RoboportEquipmentPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -7235,6 +7858,10 @@ public open class RoboportPrototype : EntityWithOwnerPrototype() {
    * Must be >= `logistics_radius`.
    */
   public val logistics_connection_distance: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RoboportPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -7277,6 +7904,8 @@ public abstract class RobotWithLogisticInterfacePrototype : FlyingRobotPrototype
   public val destroy_action: Trigger? by fromJson()
 
   public val draw_cargo: Boolean? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -7477,6 +8106,10 @@ public open class RocketSiloPrototype : AssemblingMachinePrototype() {
   public val flying_sound: Sound? by fromJson()
 
   public val rocket_result_inventory_size: ItemStackIndex? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RocketSiloPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -7550,12 +8183,20 @@ public open class RocketSiloRocketPrototype : EntityPrototype() {
   public val rocket_air_object_slice_offset_from_center: Float? by fromJson()
 
   public val flying_trigger: TriggerEffect? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RocketSiloRocketPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
  * The shadow of the rocket inside the rocket silo.
  */
-public open class RocketSiloRocketShadowPrototype : EntityPrototype()
+public open class RocketSiloRocketShadowPrototype : EntityPrototype() {
+  public companion object {
+    public fun serializer(): KSerializer<RocketSiloRocketShadowPrototype> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * The abstract base of all rolling stock.
@@ -7625,6 +8266,8 @@ public abstract class RollingStockPrototype : VehiclePrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -7751,6 +8394,10 @@ public open class SelectionToolPrototype : ItemWithLabelPrototype() {
   public val reverse_tile_filter_mode: EntityFilterMode? by fromJson()
 
   public val alt_reverse_tile_filter_mode: EntityFilterMode? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SelectionToolPrototype> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -7853,6 +8500,10 @@ public open class ShortcutPrototype : PrototypeBase() {
    * shortcuts.
    */
   override val order: Order? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ShortcutPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -7895,6 +8546,10 @@ public open class SimpleEntityPrototype : EntityWithHealthPrototype() {
   public val picture: Sprite4Way? by fromJson()
 
   public val animations: AnimationVariations? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SimpleEntityPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -7910,6 +8565,10 @@ public open class SimpleEntityWithForcePrototype : SimpleEntityWithOwnerPrototyp
    * and structures](https://wiki.factorio.com/Military_units_and_structures).
    */
   override val is_military_target: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SimpleEntityWithForcePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -7956,6 +8615,10 @@ public open class SimpleEntityWithOwnerPrototype : EntityWithOwnerPrototype() {
    * If the entity is not visible to a player, the player cannot select it.
    */
   public val force_visibility: ForceCondition? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SimpleEntityWithOwnerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -7963,7 +8626,11 @@ public open class SimpleEntityWithOwnerPrototype : EntityWithOwnerPrototype() {
  * [TrivialSmokePrototype](prototype:TrivialSmokePrototype) or
  * [SmokeWithTriggerPrototype](prototype:SmokeWithTriggerPrototype) instead.
  */
-public open class SimpleSmokePrototype : SmokePrototype()
+public open class SimpleSmokePrototype : SmokePrototype() {
+  public companion object {
+    public fun serializer(): KSerializer<SimpleSmokePrototype> = JsonReaderDeserializer()
+  }
+}
 
 /**
  * Abstract entity that has an animation.
@@ -8024,6 +8691,8 @@ public abstract class SmokePrototype : EntityPrototype() {
    * Must have a collision box size of zero.
    */
   override val collision_box: BoundingBox? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -8052,6 +8721,10 @@ public open class SmokeWithTriggerPrototype : SmokePrototype() {
   public val wave_distance: Vector? by fromJson()
 
   public val wave_speed: Vector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SmokeWithTriggerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8062,6 +8735,10 @@ public open class SolarPanelEquipmentPrototype : EquipmentPrototype() {
    * How much power should be provided.
    */
   public val power: Energy by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SolarPanelEquipmentPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8088,6 +8765,10 @@ public open class SolarPanelPrototype : EntityWithOwnerPrototype() {
    * Overlay has to be empty or have same number of variations as `picture`.
    */
   public val overlay: SpriteVariations? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SolarPanelPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8154,6 +8835,10 @@ public open class SoundPrototype : JsonReader() {
    * defined.
    */
   public val max_speed: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SoundPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8171,6 +8856,10 @@ public open class SpectatorControllerPrototype : JsonReader() {
    * Must be >= 0.34375.
    */
   public val movement_speed: Double by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpectatorControllerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8195,6 +8884,10 @@ public open class SpeechBubblePrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpeechBubblePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8226,6 +8919,10 @@ public open class SpiderLegPrototype : EntityWithHealthPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpiderLegPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8236,7 +8933,7 @@ public open class SpiderVehiclePrototype : VehiclePrototype() {
    * Must be a burner energy source when using "burner", otherwise it can also be a void energy
    * source.
    */
-  public val energy_source: UnknownUnion by fromJson()
+  public val energy_source: UnknownUnion by fromJson("burner")
 
   public val inventory_size: ItemStackIndex by fromJson()
 
@@ -8288,6 +8985,10 @@ public open class SpiderVehiclePrototype : VehiclePrototype() {
    * The guns this spider vehicle uses.
    */
   public val guns: List<ItemID>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpiderVehiclePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8311,6 +9012,10 @@ public open class SpidertronRemotePrototype : ItemPrototype() {
    * Uses `icon_size` and `icon_mipmaps` from its [ItemPrototype](prototype:ItemPrototype) parent.
    */
   public val icon_color_indicator_mask: FileName? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpidertronRemotePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8332,6 +9037,10 @@ public open class SplitterPrototype : TransportBeltConnectablePrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SplitterPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8376,21 +9085,21 @@ public open class SpritePrototype : JsonReader() {
    * are a modder, you can just ignore this property. As an example, if this is `4`, the sprite will be
    * sliced into a `4x4` grid.
    */
-  public val slice: SpriteSizeType? by fromJson()
+  public val slice: SpriteSizeType? by fromJson("dice")
 
   /**
    * Only loaded if `layers` is not defined.
    *
    * Same as `slice`, but this specifies only how many slices there are on the x-axis.
    */
-  public val slice_x: SpriteSizeType? by fromJson()
+  public val slice_x: SpriteSizeType? by fromJson("dice_x")
 
   /**
    * Only loaded if `layers` is not defined.
    *
    * Same as `slice`, but this specifies only how many slices there are on the y-axis.
    */
-  public val slice_y: SpriteSizeType? by fromJson()
+  public val slice_y: SpriteSizeType? by fromJson("dice_y")
 
   /**
    * Only loaded if `layers` is not defined.
@@ -8535,6 +9244,10 @@ public open class SpritePrototype : JsonReader() {
    * Unused.
    */
   public val generate_sdf: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpritePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8632,6 +9345,10 @@ public open class StickerPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<StickerPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8692,6 +9409,10 @@ public open class StorageTankPrototype : EntityWithOwnerPrototype() {
    * Mandatory if circuit_wire_max_distance  > 0.
    */
   public val circuit_connector_sprites: Tuple4<CircuitConnectorSprites>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<StorageTankPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8699,6 +9420,10 @@ public open class StorageTankPrototype : EntityWithOwnerPrototype() {
  */
 public open class StraightRailPrototype : RailPrototype() {
   public val bending_type: UnknownStringLiteral? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<StraightRailPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8824,6 +9549,10 @@ public open class TechnologyPrototype : PrototypeBase() {
    * Only loaded if neither `normal` nor `expensive` are defined.
    */
   public val effects: List<Modifier>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TechnologyPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8863,6 +9592,10 @@ public open class TileEffectDefinition : JsonReader() {
   public val near_zoom: Float? by fromJson()
 
   public val far_zoom: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TileEffectDefinition> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -8873,6 +9606,10 @@ public open class TileGhostPrototype : EntityPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TileGhostPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9013,6 +9750,10 @@ public open class TilePrototype : PrototypeBase() {
   public val autoplace: AutoplaceSpecification? by fromJson()
 
   public val placeable_by: ItemOrList<ItemToPlace>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TilePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9072,6 +9813,10 @@ public open class TipsAndTricksItem : PrototypeBase() {
   public val dependencies: List<String>? by fromJson()
 
   public val player_input_method_filter: PlayerInputMethodFilter? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TipsAndTricksItem> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9089,6 +9834,10 @@ public open class TipsAndTricksItemCategory : JsonReader() {
    * by their own order within those categories.
    */
   public val order: Order by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TipsAndTricksItemCategory> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9132,6 +9881,10 @@ public open class ToolPrototype : ItemPrototype() {
    * Whether this tool has infinite durability. If this is false, `durability` must be specified.
    */
   public val infinite: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ToolPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9143,6 +9896,10 @@ public open class TrainPathAchievementPrototype : AchievementPrototype() {
    * The achievement will trigger if a train path is longer than this.
    */
   public val minimum_distance: Double by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TrainPathAchievementPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9188,6 +9945,10 @@ public open class TrainStopPrototype : EntityWithOwnerPrototype() {
    * Mandatory if circuit_wire_max_distance > 0.
    */
   public val circuit_connector_sprites: Tuple4<CircuitConnectorSprites>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TrainStopPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9282,6 +10043,8 @@ public abstract class TransportBeltConnectablePrototype : EntityWithOwnerPrototy
    * Transport belt connectable entities cannot have the `"building-direction-8-way"` flag.
    */
   override val flags: EntityPrototypeFlags? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -9331,6 +10094,10 @@ public open class TransportBeltPrototype : TransportBeltConnectablePrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TransportBeltPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9361,6 +10128,10 @@ public open class TreePrototype : EntityWithHealthPrototype() {
    * `healing_per_tick × 60`.
    */
   override val healing_per_tick: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TreePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9371,6 +10142,10 @@ public open class TriggerTargetType : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val name: String by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TriggerTargetType> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9422,6 +10197,10 @@ public open class TrivialSmokePrototype : PrototypeBase() {
   public val show_when_smoke_off: Boolean? by fromJson()
 
   public val render_layer: RenderLayer? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TrivialSmokePrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9623,6 +10402,10 @@ public open class TurretPrototype : EntityWithOwnerPrototype() {
    * and structures](https://wiki.factorio.com/Military_units_and_structures).
    */
   override val is_military_target: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TurretPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9636,6 +10419,10 @@ public open class TutorialDefinition : PrototypeBase() {
    * folder](https://wiki.factorio.com/Tutorial:Mod_structure#Subfolders).
    */
   public val scenario: String by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TutorialDefinition> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9654,6 +10441,10 @@ public open class UndergroundBeltPrototype : TransportBeltConnectablePrototype()
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UndergroundBeltPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9745,6 +10536,10 @@ public open class UnitPrototype : EntityWithOwnerPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UnitPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -9820,6 +10615,10 @@ public open class UpgradeItemPrototype : SelectionToolPrototype() {
    * This property is parsed, but then ignored.
    */
   override val alt_tile_filter_mode: EntityFilterMode? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UpgradeItemPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -10063,6 +10862,10 @@ public open class UtilityConstants : PrototypeBase() {
    * it to larger values can have performance impact (growing geometrically).
    */
   public val light_renderer_search_distance_limit: UByte by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UtilityConstants> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -10190,6 +10993,10 @@ public open class UtilitySounds : PrototypeBase() {
   public val drop_item: Sound by fromJson()
 
   public val rail_plan_start: Sound by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UtilitySounds> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -11276,6 +12083,10 @@ public open class UtilitySprites : PrototypeBase() {
   public val character_logistic_requests_modifier_icon: Sprite by fromJson()
 
   public val character_logistic_requests_modifier_constant: Sprite? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UtilitySprites> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -11291,12 +12102,12 @@ public abstract class VehiclePrototype : EntityWithOwnerPrototype() {
    * Must be positive. There is no functional difference between the two ways to set braking
    * power/force.
    */
-  public val braking_power: UnknownUnion by fromJson()
+  public val braking_power: UnknownUnion by fromJson("braking_force")
 
   /**
    * Must be positive. There is no functional difference between the two ways to set friction force.
    */
-  public val friction: Double by fromJson()
+  public val friction: Double by fromJson("friction_force")
 
   /**
    * The (movement) energy used per hit point (1 hit point = 1 health damage) taken and dealt for
@@ -11351,6 +12162,8 @@ public abstract class VehiclePrototype : EntityWithOwnerPrototype() {
    * Two entities can collide only if they share a layer from the collision mask.
    */
   open override val collision_mask: CollisionMask? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -11386,6 +12199,10 @@ public open class VirtualSignalPrototype : PrototypeBase() {
    * The name of an [ItemSubGroup](prototype:ItemSubGroup).
    */
   public val subgroup: ItemSubGroupID? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<VirtualSignalPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -11435,6 +12252,10 @@ public open class WallPrototype : EntityWithOwnerPrototype() {
   public val wall_diode_red_light_left: LightDefinition? by fromJson()
 
   public val connected_gate_visualization: Sprite? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<WallPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -11455,6 +12276,10 @@ public open class WindSound : JsonReader() {
    * The sound file and volume.
    */
   public val sound: Sound by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<WindSound> = JsonReaderDeserializer()
+  }
 }
 
 public open class ActivateEquipmentCapsuleAction : JsonReader() {
@@ -11465,6 +12290,10 @@ public open class ActivateEquipmentCapsuleAction : JsonReader() {
    * [ActiveDefenseEquipmentPrototype](prototype:ActiveDefenseEquipmentPrototype).
    */
   public val equipment: EquipmentID by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ActivateEquipmentCapsuleAction> = JsonReaderDeserializer()
+  }
 }
 
 public open class ActivityBarStyleSpecification : BaseStyleSpecification() {
@@ -11481,6 +12310,10 @@ public open class ActivityBarStyleSpecification : BaseStyleSpecification() {
   public val bar: Sprite? by fromJson()
 
   public val bar_size_ratio: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ActivityBarStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class AdvancedMapGenSettings : JsonReader() {
@@ -11491,6 +12324,10 @@ public open class AdvancedMapGenSettings : JsonReader() {
   public val enemy_expansion: MapGenPresetEnemyExpansionSettings? by fromJson()
 
   public val difficulty_settings: MapGenPresetDifficultySettings? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AdvancedMapGenSettings> = JsonReaderDeserializer()
+  }
 }
 
 public open class AggregationSpecification : JsonReader() {
@@ -11508,6 +12345,10 @@ public open class AggregationSpecification : JsonReader() {
    * If `true`, already playing sounds are taken into account when checking `max_count`.
    */
   public val count_already_playing: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AggregationSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -11538,6 +12379,10 @@ public open class AmmoDamageModifier : BaseModifier() {
    * Modification value, which will be added to the current ammo damage modifier upon researching.
    */
   public val modifier: Double by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AmmoDamageModifier> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -11621,6 +12466,10 @@ public open class AmmoType : JsonReader() {
    * per array.
    */
   public val source_type: AmmoSourceType? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AmmoType> = JsonReaderDeserializer()
+  }
 }
 
 public open class AndTipTrigger : JsonReader() {
@@ -11630,6 +12479,10 @@ public open class AndTipTrigger : JsonReader() {
    * If all of the triggers are fulfilled, this trigger is considered fulfilled.
    */
   public val triggers: List<TipTrigger> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AndTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class AnimatedVector : JsonReader() {
@@ -11641,6 +12494,10 @@ public open class AnimatedVector : JsonReader() {
   public val render_layer: RenderLayer? by fromJson()
 
   public val direction_shift: DirectionShift? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AnimatedVector> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -11682,6 +12539,10 @@ public open class Animation : AnimationParameters() {
    * Only loaded if `layers` is not defined.
    */
   public val stripes: List<Stripe>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<Animation> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -11704,6 +12565,10 @@ public open class Animation4WayValues : JsonReader() {
    * Defaults to the east animation.
    */
   public val west: Animation? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<Animation4WayValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -11729,6 +12594,10 @@ public open class AnimationElement : JsonReader() {
   public val always_draw: Boolean? by fromJson()
 
   public val animation: Animation? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AnimationElement> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -11831,6 +12700,8 @@ public abstract class AnimationParameters : SpriteParameters() {
    * Unused.
    */
   override val generate_sdf: Boolean? by fromJson()
+
+  public companion object
 }
 
 public open class AnimationSheet : AnimationParameters() {
@@ -11845,6 +12716,10 @@ public open class AnimationSheet : AnimationParameters() {
   override val frame_count: UInt? by fromJson()
 
   override val line_length: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AnimationSheet> = JsonReaderDeserializer()
+  }
 }
 
 public open class AnimationVariationsValues : JsonReader() {
@@ -11857,6 +12732,10 @@ public open class AnimationVariationsValues : JsonReader() {
    * Only loaded if `sheet` is not defined.
    */
   public val sheets: List<AnimationSheet>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AnimationVariationsValues> = JsonReaderDeserializer()
+  }
 }
 
 public typealias AnimationVariations = UnknownUnion
@@ -11886,6 +12765,10 @@ public open class AreaTriggerItem : TriggerItem() {
   public val show_in_tooltip: Boolean? by fromJson()
 
   public val collision_mode: AreaTriggerItemCollisionMode? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AreaTriggerItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class ArtilleryRangeModifier : SimpleModifier() {
@@ -11901,6 +12784,10 @@ public open class ArtilleryRangeModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ArtilleryRangeModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class ArtilleryRemoteCapsuleAction : JsonReader() {
@@ -11912,6 +12799,10 @@ public open class ArtilleryRemoteCapsuleAction : JsonReader() {
   public val flare: EntityID by fromJson()
 
   public val play_sound_on_failure: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ArtilleryRemoteCapsuleAction> = JsonReaderDeserializer()
+  }
 }
 
 public open class ArtilleryTriggerDelivery : TriggerDeliveryItem() {
@@ -11935,6 +12826,10 @@ public open class ArtilleryTriggerDelivery : TriggerDeliveryItem() {
   public val range_deviation: Float? by fromJson()
 
   public val trigger_fired_artillery: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ArtilleryTriggerDelivery> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -11951,6 +12846,10 @@ public open class AttackReactionItem : JsonReader() {
   public val reaction_modifier: Float? by fromJson()
 
   public val damage_type: DamageTypeID? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AttackReactionItem> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -12214,6 +13113,10 @@ public open class AutoplacePeak : JsonReader() {
    * Only loaded if `distance_optimal` is defined.
    */
   public val distance_top_property_limit: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AutoplacePeak> = JsonReaderDeserializer()
+  }
 }
 
 public open class AutoplaceSettings : JsonReader() {
@@ -12229,6 +13132,10 @@ public open class AutoplaceSettings : JsonReader() {
    * control](prototype:AutoplaceSpecification::control).
    */
   public val settings: Map<UnknownUnion, FrequencySizeRichness>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AutoplaceSettings> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -12368,6 +13275,10 @@ public open class AutoplaceSpecificationValues : JsonReader() {
    * See `starting_area_amount`. Controls approximate radius of the blob in tiles.
    */
   public val starting_area_size: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<AutoplaceSpecificationValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -12526,6 +13437,8 @@ public abstract class BaseAttackParameters : JsonReader() {
    * Mandatory if both `ammo_type` and `ammo_categories` are not defined.
    */
   public val ammo_category: AmmoCategoryID? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -12549,6 +13462,8 @@ public abstract class BaseEnergySource : JsonReader() {
    * Whether to render the "no network" icon if the entity is not connected to an electric network.
    */
   public val render_no_network_icon: Boolean? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -12579,6 +13494,8 @@ public abstract class BaseModifier : JsonReader() {
    * Icons of reduced size will be used at decreased scale.
    */
   public val icon_mipmaps: IconMipMapType? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -12734,6 +13651,8 @@ public abstract class BaseStyleSpecification : JsonReader() {
   public val effect_opacity: Float? by fromJson()
 
   public val tooltip: LocalisedString? by fromJson()
+
+  public companion object
 }
 
 @Serializable
@@ -12790,6 +13709,10 @@ public open class BeaconGraphicsSet : JsonReader() {
   public val module_visualisations: List<BeaconModuleVisualizations>? by fromJson()
 
   public val module_tint_mode: BeaconGraphicsSetModuleTintMode? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BeaconGraphicsSet> = JsonReaderDeserializer()
+  }
 }
 
 public open class BeaconModuleVisualization : JsonReader() {
@@ -12814,6 +13737,10 @@ public open class BeaconModuleVisualization : JsonReader() {
   public val render_layer: RenderLayer? by fromJson()
 
   public val pictures: SpriteVariations? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BeaconModuleVisualization> = JsonReaderDeserializer()
+  }
 }
 
 public open class BeaconModuleVisualizations : JsonReader() {
@@ -12834,6 +13761,10 @@ public open class BeaconModuleVisualizations : JsonReader() {
    * those slots (with different tints etc). Example:
    */
   public val slots: List<List<BeaconModuleVisualization>>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BeaconModuleVisualizations> = JsonReaderDeserializer()
+  }
 }
 
 public open class BeaconVisualizationTints : JsonReader() {
@@ -12844,6 +13775,10 @@ public open class BeaconVisualizationTints : JsonReader() {
   public val tertiary: Color? by fromJson()
 
   public val quaternary: Color? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BeaconVisualizationTints> = JsonReaderDeserializer()
+  }
 }
 
 public open class BeamAnimationSet : JsonReader() {
@@ -12856,6 +13791,10 @@ public open class BeamAnimationSet : JsonReader() {
   public val tail: Animation? by fromJson()
 
   public val body: AnimationVariations? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BeamAnimationSet> = JsonReaderDeserializer()
+  }
 }
 
 public open class BeamAttackParameters : BaseAttackParameters() {
@@ -12864,6 +13803,10 @@ public open class BeamAttackParameters : BaseAttackParameters() {
   public val source_direction_count: UInt? by fromJson()
 
   public val source_offset: Vector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BeamAttackParameters> = JsonReaderDeserializer()
+  }
 }
 
 public open class BeamTriggerDelivery : TriggerDeliveryItem() {
@@ -12881,12 +13824,20 @@ public open class BeamTriggerDelivery : TriggerDeliveryItem() {
   public val duration: UInt? by fromJson()
 
   public val source_offset: Vector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BeamTriggerDelivery> = JsonReaderDeserializer()
+  }
 }
 
 public open class BeltTraverseTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BeltTraverseTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -12920,6 +13871,10 @@ public open class BoilerFire : JsonReader() {
   public val south: Animation? by fromJson()
 
   public val west: Animation? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BoilerFire> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -12933,6 +13888,10 @@ public open class BoilerFireGlow : JsonReader() {
   public val south: Animation? by fromJson()
 
   public val west: Animation? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BoilerFireGlow> = JsonReaderDeserializer()
+  }
 }
 
 public open class BoilerPatch : JsonReader() {
@@ -12943,6 +13902,10 @@ public open class BoilerPatch : JsonReader() {
   public val south: Sprite? by fromJson()
 
   public val west: Sprite? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BoilerPatch> = JsonReaderDeserializer()
+  }
 }
 
 public open class BoilerStructure : JsonReader() {
@@ -12953,6 +13916,10 @@ public open class BoilerStructure : JsonReader() {
   public val south: Animation by fromJson()
 
   public val west: Animation by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BoilerStructure> = JsonReaderDeserializer()
+  }
 }
 
 public open class BonusGuiOrdering : JsonReader() {
@@ -12975,6 +13942,10 @@ public open class BonusGuiOrdering : JsonReader() {
   public val mining_productivity: Order by fromJson()
 
   public val train_braking_force: Order by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BonusGuiOrdering> = JsonReaderDeserializer()
+  }
 }
 
 public abstract class BoolModifier : BaseModifier() {
@@ -12982,6 +13953,8 @@ public abstract class BoolModifier : BaseModifier() {
    * The value this modifier will have upon researching.
    */
   public val modifier: Boolean by fromJson()
+
+  public companion object
 }
 
 public open class BorderImageSet : JsonReader() {
@@ -13018,6 +13991,10 @@ public open class BorderImageSet : JsonReader() {
   public val bottom_end: Sprite? by fromJson()
 
   public val left_end: Sprite? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BorderImageSet> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -13046,6 +14023,10 @@ public open class BoxSpecification : JsonReader() {
    * Only loaded, and mandatory if `is_whole_box` is `false`.
    */
   public val max_side_length: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BoxSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class BuildEntityTipTrigger : JsonReader() {
@@ -13067,6 +14048,10 @@ public open class BuildEntityTipTrigger : JsonReader() {
   public val linear_power_pole_line: Boolean? by fromJson()
 
   public val build_in_line: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BuildEntityTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class BurnerEnergySource : BaseEnergySource() {
@@ -13101,6 +14086,10 @@ public open class BurnerEnergySource : BaseEnergySource() {
    * The energy source can be used with fuel from these [fuel categories](prototype:FuelCategory).
    */
   public val fuel_categories: List<FuelCategoryID>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<BurnerEnergySource> = JsonReaderDeserializer()
+  }
 }
 
 public open class ButtonStyleSpecification : StyleWithClickableGraphicalSetSpecification() {
@@ -13136,6 +14125,10 @@ public open class ButtonStyleSpecification : StyleWithClickableGraphicalSetSpeci
   public val draw_grayscale_picture: Boolean? by fromJson()
 
   public val icon_horizontal_align: HorizontalAlign? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ButtonStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class CameraEffectTriggerEffectItem : TriggerEffectItem() {
@@ -13159,10 +14152,18 @@ public open class CameraEffectTriggerEffectItem : TriggerEffectItem() {
   public val max_distance: UShort? by fromJson()
 
   public val strength: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CameraEffectTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class CameraStyleSpecification : EmptyWidgetStyleSpecification() {
   override val type: UnknownStringLiteral by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CameraStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -13202,6 +14203,10 @@ public open class CharacterArmorAnimation : JsonReader() {
    * animations to be used for the player without armor.
    */
   public val armors: List<ItemID>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterArmorAnimation> = JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterBuildDistanceModifier : SimpleModifier() {
@@ -13211,6 +14216,10 @@ public open class CharacterBuildDistanceModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterBuildDistanceModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterCraftingSpeedModifier : SimpleModifier() {
@@ -13220,6 +14229,10 @@ public open class CharacterCraftingSpeedModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterCraftingSpeedModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterHealthBonusModifier : SimpleModifier() {
@@ -13229,6 +14242,10 @@ public open class CharacterHealthBonusModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterHealthBonusModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterInventorySlotsBonusModifier : SimpleModifier() {
@@ -13238,6 +14255,11 @@ public open class CharacterInventorySlotsBonusModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterInventorySlotsBonusModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterItemDropDistanceModifier : SimpleModifier() {
@@ -13247,6 +14269,11 @@ public open class CharacterItemDropDistanceModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterItemDropDistanceModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterItemPickupDistanceModifier : SimpleModifier() {
@@ -13256,6 +14283,11 @@ public open class CharacterItemPickupDistanceModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterItemPickupDistanceModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterLogisticRequestsModifier : BoolModifier() {
@@ -13265,6 +14297,11 @@ public open class CharacterLogisticRequestsModifier : BoolModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterLogisticRequestsModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterLogisticTrashSlotsModifier : SimpleModifier() {
@@ -13274,6 +14311,11 @@ public open class CharacterLogisticTrashSlotsModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterLogisticTrashSlotsModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterLootPickupDistanceModifier : SimpleModifier() {
@@ -13283,6 +14325,11 @@ public open class CharacterLootPickupDistanceModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterLootPickupDistanceModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterMiningSpeedModifier : SimpleModifier() {
@@ -13292,6 +14339,10 @@ public open class CharacterMiningSpeedModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterMiningSpeedModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterReachDistanceModifier : SimpleModifier() {
@@ -13301,6 +14352,10 @@ public open class CharacterReachDistanceModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterReachDistanceModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterResourceReachDistanceModifier : SimpleModifier() {
@@ -13310,6 +14365,11 @@ public open class CharacterResourceReachDistanceModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterResourceReachDistanceModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class CharacterRunningSpeedModifier : SimpleModifier() {
@@ -13319,6 +14379,10 @@ public open class CharacterRunningSpeedModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CharacterRunningSpeedModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class ChartUtilityConstants : JsonReader() {
@@ -13407,6 +14471,10 @@ public open class ChartUtilityConstants : JsonReader() {
   public val custom_tag_scale: Float? by fromJson()
 
   public val custom_tag_selected_overlay_tint: Color by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ChartUtilityConstants> = JsonReaderDeserializer()
+  }
 }
 
 public open class CheckBoxStyleSpecification : StyleWithClickableGraphicalSetSpecification() {
@@ -13428,6 +14496,10 @@ public open class CheckBoxStyleSpecification : StyleWithClickableGraphicalSetSpe
   public val intermediate_mark: Sprite? by fromJson()
 
   public val text_padding: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CheckBoxStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class CircuitConnectorLayer : JsonReader() {
@@ -13438,6 +14510,10 @@ public open class CircuitConnectorLayer : JsonReader() {
   public val south: RenderLayer? by fromJson()
 
   public val west: RenderLayer? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CircuitConnectorLayer> = JsonReaderDeserializer()
+  }
 }
 
 public open class CircuitConnectorSecondaryDrawOrder : JsonReader() {
@@ -13448,6 +14524,11 @@ public open class CircuitConnectorSecondaryDrawOrder : JsonReader() {
   public val south: Byte? by fromJson()
 
   public val west: Byte? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CircuitConnectorSecondaryDrawOrder> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class CircuitConnectorSprites : JsonReader() {
@@ -13484,6 +14565,10 @@ public open class CircuitConnectorSprites : JsonReader() {
   public val blue_led_light_offset: Vector? by fromJson()
 
   public val red_green_led_light_offset: Vector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CircuitConnectorSprites> = JsonReaderDeserializer()
+  }
 }
 
 public open class CircularParticleCreationSpecification : JsonReader() {
@@ -13516,6 +14601,11 @@ public open class CircularParticleCreationSpecification : JsonReader() {
   public val creation_distance_orientation: Double? by fromJson()
 
   public val use_source_position: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CircularParticleCreationSpecification> =
+        JsonReaderDeserializer()
+  }
 }
 
 public typealias CircularProjectileCreationSpecification = List<UnknownTuple>
@@ -13524,6 +14614,10 @@ public open class ClearCursorTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ClearCursorTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class CliffPlacementSettings : JsonReader() {
@@ -13555,6 +14649,10 @@ public open class CliffPlacementSettings : JsonReader() {
    * in cliff walls.
    */
   public val richness: MapGenSize? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CliffPlacementSettings> = JsonReaderDeserializer()
+  }
 }
 
 public open class ClusterTriggerItem : TriggerItem() {
@@ -13568,6 +14666,10 @@ public open class ClusterTriggerItem : TriggerItem() {
   public val distance: Float by fromJson()
 
   public val distance_deviation: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ClusterTriggerItem> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -13642,6 +14744,10 @@ public open class ColorValues : JsonReader() {
    * alpha value (opacity)
    */
   public val a: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ColorValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -13665,6 +14771,10 @@ public open class ColorFilterData : JsonReader() {
    * 4 arrays of 4-length float arrays, essentially a 4x4 matrix.
    */
   public val matrix: List<List<Float>> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ColorFilterData> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -13690,6 +14800,10 @@ public open class ColumnAlignment : JsonReader() {
   public val column: UInt by fromJson()
 
   public val alignment: ColumnAlignmentAlignment by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ColumnAlignment> = JsonReaderDeserializer()
+  }
 }
 
 public open class ColumnWidth : JsonReader() {
@@ -13706,6 +14820,10 @@ public open class ColumnWidth : JsonReader() {
    * Sets `minimal_width` and `maximal_width` to the same value.
    */
   public val width: Int? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ColumnWidth> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -13743,6 +14861,10 @@ public open class ConnectableEntityGraphics : JsonReader() {
   public val ending_left: SpriteVariations by fromJson()
 
   public val cross: SpriteVariations by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ConnectableEntityGraphics> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -13786,6 +14908,10 @@ public open class CraftItemTipTrigger : JsonReader() {
   public val consecutive: Boolean? by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CraftItemTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -13800,6 +14926,10 @@ public open class CraftingMachineTint : JsonReader() {
   public val tertiary: Color? by fromJson()
 
   public val quaternary: Color? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CraftingMachineTint> = JsonReaderDeserializer()
+  }
 }
 
 public open class CreateDecorativesTriggerEffectItem : TriggerEffectItem() {
@@ -13823,6 +14953,11 @@ public open class CreateDecorativesTriggerEffectItem : TriggerEffectItem() {
   public val apply_projection: Boolean? by fromJson()
 
   public val spread_evenly: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CreateDecorativesTriggerEffectItem> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class CreateEntityTriggerEffectItem : TriggerEffectItem() {
@@ -13857,6 +14992,10 @@ public open class CreateEntityTriggerEffectItem : TriggerEffectItem() {
    * three Distractors.
    */
   public val offsets: ItemOrList<Vector>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CreateEntityTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class CreateExplosionTriggerEffectItem : CreateEntityTriggerEffectItem() {
@@ -13869,12 +15008,21 @@ public open class CreateExplosionTriggerEffectItem : CreateEntityTriggerEffectIt
   public val inherit_movement_distance_from_projectile: Boolean? by fromJson()
 
   public val cycle_while_moving: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CreateExplosionTriggerEffectItem> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class CreateFireTriggerEffectItem : CreateEntityTriggerEffectItem() {
   override val type: UnknownStringLiteral by fromJson()
 
   public val initial_ground_flame_count: UByte? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CreateFireTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class CreateParticleTriggerEffectItem : TriggerEffectItem() {
@@ -13919,6 +15067,10 @@ public open class CreateParticleTriggerEffectItem : TriggerEffectItem() {
   public val tail_width: Float? by fromJson()
 
   public val rotate_offsets: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CreateParticleTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class CreateSmokeTriggerEffectItem : CreateEntityTriggerEffectItem() {
@@ -13943,6 +15095,10 @@ public open class CreateSmokeTriggerEffectItem : CreateEntityTriggerEffectItem()
   public val speed_from_center: Float? by fromJson()
 
   public val speed_from_center_deviation: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CreateSmokeTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class CreateStickerTriggerEffectItem : TriggerEffectItem() {
@@ -13960,6 +15116,10 @@ public open class CreateStickerTriggerEffectItem : TriggerEffectItem() {
    * when the sticker is created.
    */
   public val trigger_created_entity: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CreateStickerTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class CreateTrivialSmokeEffectItem : TriggerEffectItem() {
@@ -13992,6 +15152,10 @@ public open class CreateTrivialSmokeEffectItem : TriggerEffectItem() {
   public val speed_from_center: Float? by fromJson()
 
   public val speed_from_center_deviation: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CreateTrivialSmokeEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class CursorBoxSpecification : JsonReader() {
@@ -14010,6 +15174,10 @@ public open class CursorBoxSpecification : JsonReader() {
   public val train_visualization: List<BoxSpecification> by fromJson()
 
   public val blueprint_snap_rectangle: List<BoxSpecification> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CursorBoxSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -14045,6 +15213,10 @@ public open class CyclicSound : JsonReader() {
    * Played once when the overall cyclic sound is requested to end.
    */
   public val end_sound: Sound? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<CyclicSound> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -14059,6 +15231,10 @@ public open class DamagePrototype : JsonReader() {
    * built-in types, and [DamageType](prototype:DamageType) for creating custom types.
    */
   public val type: DamageTypeID by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DamagePrototype> = JsonReaderDeserializer()
+  }
 }
 
 public open class DamageTriggerEffectItem : TriggerEffectItem() {
@@ -14080,6 +15256,10 @@ public open class DamageTriggerEffectItem : TriggerEffectItem() {
   public val lower_damage_modifier: Float? by fromJson()
 
   public val upper_damage_modifier: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DamageTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class DamageTypeFiltersValues : JsonReader() {
@@ -14092,6 +15272,10 @@ public open class DamageTypeFiltersValues : JsonReader() {
    * Whether this is a whitelist or a blacklist of damage types. Defaults to being a blacklist.
    */
   public val whitelist: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DamageTypeFiltersValues> = JsonReaderDeserializer()
+  }
 }
 
 public typealias DamageTypeFilters = UnknownUnion
@@ -14123,6 +15307,11 @@ public open class DeconstructionTimeToLiveModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DeconstructionTimeToLiveModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -14138,6 +15327,10 @@ public open class DefaultRecipeTint : JsonReader() {
   public val tertiary: Color? by fromJson()
 
   public val quaternary: Color? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DefaultRecipeTint> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -14146,6 +15339,10 @@ public open class DefaultRecipeTint : JsonReader() {
  */
 public open class DependenciesMetTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DependenciesMetTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class DestroyCliffsCapsuleAction : JsonReader() {
@@ -14163,6 +15360,10 @@ public open class DestroyCliffsCapsuleAction : JsonReader() {
    * Whether using the capsule consumes an item from the stack.
    */
   public val uses_stack: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DestroyCliffsCapsuleAction> = JsonReaderDeserializer()
+  }
 }
 
 public open class DestroyCliffsTriggerEffectItem : TriggerEffectItem() {
@@ -14171,6 +15372,10 @@ public open class DestroyCliffsTriggerEffectItem : TriggerEffectItem() {
   public val radius: Float by fromJson()
 
   public val explosion: EntityID? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DestroyCliffsTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class DestroyDecorativesTriggerEffectItem : TriggerEffectItem() {
@@ -14199,6 +15404,11 @@ public open class DestroyDecorativesTriggerEffectItem : TriggerEffectItem() {
    * destroyed.
    */
   public val decoratives_with_trigger_only: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DestroyDecorativesTriggerEffectItem> =
+        JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -14227,12 +15437,20 @@ public open class DifficultySettings : JsonReader() {
   public val technology_price_multiplier: Double? by fromJson()
 
   public val research_queue_setting: ResearchQueueSetting? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DifficultySettings> = JsonReaderDeserializer()
+  }
 }
 
 public open class DirectTriggerItem : TriggerItem() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val filter_enabled: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DirectTriggerItem> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -14248,6 +15466,10 @@ public open class DirectionShift : JsonReader() {
   public val south: Vector? by fromJson()
 
   public val west: Vector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DirectionShift> = JsonReaderDeserializer()
+  }
 }
 
 public open class DistanceFromNearestPointArguments : JsonReader() {
@@ -14258,10 +15480,19 @@ public open class DistanceFromNearestPointArguments : JsonReader() {
   public val points: NoiseArray by fromJson()
 
   public val maximum_distance: ConstantNoiseNumber? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DistanceFromNearestPointArguments> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class DoubleSliderStyleSpecification : SliderStyleSpecification() {
   override val type: UnknownStringLiteral by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DoubleSliderStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class DropDownStyleSpecification : BaseStyleSpecification() {
@@ -14276,6 +15507,10 @@ public open class DropDownStyleSpecification : BaseStyleSpecification() {
   public val selector_and_title_spacing: Short? by fromJson()
 
   public val opened_sound: Sound? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<DropDownStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -14306,6 +15541,10 @@ public open class Effect : JsonReader() {
    * sum is -80%.
    */
   public val pollution: EffectValue? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<Effect> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -14336,6 +15575,10 @@ public open class EffectValue : JsonReader() {
    * can range from `-327.68` to `327.67`. Numbers outside of this range will wrap around.
    */
   public val bonus: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EffectValue> = JsonReaderDeserializer()
+  }
 }
 
 public open class ElectricEnergySource : BaseEnergySource() {
@@ -14371,6 +15614,10 @@ public open class ElectricEnergySource : BaseEnergySource() {
    * set to `false`.
    */
   public val drain: Energy? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ElectricEnergySource> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -14397,6 +15644,10 @@ public open class ElementImageSetValues : JsonReader() {
   public val shadow: ElementImageSetLayer? by fromJson()
 
   public val glow: ElementImageSetLayer? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ElementImageSetValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -14614,6 +15865,10 @@ public open class ElementImageSetLayerValues : JsonReader() {
   public val right_outer_border_shift: Int? by fromJson()
 
   public val left_outer_border_shift: Int? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ElementImageSetLayerValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -14625,6 +15880,10 @@ public open class EmptyWidgetStyleSpecification : BaseStyleSpecification() {
   public open val type: UnknownStringLiteral by fromJson()
 
   public val graphical_set: ElementImageSet? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EmptyWidgetStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class EnemyEvolutionSettings : JsonReader() {
@@ -14644,6 +15903,10 @@ public open class EnemyEvolutionSettings : JsonReader() {
    * Percentual increase in the evolution factor for 1 pollution unit
    */
   public val pollution_factor: Double by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EnemyEvolutionSettings> = JsonReaderDeserializer()
+  }
 }
 
 public open class EnemyExpansionSettings : JsonReader() {
@@ -14689,6 +15952,10 @@ public open class EnemyExpansionSettings : JsonReader() {
   public val min_expansion_cooldown: UInt by fromJson()
 
   public val max_expansion_cooldown: UInt by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EnemyExpansionSettings> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -14808,6 +16075,10 @@ public open class EntityRendererSearchBoxLimits : JsonReader() {
    * Min value 4, max value 15. Min value 4 to compensate for tall entities like electric poles.
    */
   public val bottom: UByte by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EntityRendererSearchBoxLimits> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -14822,6 +16093,10 @@ public open class EntityTransferTipTrigger : JsonReader() {
   public val count: UInt? by fromJson()
 
   public val transfer: EntityTransferTipTriggerTransfer? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EntityTransferTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -14864,12 +16139,20 @@ public open class EquipmentShape : JsonReader() {
    * 0}` is the upper left corner of the equipment.
    */
   public val points: List<List<UInt>>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<EquipmentShape> = JsonReaderDeserializer()
+  }
 }
 
 public open class ExplosionDefinitionValues : JsonReader() {
   public val name: EntityID by fromJson()
 
   public val offset: Vector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ExplosionDefinitionValues> = JsonReaderDeserializer()
+  }
 }
 
 public typealias ExplosionDefinition = UnknownUnion
@@ -14898,6 +16181,10 @@ public open class FactorioBasisNoiseArguments : JsonReader() {
    * The output will be multiplied by this value before returning.
    */
   public val output_scale: ConstantNoiseNumber? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FactorioBasisNoiseArguments> = JsonReaderDeserializer()
+  }
 }
 
 public open class FactorioMultioctaveNoiseArguments : JsonReader() {
@@ -14934,6 +16221,11 @@ public open class FactorioMultioctaveNoiseArguments : JsonReader() {
    * How many layers of noise at different scales to sum.
    */
   public val octaves: ConstantNoiseNumber by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FactorioMultioctaveNoiseArguments> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class FactorioQuickMultioctaveNoiseArguments : JsonReader() {
@@ -14956,12 +16248,21 @@ public open class FactorioQuickMultioctaveNoiseArguments : JsonReader() {
   public val octave_output_scale_multiplier: ConstantNoiseNumber? by fromJson()
 
   public val octave_seed0_shift: ConstantNoiseNumber? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FactorioQuickMultioctaveNoiseArguments> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class FastBeltBendTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FastBeltBendTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class FastReplaceTipTrigger : JsonReader() {
@@ -14974,6 +16275,10 @@ public open class FastReplaceTipTrigger : JsonReader() {
   public val target: EntityID? by fromJson()
 
   public val match_type_only: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FastReplaceTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -15009,6 +16314,11 @@ public open class FlameThrowerExplosionTriggerDelivery : TriggerDeliveryItem() {
   public val starting_frame_fraciton_deviation: Double? by fromJson()
 
   public val projectile_starting_speed: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FlameThrowerExplosionTriggerDelivery> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class FlowStyleSpecification : BaseStyleSpecification() {
@@ -15019,6 +16329,10 @@ public open class FlowStyleSpecification : BaseStyleSpecification() {
   public val horizontal_spacing: Int? by fromJson()
 
   public val vertical_spacing: Int? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FlowStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -15115,6 +16429,10 @@ public open class FluidBox : JsonReader() {
    * are drawn on top.
    */
   public val secondary_draw_orders: FluidBoxSecondaryDrawOrders? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FluidBox> = JsonReaderDeserializer()
+  }
 }
 
 public open class FluidBoxSecondaryDrawOrders : JsonReader() {
@@ -15125,6 +16443,10 @@ public open class FluidBoxSecondaryDrawOrders : JsonReader() {
   public val south: Byte? by fromJson()
 
   public val west: Byte? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FluidBoxSecondaryDrawOrders> = JsonReaderDeserializer()
+  }
 }
 
 public open class FluidEnergySource : BaseEnergySource() {
@@ -15188,6 +16510,10 @@ public open class FluidEnergySource : BaseEnergySource() {
    * Only loaded if `burns_fluid` is `false`.
    */
   public val maximum_temperature: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FluidEnergySource> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -15247,6 +16573,10 @@ public open class FluidIngredientPrototype : JsonReader() {
    * and output fluidboxes.
    */
   public val fluidbox_index: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FluidIngredientPrototype> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -15324,12 +16654,20 @@ public open class FluidProductPrototype : JsonReader() {
    * `true`.
    */
   public val show_details_in_recipe_tooltip: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FluidProductPrototype> = JsonReaderDeserializer()
+  }
 }
 
 public open class FluidWagonConnectorGraphics : JsonReader() {
   public val load_animations: PumpConnectorGraphics by fromJson()
 
   public val unload_animations: PumpConnectorGraphics by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FluidWagonConnectorGraphics> = JsonReaderDeserializer()
+  }
 }
 
 public open class FollowerRobotLifetimeModifier : SimpleModifier() {
@@ -15345,6 +16683,10 @@ public open class FollowerRobotLifetimeModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FollowerRobotLifetimeModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class FootprintParticle : JsonReader() {
@@ -15363,6 +16705,10 @@ public open class FootprintParticle : JsonReader() {
    * don't have an associated footprint particle.
    */
   public val use_as_default: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FootprintParticle> = JsonReaderDeserializer()
+  }
 }
 
 public open class FootstepTriggerEffectItem : CreateParticleTriggerEffectItem() {
@@ -15379,6 +16725,10 @@ public open class FootstepTriggerEffectItem : CreateParticleTriggerEffectItem() 
    * have an associated footstep particle trigger. (ie. don't show up in one of the "tiles" lists).
    */
   public val use_as_default: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FootstepTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public typealias FootstepTriggerEffectList = List<FootstepTriggerEffectItem>
@@ -15421,6 +16771,10 @@ public open class FrameStyleSpecification : BaseStyleSpecification() {
   public val background_graphical_set: ElementImageSet? by fromJson()
 
   public val border: BorderImageSet? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FrameStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class FrequencySizeRichness : JsonReader() {
@@ -15429,6 +16783,10 @@ public open class FrequencySizeRichness : JsonReader() {
   public val size: MapGenSize? by fromJson()
 
   public val richness: MapGenSize? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<FrequencySizeRichness> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -15453,12 +16811,20 @@ public open class GameControllerVibrationData : JsonReader() {
   public val duration: UInt? by fromJson()
 
   public val play_for: PlayFor? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GameControllerVibrationData> = JsonReaderDeserializer()
+  }
 }
 
 public open class GateOverRailBuildTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GateOverRailBuildTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class GhostTimeToLiveModifier : SimpleModifier() {
@@ -15468,6 +16834,10 @@ public open class GhostTimeToLiveModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GhostTimeToLiveModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class GiveItemModifier : BaseModifier() {
@@ -15484,12 +16854,20 @@ public open class GiveItemModifier : BaseModifier() {
    * Must be `> 0`.
    */
   public val count: ItemCountType? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GiveItemModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class GlowStyleSpecification : BaseStyleSpecification() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val image_set: ElementImageSet? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GlowStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class GraphStyleSpecification : BaseStyleSpecification() {
@@ -15522,12 +16900,20 @@ public open class GraphStyleSpecification : BaseStyleSpecification() {
   public val grid_lines_color: Color? by fromJson()
 
   public val guide_lines_color: Color? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GraphStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class GroupAttackTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GroupAttackTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class GunShift4Way : JsonReader() {
@@ -15538,6 +16924,10 @@ public open class GunShift4Way : JsonReader() {
   public val south: Vector? by fromJson()
 
   public val west: Vector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GunShift4Way> = JsonReaderDeserializer()
+  }
 }
 
 public open class GunSpeedModifier : BaseModifier() {
@@ -15563,6 +16953,10 @@ public open class GunSpeedModifier : BaseModifier() {
    * Modification value, which will be added to the current gun speed modifier upon researching.
    */
   public val modifier: Double by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<GunSpeedModifier> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -15602,6 +16996,10 @@ public open class HeatBuffer : JsonReader() {
    * May contain up to 32 connections.
    */
   public val connections: List<HeatConnection>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<HeatBuffer> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -15621,6 +17019,10 @@ public open class HeatConnection : JsonReader() {
    * connection to succeed). A connection rotates with the entity.
    */
   public val direction: Direction by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<HeatConnection> = JsonReaderDeserializer()
+  }
 }
 
 public open class HeatEnergySource : BaseEnergySource() {
@@ -15663,6 +17065,10 @@ public open class HeatEnergySource : BaseEnergySource() {
    * Heat energy sources do not support producing pollution.
    */
   override val emissions_per_minute: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<HeatEnergySource> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -15676,10 +17082,20 @@ public open class HorizontalFlowStyleSpecification : BaseStyleSpecification() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val horizontal_spacing: Int? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<HorizontalFlowStyleSpecification> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class HorizontalScrollBarStyleSpecification : ScrollBarStyleSpecification() {
   public val type: UnknownStringLiteral by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<HorizontalScrollBarStyleSpecification> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -15737,6 +17153,10 @@ public open class IconData : JsonReader() {
    * Icons of reduced size will be used at decreased scale.
    */
   public val icon_mipmaps: IconMipMapType? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<IconData> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -15756,6 +17176,10 @@ public open class ImageStyleSpecification : BaseStyleSpecification() {
   public val graphical_set: ElementImageSet? by fromJson()
 
   public val stretch_image_to_widget_size: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ImageStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -15773,6 +17197,10 @@ public open class InsertItemTriggerEffectItem : TriggerEffectItem() {
   public val item: ItemID by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<InsertItemTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class InserterStackSizeBonusModifier : SimpleModifier() {
@@ -15788,22 +17216,39 @@ public open class InserterStackSizeBonusModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<InserterStackSizeBonusModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class InstantTriggerDelivery : TriggerDeliveryItem() {
   public val type: UnknownStringLiteral by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<InstantTriggerDelivery> = JsonReaderDeserializer()
+  }
 }
 
 public open class InterruptibleSound : JsonReader() {
   public val sound: Sound by fromJson()
 
   public val fade_ticks: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<InterruptibleSound> = JsonReaderDeserializer()
+  }
 }
 
 public open class InvokeTileEffectTriggerEffectItem : TriggerEffectItem() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val tile_collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<InvokeTileEffectTriggerEffectItem> =
+        JsonReaderDeserializer()
+  }
 }
 
 public typealias ItemCountType = UInt
@@ -15841,6 +17286,10 @@ public open class ItemIngredientPrototypeValues : JsonReader() {
    * [here](https://factorio.com/blog/post/fff-256).
    */
   public val catalyst_amount: UShort? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ItemIngredientPrototypeValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -15909,6 +17358,10 @@ public open class ItemProductPrototypeValues : JsonReader() {
    * `true`.
    */
   public val show_details_in_recipe_tooltip: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ItemProductPrototypeValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -15962,6 +17415,10 @@ public open class ItemToPlace : JsonReader() {
    * of the item.
    */
   public val count: UInt by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ItemToPlace> = JsonReaderDeserializer()
+  }
 }
 
 public open class LabelStyleSpecification : BaseStyleSpecification() {
@@ -15993,6 +17450,10 @@ public open class LabelStyleSpecification : BaseStyleSpecification() {
   public val rich_text_highlight_warning_color: Color? by fromJson()
 
   public val rich_text_highlight_ok_color: Color? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LabelStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class LaboratoryProductivityModifier : SimpleModifier() {
@@ -16008,6 +17469,10 @@ public open class LaboratoryProductivityModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LaboratoryProductivityModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class LaboratorySpeedModifier : SimpleModifier() {
@@ -16023,10 +17488,18 @@ public open class LaboratorySpeedModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LaboratorySpeedModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class LayeredSoundValues : JsonReader() {
   public val layers: List<Sound> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LayeredSoundValues> = JsonReaderDeserializer()
+  }
 }
 
 public typealias LayeredSound = UnknownUnion
@@ -16078,6 +17551,10 @@ public open class LightDefinitionValues : JsonReader() {
   public val color: Color? by fromJson()
 
   public val minimum_darkness: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LightDefinitionValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16119,18 +17596,30 @@ public open class LightFlickeringDefinition : JsonReader() {
    * Color of the light.
    */
   public val color: Color? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LightFlickeringDefinition> = JsonReaderDeserializer()
+  }
 }
 
 public open class LimitChestTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LimitChestTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class LineStyleSpecification : BaseStyleSpecification() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val border: BorderImageSet? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LineStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class LineTriggerItem : TriggerItem() {
@@ -16141,6 +17630,10 @@ public open class LineTriggerItem : TriggerItem() {
   public val width: Double by fromJson()
 
   public val range_effects: TriggerEffect? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LineTriggerItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class LinkedBeltStructure : JsonReader() {
@@ -16155,6 +17648,10 @@ public open class LinkedBeltStructure : JsonReader() {
   public val direction_in_side_loading: Sprite4Way? by fromJson()
 
   public val direction_out_side_loading: Sprite4Way? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LinkedBeltStructure> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16316,6 +17813,10 @@ public open class ListBoxStyleSpecification : BaseStyleSpecification() {
   public val item_style: ButtonStyleSpecification? by fromJson()
 
   public val scroll_pane_style: ScrollPaneStyleSpecification? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ListBoxStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class LoaderStructure : JsonReader() {
@@ -16326,6 +17827,10 @@ public open class LoaderStructure : JsonReader() {
   public val back_patch: Sprite4Way? by fromJson()
 
   public val front_patch: Sprite4Way? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LoaderStructure> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16381,24 +17886,40 @@ public open class LootItem : JsonReader() {
    * Must be `> 0`.
    */
   public val count_max: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LootItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class LowPowerTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<LowPowerTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class ManualTransferTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ManualTransferTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class ManualWireDragTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ManualWireDragTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class MapEditorConstants : JsonReader() {
@@ -16433,6 +17954,10 @@ public open class MapEditorConstants : JsonReader() {
   public val tile_editor_selection_preview_radius: UByte by fromJson()
 
   public val decorative_editor_selection_preview_radius: UByte by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MapEditorConstants> = JsonReaderDeserializer()
+  }
 }
 
 public open class MapGenPreset : JsonReader() {
@@ -16459,6 +17984,10 @@ public open class MapGenPreset : JsonReader() {
    * If any setting is not set, it will use the default values.
    */
   public val advanced_settings: AdvancedMapGenSettings? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MapGenPreset> = JsonReaderDeserializer()
+  }
 }
 
 public open class MapGenPresetDifficultySettings : JsonReader() {
@@ -16477,6 +18006,10 @@ public open class MapGenPresetDifficultySettings : JsonReader() {
   public val technology_price_multiplier: Double? by fromJson()
 
   public val research_queue_setting: ResearchQueueSetting? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MapGenPresetDifficultySettings> = JsonReaderDeserializer()
+  }
 }
 
 public open class MapGenPresetEnemyEvolutionSettings : JsonReader() {
@@ -16496,6 +18029,11 @@ public open class MapGenPresetEnemyEvolutionSettings : JsonReader() {
    * Percentual increase in the evolution factor for 1 pollution unit
    */
   public val pollution_factor: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MapGenPresetEnemyEvolutionSettings> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class MapGenPresetEnemyExpansionSettings : JsonReader() {
@@ -16526,6 +18064,11 @@ public open class MapGenPresetEnemyExpansionSettings : JsonReader() {
    * In ticks.
    */
   public val max_expansion_cooldown: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MapGenPresetEnemyExpansionSettings> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16552,6 +18095,10 @@ public open class MapGenPresetPollutionSettings : JsonReader() {
   public val enemy_attack_pollution_consumption_modifier: Double? by fromJson()
 
   public val pollution_restored_per_tree_damage: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MapGenPresetPollutionSettings> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -16624,6 +18171,10 @@ public open class MapGenSettings : JsonReader() {
   public val peaceful_mode: Boolean? by fromJson()
 
   public val cliff_settings: CliffPlacementSettings? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MapGenSettings> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16649,6 +18200,10 @@ public open class MapPositionValues : JsonReader() {
   public val x: Double by fromJson()
 
   public val y: Double by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MapPositionValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16669,6 +18224,11 @@ public open class MaxFailedAttemptsPerTickPerConstructionQueueModifier : SimpleM
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MaxFailedAttemptsPerTickPerConstructionQueueModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class MaxSuccessfulAttemptsPerTickPerConstructionQueueModifier : SimpleModifier() {
@@ -16678,6 +18238,11 @@ public open class MaxSuccessfulAttemptsPerTickPerConstructionQueueModifier : Sim
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MaxSuccessfulAttemptsPerTickPerConstructionQueueModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class MaximumFollowingRobotsCountModifier : SimpleModifier() {
@@ -16693,6 +18258,11 @@ public open class MaximumFollowingRobotsCountModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MaximumFollowingRobotsCountModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16744,10 +18314,18 @@ public open class MinableProperties : JsonReader() {
   public val count: UShort? by fromJson()
 
   public val mining_trigger: Trigger? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MinableProperties> = JsonReaderDeserializer()
+  }
 }
 
 public open class MinimapStyleSpecification : EmptyWidgetStyleSpecification() {
   override val type: UnknownStringLiteral by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MinimapStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16808,6 +18386,10 @@ public open class MiningDrillGraphicsSet : JsonReader() {
    * Secondary draw order(s) for all directions of the circuit connectors.
    */
   public val circuit_connector_secondary_draw_order: UnknownUnion? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MiningDrillGraphicsSet> = JsonReaderDeserializer()
+  }
 }
 
 public open class MiningDrillProductivityBonusModifier : SimpleModifier() {
@@ -16823,6 +18405,11 @@ public open class MiningDrillProductivityBonusModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<MiningDrillProductivityBonusModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16833,6 +18420,10 @@ public open class ModSetting : JsonReader() {
    * The value of the mod setting. The type depends on the kind of setting.
    */
   public val `value`: UnknownUnion by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ModSetting> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16875,6 +18466,10 @@ public open class ModuleSpecification : JsonReader() {
   public val module_info_separation_multiplier: Float? by fromJson()
 
   public val module_info_multi_row_initial_height_modifier: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ModuleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -16895,6 +18490,10 @@ public open class NestedTriggerEffectItem : TriggerEffectItem() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val action: Trigger by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NestedTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16916,6 +18515,10 @@ public open class NoiseArrayConstruction : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val value_expressions: List<NoiseExpression> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseArrayConstruction> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16952,6 +18555,10 @@ public open class NoiseFunctionAbsoluteValue : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple1<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionAbsoluteValue> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16963,6 +18570,10 @@ public open class NoiseFunctionAdd : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: List<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionAdd> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -16991,6 +18602,10 @@ public open class NoiseFunctionAtan2 : JsonReader() {
    * The first argument is y and the second is x.
    */
   public val arguments: Tuple2<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionAtan2> = JsonReaderDeserializer()
+  }
 }
 
 public open class NoiseFunctionAutoplaceProbability : JsonReader() {
@@ -16999,6 +18614,11 @@ public open class NoiseFunctionAutoplaceProbability : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple1<NoiseLiteralObject> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionAutoplaceProbability> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class NoiseFunctionAutoplaceRichness : JsonReader() {
@@ -17007,6 +18627,10 @@ public open class NoiseFunctionAutoplaceRichness : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple1<NoiseLiteralObject> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionAutoplaceRichness> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17018,6 +18642,10 @@ public open class NoiseFunctionBitwiseAnd : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: List<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionBitwiseAnd> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17029,6 +18657,10 @@ public open class NoiseFunctionBitwiseNot : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple1<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionBitwiseNot> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17040,6 +18672,10 @@ public open class NoiseFunctionBitwiseOr : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: List<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionBitwiseOr> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17051,6 +18687,10 @@ public open class NoiseFunctionBitwiseXor : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: List<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionBitwiseXor> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17062,6 +18702,10 @@ public open class NoiseFunctionCeil : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple1<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionCeil> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17074,6 +18718,10 @@ public open class NoiseFunctionClamp : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple3<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionClamp> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17087,6 +18735,10 @@ public open class NoiseFunctionCompileTimeLog : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: List<NoiseExpression> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionCompileTimeLog> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17098,6 +18750,10 @@ public open class NoiseFunctionCos : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple1<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionCos> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17111,6 +18767,11 @@ public open class NoiseFunctionDistanceFromNearestPoint : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: DistanceFromNearestPointArguments by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionDistanceFromNearestPoint> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17122,6 +18783,10 @@ public open class NoiseFunctionDivide : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple2<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionDivide> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17134,6 +18799,10 @@ public open class NoiseFunctionEquals : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple2<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionEquals> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17145,6 +18814,10 @@ public open class NoiseFunctionExponentiate : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple2<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionExponentiate> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17157,6 +18830,10 @@ public open class NoiseFunctionFactorioBasisNoise : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: FactorioBasisNoiseArguments by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionFactorioBasisNoise> = JsonReaderDeserializer()
+  }
 }
 
 public open class NoiseFunctionFactorioMultioctaveNoise : JsonReader() {
@@ -17165,6 +18842,11 @@ public open class NoiseFunctionFactorioMultioctaveNoise : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: FactorioMultioctaveNoiseArguments by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionFactorioMultioctaveNoise> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class NoiseFunctionFactorioQuickMultioctaveNoise : JsonReader() {
@@ -17173,6 +18855,11 @@ public open class NoiseFunctionFactorioQuickMultioctaveNoise : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: FactorioQuickMultioctaveNoiseArguments by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionFactorioQuickMultioctaveNoise> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17184,6 +18871,10 @@ public open class NoiseFunctionFloor : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple1<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionFloor> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17196,6 +18887,10 @@ public open class NoiseFunctionLessOrEqual : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple2<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionLessOrEqual> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17208,6 +18903,10 @@ public open class NoiseFunctionLessThan : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple2<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionLessThan> = JsonReaderDeserializer()
+  }
 }
 
 public open class NoiseFunctionLog2 : JsonReader() {
@@ -17216,6 +18915,10 @@ public open class NoiseFunctionLog2 : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple1<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionLog2> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17228,6 +18931,10 @@ public open class NoiseFunctionModulo : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple2<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionModulo> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17239,6 +18946,10 @@ public open class NoiseFunctionMultiply : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: List<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionMultiply> = JsonReaderDeserializer()
+  }
 }
 
 public open class NoiseFunctionNoiseLayerNameToID : JsonReader() {
@@ -17247,6 +18958,10 @@ public open class NoiseFunctionNoiseLayerNameToID : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple1<NoiseLiteralString> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionNoiseLayerNameToID> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17259,6 +18974,10 @@ public open class NoiseFunctionOffsetPoints : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple2<NoiseArray> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionOffsetPoints> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17271,6 +18990,10 @@ public open class NoiseFunctionRandomPenalty : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: RandomPenaltyArguments by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionRandomPenalty> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17287,6 +19010,10 @@ public open class NoiseFunctionRidge : JsonReader() {
    * the upper limit.
    */
   public val arguments: Tuple3<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionRidge> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17298,6 +19025,10 @@ public open class NoiseFunctionSin : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple1<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionSin> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17327,6 +19058,10 @@ public open class NoiseFunctionSpotNoise : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: SpotNoiseArguments by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionSpotNoise> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17338,6 +19073,10 @@ public open class NoiseFunctionSubtract : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple2<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionSubtract> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17350,6 +19089,10 @@ public open class NoiseFunctionTerrace : JsonReader() {
   public val function_name: UnknownStringLiteral by fromJson()
 
   public val arguments: Tuple4<NoiseNumber> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseFunctionTerrace> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17375,6 +19118,10 @@ public open class NoiseIfElseChain : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val arguments: List<NoiseExpression> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseIfElseChain> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17390,6 +19137,10 @@ public open class NoiseLiteralBoolean : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val literal_value: Boolean by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseLiteralBoolean> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17400,6 +19151,10 @@ public open class NoiseLiteralExpression : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val literal_value: NoiseExpression by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseLiteralExpression> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17411,6 +19166,10 @@ public open class NoiseLiteralNumber : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val literal_value: Float by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseLiteralNumber> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17423,6 +19182,10 @@ public open class NoiseLiteralObject : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val literal_value: AutoplaceSpecification by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseLiteralObject> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17434,6 +19197,10 @@ public open class NoiseLiteralString : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val literal_value: String by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseLiteralString> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17464,6 +19231,10 @@ public open class NoiseProcedureDelimiter : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val expression: NoiseExpression by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseProcedureDelimiter> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17490,6 +19261,10 @@ public open class NoiseVariable : JsonReader() {
    * name.
    */
   public val variable_name: UnknownUnion by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NoiseVariable> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17506,6 +19281,10 @@ public open class NothingModifier : BaseModifier() {
   public val use_icon_overlay_constant: Boolean? by fromJson()
 
   public val effect_description: LocalisedString? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<NothingModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class OffshorePumpGraphicsSet : JsonReader() {
@@ -17537,6 +19316,10 @@ public open class OffshorePumpGraphicsSet : JsonReader() {
    * Drawn by tile renderer when water animation is enabled.
    */
   public val underwater_pictures: Sprite4Way? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<OffshorePumpGraphicsSet> = JsonReaderDeserializer()
+  }
 }
 
 public open class OrTipTrigger : JsonReader() {
@@ -17546,6 +19329,10 @@ public open class OrTipTrigger : JsonReader() {
    * If at least one of the triggers is fulfilled, this trigger is considered fulfilled.
    */
   public val triggers: List<TipTrigger> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<OrTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17570,6 +19357,10 @@ public open class OrientedCliffPrototype : JsonReader() {
    * Unused.
    */
   public val fill_volume: UInt by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<OrientedCliffPrototype> = JsonReaderDeserializer()
+  }
 }
 
 public open class OrientedCliffPrototypeSet : JsonReader() {
@@ -17612,6 +19403,10 @@ public open class OrientedCliffPrototypeSet : JsonReader() {
   public val south_to_none: OrientedCliffPrototype by fromJson()
 
   public val none_to_north: OrientedCliffPrototype by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<OrientedCliffPrototypeSet> = JsonReaderDeserializer()
+  }
 }
 
 public open class OtherColors : JsonReader() {
@@ -17620,6 +19415,10 @@ public open class OtherColors : JsonReader() {
   public val color: Color? by fromJson()
 
   public val bar: ElementImageSet? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<OtherColors> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17637,6 +19436,10 @@ public open class PasteEntitySettingsTipTrigger : JsonReader() {
   public val target: EntityID? by fromJson()
 
   public val match_type_only: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PasteEntitySettingsTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class PathFinderSettings : JsonReader() {
@@ -17798,6 +19601,10 @@ public open class PathFinderSettings : JsonReader() {
   public val overload_levels: List<UInt> by fromJson()
 
   public val overload_multipliers: List<Double> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PathFinderSettings> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -17829,6 +19636,10 @@ public open class PipeConnectionDefinition : JsonReader() {
   public val max_underground_distance: UInt? by fromJson()
 
   public val type: PipeConnectionDefinitionType? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PipeConnectionDefinition> = JsonReaderDeserializer()
+  }
 }
 
 public open class PipePictures : JsonReader() {
@@ -17901,6 +19712,10 @@ public open class PipePictures : JsonReader() {
    * [FluidPrototype::gas_temperature](prototype:FluidPrototype::gas_temperature).
    */
   public val gas_flow: Animation by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PipePictures> = JsonReaderDeserializer()
+  }
 }
 
 public open class PipeToGroundPictures : JsonReader() {
@@ -17911,6 +19726,10 @@ public open class PipeToGroundPictures : JsonReader() {
   public val left: Sprite by fromJson()
 
   public val right: Sprite by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PipeToGroundPictures> = JsonReaderDeserializer()
+  }
 }
 
 public open class PlaceAsTile : JsonReader() {
@@ -17919,6 +19738,10 @@ public open class PlaceAsTile : JsonReader() {
   public val condition: CollisionMask by fromJson()
 
   public val condition_size: Int by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PlaceAsTile> = JsonReaderDeserializer()
+  }
 }
 
 public open class PlaceEquipmentTipTrigger : JsonReader() {
@@ -17927,6 +19750,10 @@ public open class PlaceEquipmentTipTrigger : JsonReader() {
   public val count: UInt? by fromJson()
 
   public val equipment: EquipmentID? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PlaceEquipmentTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -17964,6 +19791,10 @@ public open class PlaySoundTriggerEffectItem : TriggerEffectItem() {
   public val audible_distance_modifier: Float? by fromJson()
 
   public val play_on_target_position: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PlaySoundTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class PlayerColorData : JsonReader() {
@@ -17972,6 +19803,10 @@ public open class PlayerColorData : JsonReader() {
   public val player_color: Color by fromJson()
 
   public val chat_color: Color by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PlayerColorData> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -18024,6 +19859,10 @@ public open class PollutionSettings : JsonReader() {
   public val max_pollution_to_restore_trees: Double by fromJson()
 
   public val enemy_attack_pollution_consumption_modifier: Double by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PollutionSettings> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18044,12 +19883,20 @@ public open class ProgrammableSpeakerInstrument : JsonReader() {
   public val name: String by fromJson()
 
   public val notes: List<ProgrammableSpeakerNote> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ProgrammableSpeakerInstrument> = JsonReaderDeserializer()
+  }
 }
 
 public open class ProgrammableSpeakerNote : JsonReader() {
   public val name: String by fromJson()
 
   public val sound: Sound by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ProgrammableSpeakerNote> = JsonReaderDeserializer()
+  }
 }
 
 public open class ProgressBarStyleSpecification : BaseStyleSpecification() {
@@ -18077,6 +19924,10 @@ public open class ProgressBarStyleSpecification : BaseStyleSpecification() {
   public val embed_text_in_bar: Boolean? by fromJson()
 
   public val side_text_padding: Short? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ProgressBarStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class ProjectileAttackParameters : BaseAttackParameters() {
@@ -18115,6 +19966,10 @@ public open class ProjectileAttackParameters : BaseAttackParameters() {
    * weapons.
    */
   public val projectile_orientation_offset: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ProjectileAttackParameters> = JsonReaderDeserializer()
+  }
 }
 
 public open class ProjectileTriggerDelivery : TriggerDeliveryItem() {
@@ -18149,6 +20004,10 @@ public open class ProjectileTriggerDelivery : TriggerDeliveryItem() {
   public val max_range: Double? by fromJson()
 
   public val min_range: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ProjectileTriggerDelivery> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18176,6 +20035,10 @@ public open class PumpConnectorGraphics : JsonReader() {
    * Size of the array must be 6 or more.
    */
   public val west: List<PumpConnectorGraphicsAnimation> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PumpConnectorGraphics> = JsonReaderDeserializer()
+  }
 }
 
 public open class PumpConnectorGraphicsAnimation : JsonReader() {
@@ -18188,6 +20051,10 @@ public open class PumpConnectorGraphicsAnimation : JsonReader() {
   public val connector: Animation? by fromJson()
 
   public val connector_shadow: Animation? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PumpConnectorGraphicsAnimation> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18203,6 +20070,10 @@ public open class PushBackTriggerEffectItem : TriggerEffectItem() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val distance: Float by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PushBackTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public open class RadioButtonStyleSpecification : StyleWithClickableGraphicalSetSpecification() {
@@ -18218,6 +20089,10 @@ public open class RadioButtonStyleSpecification : StyleWithClickableGraphicalSet
   public val disabled_font_color: Color? by fromJson()
 
   public val text_padding: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RadioButtonStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18236,6 +20111,11 @@ public open class RadiusVisualisationSpecification : JsonReader() {
   public val draw_in_cursor: Boolean? by fromJson()
 
   public val draw_on_selection: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RadiusVisualisationSpecification> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class RailPictureSet : JsonReader() {
@@ -18268,6 +20148,10 @@ public open class RailPictureSet : JsonReader() {
   public val curved_rail_horizontal_left_bottom: RailPieceLayers by fromJson()
 
   public val rail_endings: Sprite8Way by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RailPictureSet> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18309,6 +20193,10 @@ public open class RailPieceLayers : JsonReader() {
   public val segment_visualisation_continuing_front: Sprite? by fromJson()
 
   public val segment_visualisation_continuing_back: Sprite? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RailPieceLayers> = JsonReaderDeserializer()
+  }
 }
 
 public open class RandomPenaltyArguments : JsonReader() {
@@ -18333,6 +20221,10 @@ public open class RandomPenaltyArguments : JsonReader() {
   public val seed: ConstantNoiseNumber? by fromJson()
 
   public val amplitude: ConstantNoiseNumber? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RandomPenaltyArguments> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18493,6 +20385,10 @@ public open class RecipeData : JsonReader() {
    * filters, logistic requests, etc.).
    */
   public val unlock_results: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RecipeData> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18556,6 +20452,10 @@ public open class ResearchTechnologyTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val technology: TechnologyID by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ResearchTechnologyTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18576,6 +20476,10 @@ public open class Resistance : JsonReader() {
    * given damage type. (Higher is better)
    */
   public val percent: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<Resistance> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18688,6 +20592,10 @@ public open class RotatedAnimation : AnimationParameters() {
    * Only loaded if `layers` is not defined.
    */
   public val stripes: List<Stripe>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RotatedAnimation> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18711,6 +20619,10 @@ public open class RotatedAnimation4WayValues : JsonReader() {
    * Defaults to the east animation.
    */
   public val west: RotatedAnimation? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RotatedAnimation4WayValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18774,21 +20686,21 @@ public open class RotatedSprite : SpriteParameters() {
    * are a modder, you can just ignore this property. As an example, if this is `4`, the sprite will be
    * sliced into a `4x4` grid.
    */
-  public val slice: SpriteSizeType? by fromJson()
+  public val slice: SpriteSizeType? by fromJson("dice")
 
   /**
    * Only loaded if `layers` is not defined.
    *
    * Same as `slice`, but this specifies only how many slices there are on the x-axis.
    */
-  public val slice_x: SpriteSizeType? by fromJson()
+  public val slice_x: SpriteSizeType? by fromJson("dice_x")
 
   /**
    * Only loaded if `layers` is not defined.
    *
    * Same as `slice`, but this specifies only how many slices there are on the y-axis.
    */
-  public val slice_y: SpriteSizeType? by fromJson()
+  public val slice_y: SpriteSizeType? by fromJson("dice_y")
 
   /**
    * Only loaded if `layers` is not defined.
@@ -18839,6 +20751,10 @@ public open class RotatedSprite : SpriteParameters() {
    * Only loaded if `layers` is not defined.
    */
   public val allow_low_quality_rotation: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<RotatedSprite> = JsonReaderDeserializer()
+  }
 }
 
 public open class ScriptTriggerEffectItem : TriggerEffectItem() {
@@ -18849,12 +20765,18 @@ public open class ScriptTriggerEffectItem : TriggerEffectItem() {
    * [on_script_trigger_effect](runtime:on_script_trigger_effect).
    */
   public val effect_id: String by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ScriptTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 public abstract class ScrollBarStyleSpecification : BaseStyleSpecification() {
   public val background_graphical_set: ElementImageSet? by fromJson()
 
   public val thumb_button_style: ButtonStyleSpecification? by fromJson()
+
+  public companion object
 }
 
 public open class ScrollPaneStyleSpecification : BaseStyleSpecification() {
@@ -18899,6 +20821,10 @@ public open class ScrollPaneStyleSpecification : BaseStyleSpecification() {
   public val extra_right_margin_when_activated: Int? by fromJson()
 
   public val dont_force_clipping_rect_for_contents: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ScrollPaneStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18944,6 +20870,10 @@ public open class SequenceTipTrigger : JsonReader() {
    * List of triggers to fulfill.
    */
   public val triggers: List<TipTrigger> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SequenceTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class SetFilterTipTrigger : JsonReader() {
@@ -18956,6 +20886,10 @@ public open class SetFilterTipTrigger : JsonReader() {
   public val match_type_only: Boolean? by fromJson()
 
   public val consecutive: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SetFilterTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class SetLogisticRequestTipTrigger : JsonReader() {
@@ -18964,6 +20898,10 @@ public open class SetLogisticRequestTipTrigger : JsonReader() {
   public val count: UInt? by fromJson()
 
   public val logistic_chest_only: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SetLogisticRequestTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class SetRecipeTipTrigger : JsonReader() {
@@ -18976,6 +20914,10 @@ public open class SetRecipeTipTrigger : JsonReader() {
   public val consecutive: Boolean? by fromJson()
 
   public val uses_fluid: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SetRecipeTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class SetTileTriggerEffectItem : TriggerEffectItem() {
@@ -18988,6 +20930,10 @@ public open class SetTileTriggerEffectItem : TriggerEffectItem() {
   public val apply_projection: Boolean? by fromJson()
 
   public val tile_collision_mask: CollisionMask? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SetTileTriggerEffectItem> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -18999,6 +20945,8 @@ public abstract class Settings : JsonReader() {
    * All startup mod settings, indexed by the name of the setting.
    */
   public val startup: Map<String, ModSetting> by fromJson()
+
+  public companion object
 }
 
 public open class ShiftAnimationWaypoints : JsonReader() {
@@ -19009,18 +20957,31 @@ public open class ShiftAnimationWaypoints : JsonReader() {
   public val south: List<Vector> by fromJson()
 
   public val west: List<Vector> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ShiftAnimationWaypoints> = JsonReaderDeserializer()
+  }
 }
 
 public open class ShiftBuildTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ShiftBuildTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class ShowExplosionOnChartTriggerEffectItem : TriggerEffectItem() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val scale: Float by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ShowExplosionOnChartTriggerEffectItem> =
+        JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -19039,6 +21000,10 @@ public open class SignalColorMapping : JsonReader() {
   public val name: UnknownUnion by fromJson()
 
   public val color: Color by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SignalColorMapping> = JsonReaderDeserializer()
+  }
 }
 
 public open class SignalIDConnector : JsonReader() {
@@ -19048,6 +21013,10 @@ public open class SignalIDConnector : JsonReader() {
    * Name of the signal that shows this color.
    */
   public val name: UnknownUnion by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SignalIDConnector> = JsonReaderDeserializer()
+  }
 }
 
 public abstract class SimpleModifier : BaseModifier() {
@@ -19055,6 +21024,8 @@ public abstract class SimpleModifier : BaseModifier() {
    * Modification value, which will be added to the variable it modifies.
    */
   public val modifier: Double by fromJson()
+
+  public companion object
 }
 
 /**
@@ -19164,6 +21135,10 @@ public open class SimulationDefinition : JsonReader() {
    * setting the volume modifier to `1`.
    */
   public val override_volume: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SimulationDefinition> = JsonReaderDeserializer()
+  }
 }
 
 public open class SliderStyleSpecification : BaseStyleSpecification() {
@@ -19184,6 +21159,10 @@ public open class SliderStyleSpecification : BaseStyleSpecification() {
   public val button: ButtonStyleSpecification? by fromJson()
 
   public val high_button: ButtonStyleSpecification? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SliderStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -19233,6 +21212,10 @@ public open class SmokeSource : JsonReader() {
    * A value between `0` and `1`.
    */
   public val vertical_speed_slowdown: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SmokeSource> = JsonReaderDeserializer()
+  }
 }
 
 public open class SoundValues : JsonReader() {
@@ -19287,6 +21270,10 @@ public open class SoundValues : JsonReader() {
    * defined.
    */
   public val max_speed: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SoundValues> = JsonReaderDeserializer()
+  }
 }
 
 public typealias Sound = UnknownUnion
@@ -19319,6 +21306,10 @@ public open class SoundDefinition : JsonReader() {
    * Must be `>= min_speed`.
    */
   public val max_speed: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SoundDefinition> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -19351,6 +21342,10 @@ public open class SpawnPointValues : JsonReader() {
    * Must be `>= 0`.
    */
   public val spawn_weight: Double by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpawnPointValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -19377,6 +21372,10 @@ public open class SpeechBubbleStyleSpecification : BaseStyleSpecification() {
   public val arrow_indent: Double? by fromJson()
 
   public val pass_through_mouse: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpeechBubbleStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -19393,6 +21392,10 @@ public open class SpiderEnginePrototype : JsonReader() {
    * it.
    */
   public val military_target: String? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpiderEnginePrototype> = JsonReaderDeserializer()
+  }
 }
 
 public open class SpiderLegGraphicsSet : JsonReader() {
@@ -19413,6 +21416,10 @@ public open class SpiderLegGraphicsSet : JsonReader() {
   public val upper_part_water_reflection: SpiderLegPart? by fromJson()
 
   public val lower_part_water_reflection: SpiderLegPart? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpiderLegGraphicsSet> = JsonReaderDeserializer()
+  }
 }
 
 public open class SpiderLegPart : JsonReader() {
@@ -19429,6 +21436,10 @@ public open class SpiderLegPart : JsonReader() {
   public val top_end_length: Float? by fromJson()
 
   public val bottom_end_length: Float? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpiderLegPart> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -19456,6 +21467,10 @@ public open class SpiderLegSpecification : JsonReader() {
    * event.
    */
   public val leg_hit_the_ground_trigger: TriggerEffect? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpiderLegSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -19500,6 +21515,10 @@ public open class SpiderVehicleGraphicsSet : JsonReader() {
    * contain one position per body direction.
    */
   public val light_positions: List<List<Vector>>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpiderVehicleGraphicsSet> = JsonReaderDeserializer()
+  }
 }
 
 public open class SpotNoiseArguments : JsonReader() {
@@ -19586,6 +21605,10 @@ public open class SpotNoiseArguments : JsonReader() {
   public val maximum_spot_basement_radius: ConstantNoiseNumber by fromJson()
 
   public val comment: NoiseLiteralString? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpotNoiseArguments> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -19627,21 +21650,25 @@ public open class Sprite : SpriteParameters() {
    * are a modder, you can just ignore this property. As an example, if this is `4`, the sprite will be
    * sliced into a `4x4` grid.
    */
-  public val slice: SpriteSizeType? by fromJson()
+  public val slice: SpriteSizeType? by fromJson("dice")
 
   /**
    * Only loaded if `layers` is not defined.
    *
    * Same as `slice`, but this specifies only how many slices there are on the x-axis.
    */
-  public val slice_x: SpriteSizeType? by fromJson()
+  public val slice_x: SpriteSizeType? by fromJson("dice_x")
 
   /**
    * Only loaded if `layers` is not defined.
    *
    * Same as `slice`, but this specifies only how many slices there are on the y-axis.
    */
-  public val slice_y: SpriteSizeType? by fromJson()
+  public val slice_y: SpriteSizeType? by fromJson("dice_y")
+
+  public companion object {
+    public fun serializer(): KSerializer<Sprite> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -19675,6 +21702,10 @@ public open class Sprite4WayValues : JsonReader() {
    * Only loaded, and mandatory if both `sheets` and `sheet` are not defined.
    */
   public val west: Sprite? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<Sprite4WayValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -19733,6 +21764,10 @@ public open class Sprite8Way : JsonReader() {
    * Only loaded, and mandatory if both `sheets` and `sheet` are not defined.
    */
   public val north_west: Sprite? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<Sprite8Way> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -19794,6 +21829,10 @@ public open class SpriteNWaySheet : SpriteParameters() {
    * Unused.
    */
   override val generate_sdf: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpriteNWaySheet> = JsonReaderDeserializer()
+  }
 }
 
 public abstract class SpriteParameters : JsonReader() {
@@ -19908,6 +21947,8 @@ public abstract class SpriteParameters : JsonReader() {
    * for the sprite.
    */
   public open val generate_sdf: Boolean? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -19951,12 +21992,20 @@ public open class SpriteSheet : SpriteParameters() {
   public val repeat_count: UInt? by fromJson()
 
   public val line_length: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpriteSheet> = JsonReaderDeserializer()
+  }
 }
 
 public typealias SpriteSizeType = Short
 
 public open class SpriteVariationsValues : JsonReader() {
   public val sheet: SpriteSheet by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SpriteVariationsValues> = JsonReaderDeserializer()
+  }
 }
 
 public typealias SpriteVariations = UnknownUnion
@@ -19974,6 +22023,11 @@ public open class StackInserterCapacityBonusModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<StackInserterCapacityBonusModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -19989,6 +22043,10 @@ public open class StackTransferTipTrigger : JsonReader() {
   public val count: UInt? by fromJson()
 
   public val transfer: StackTransferTipTriggerTransfer? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<StackTransferTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class StateSteeringSettings : JsonReader() {
@@ -20005,6 +22063,10 @@ public open class StateSteeringSettings : JsonReader() {
    * Used only for special "to look good" purposes (like in trailer).
    */
   public val force_unit_fuzzy_goto_behavior: Boolean by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<StateSteeringSettings> = JsonReaderDeserializer()
+  }
 }
 
 public open class StatusColors : JsonReader() {
@@ -20023,12 +22085,20 @@ public open class StatusColors : JsonReader() {
   public val working: Color? by fromJson()
 
   public val low_power: Color? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<StatusColors> = JsonReaderDeserializer()
+  }
 }
 
 public open class SteeringSettings : JsonReader() {
   public val default: StateSteeringSettings by fromJson()
 
   public val moving: StateSteeringSettings by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SteeringSettings> = JsonReaderDeserializer()
+  }
 }
 
 public open class StorageTankPictures : JsonReader() {
@@ -20041,6 +22111,10 @@ public open class StorageTankPictures : JsonReader() {
   public val flow_sprite: Sprite by fromJson()
 
   public val gas_flow: Animation by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<StorageTankPictures> = JsonReaderDeserializer()
+  }
 }
 
 public open class StreamAttackParameters : BaseAttackParameters() {
@@ -20058,12 +22132,20 @@ public open class StreamAttackParameters : BaseAttackParameters() {
    * Controls which fluids can fuel this stream attack and their potential damage bonuses.
    */
   public val fluids: List<StreamFluidProperties>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<StreamAttackParameters> = JsonReaderDeserializer()
+  }
 }
 
 public open class StreamFluidProperties : JsonReader() {
   public val type: FluidID by fromJson()
 
   public val damage_modifier: Double? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<StreamFluidProperties> = JsonReaderDeserializer()
+  }
 }
 
 public open class StreamTriggerDelivery : TriggerDeliveryItem() {
@@ -20075,6 +22157,10 @@ public open class StreamTriggerDelivery : TriggerDeliveryItem() {
   public val stream: EntityID by fromJson()
 
   public val source_offset: Vector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<StreamTriggerDelivery> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -20107,6 +22193,10 @@ public open class Stripe : JsonReader() {
   public val x: UInt? by fromJson()
 
   public val y: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<Stripe> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -20131,6 +22221,8 @@ public abstract class StyleWithClickableGraphicalSetSpecification : BaseStyleSpe
   public val selected_clicked_graphical_set: ElementImageSet? by fromJson()
 
   public val left_click_sound: Sound? by fromJson()
+
+  public companion object
 }
 
 public open class SwitchStyleSpecification : BaseStyleSpecification() {
@@ -20153,6 +22245,10 @@ public open class SwitchStyleSpecification : BaseStyleSpecification() {
   public val active_label: LabelStyleSpecification? by fromJson()
 
   public val inactive_label: LabelStyleSpecification? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<SwitchStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class TabStyleSpecification : BaseStyleSpecification() {
@@ -20213,6 +22309,10 @@ public open class TabStyleSpecification : BaseStyleSpecification() {
   public val draw_grayscale_picture: Boolean? by fromJson()
 
   public val left_click_sound: Sound? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TabStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class TabbedPaneStyleSpecification : BaseStyleSpecification() {
@@ -20223,6 +22323,10 @@ public open class TabbedPaneStyleSpecification : BaseStyleSpecification() {
   public val tab_content_frame: FrameStyleSpecification? by fromJson()
 
   public val tab_container: HorizontalFlowStyleSpecification? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TabbedPaneStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class TableStyleSpecification : BaseStyleSpecification() {
@@ -20291,6 +22395,10 @@ public open class TableStyleSpecification : BaseStyleSpecification() {
       fromJson()
 
   public val border: BorderImageSet? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TableStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -20344,6 +22452,10 @@ public open class TechnologyData : JsonReader() {
    * List of effects of the technology (applied when the technology is researched).
    */
   public val effects: List<Modifier>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TechnologyData> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -20425,6 +22537,11 @@ public open class TechnologySlotStyleSpecification : ButtonStyleSpecification() 
   public val progress_bar_height: UInt? by fromJson()
 
   public val progress_bar_color: Color? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TechnologySlotStyleSpecification> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -20485,6 +22602,10 @@ public open class TechnologyUnit : JsonReader() {
    * [ToolPrototypes](prototype:ToolPrototype).
    */
   public val ingredients: List<IngredientPrototype> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TechnologyUnit> = JsonReaderDeserializer()
+  }
 }
 
 public open class TextBoxStyleSpecification : BaseStyleSpecification() {
@@ -20522,6 +22643,10 @@ public open class TextBoxStyleSpecification : BaseStyleSpecification() {
   public val selected_rich_text_highlight_warning_color: Color? by fromJson()
 
   public val selected_rich_text_highlight_ok_color: Color? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TextBoxStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class ThrowCapsuleAction : JsonReader() {
@@ -20533,12 +22658,20 @@ public open class ThrowCapsuleAction : JsonReader() {
    * Whether using the capsule consumes an item from the stack.
    */
   public val uses_stack: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ThrowCapsuleAction> = JsonReaderDeserializer()
+  }
 }
 
 public open class TileAndAlpha : JsonReader() {
   public val tile: TileID by fromJson()
 
   public val alpha: Float by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TileAndAlpha> = JsonReaderDeserializer()
+  }
 }
 
 public open class TileBuildSound : JsonReader() {
@@ -20547,6 +22680,10 @@ public open class TileBuildSound : JsonReader() {
   public val medium: Sound? by fromJson()
 
   public val large: Sound? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TileBuildSound> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -20609,6 +22746,10 @@ public open class TileSprite : JsonReader() {
    * cards. 0 means that all the pictures are in one horizontal line.
    */
   public val line_length: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TileSprite> = JsonReaderDeserializer()
+  }
 }
 
 public open class TileSpriteWithProbability : TileSprite() {
@@ -20625,6 +22766,10 @@ public open class TileSpriteWithProbability : TileSprite() {
   public val probability: Double? by fromJson()
 
   public val weights: List<Double>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TileSpriteWithProbability> = JsonReaderDeserializer()
+  }
 }
 
 public open class TileTransitionSprite : JsonReader() {
@@ -20657,6 +22802,10 @@ public open class TileTransitionSprite : JsonReader() {
    * Vertical position of the sprite in the source file in pixels.
    */
   public val y: SpriteSizeType? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TileTransitionSprite> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -20762,18 +22911,29 @@ public abstract class TileTransitions : JsonReader() {
   public val apply_effect_color_to_overlay: Boolean? by fromJson()
 
   public val offset_background_layer_by_tile_layer: Boolean? by fromJson()
+
+  public companion object
 }
 
 public open class TileTransitionsBetweenTransitions : TileTransitions() {
   public val transition_group1: UByte by fromJson()
 
   public val transition_group2: UByte by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TileTransitionsBetweenTransitions> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class TileTransitionsToTiles : TileTransitions() {
   public val to_tiles: List<TileID> by fromJson()
 
   public val transition_group: UByte by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TileTransitionsToTiles> = JsonReaderDeserializer()
+  }
 }
 
 public open class TileTransitionsVariants : TileTransitions() {
@@ -20785,12 +22945,20 @@ public open class TileTransitionsVariants : TileTransitions() {
    * scale needs to be 0.5.
    */
   public val material_background: TileSprite? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TileTransitionsVariants> = JsonReaderDeserializer()
+  }
 }
 
 public open class TimeElapsedTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val ticks: UInt by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TimeElapsedTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -20827,6 +22995,10 @@ public open class TrainBrakingForceBonusModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TrainBrakingForceBonusModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class TrainPathFinderConstants : JsonReader() {
@@ -20856,6 +23028,10 @@ public open class TrainPathFinderConstants : JsonReader() {
   public val train_with_no_path_penalty: UInt by fromJson()
 
   public val train_auto_without_schedule_penalty: UInt by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TrainPathFinderConstants> = JsonReaderDeserializer()
+  }
 }
 
 public open class TrainStopDrawingBoxes : JsonReader() {
@@ -20866,6 +23042,10 @@ public open class TrainStopDrawingBoxes : JsonReader() {
   public val south: BoundingBox by fromJson()
 
   public val west: BoundingBox by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TrainStopDrawingBoxes> = JsonReaderDeserializer()
+  }
 }
 
 public open class TrainStopLight : JsonReader() {
@@ -20874,6 +23054,10 @@ public open class TrainStopLight : JsonReader() {
   public val red_picture: Sprite4Way by fromJson()
 
   public val light: LightDefinition by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TrainStopLight> = JsonReaderDeserializer()
+  }
 }
 
 public open class TransportBeltAnimationSet : JsonReader() {
@@ -20906,6 +23090,10 @@ public open class TransportBeltAnimationSet : JsonReader() {
   public val ending_patch: Sprite4Way? by fromJson()
 
   public val ends_with_stopper: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TransportBeltAnimationSet> = JsonReaderDeserializer()
+  }
 }
 
 public open class TransportBeltAnimationSetWithCorners : TransportBeltAnimationSet() {
@@ -20924,6 +23112,11 @@ public open class TransportBeltAnimationSetWithCorners : TransportBeltAnimationS
   public val south_to_west_index: UByte? by fromJson()
 
   public val west_to_south_index: UByte? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TransportBeltAnimationSetWithCorners> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -20978,6 +23171,10 @@ public open class TransportBeltConnectorFrame : JsonReader() {
   public val frame_back_patch: SpriteVariations? by fromJson()
 
   public val frame_front_patch: SpriteVariations? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TransportBeltConnectorFrame> = JsonReaderDeserializer()
+  }
 }
 
 public open class TreeVariation : JsonReader() {
@@ -21015,6 +23212,10 @@ public open class TreeVariation : JsonReader() {
   public val overlay: Animation? by fromJson()
 
   public val water_reflection: WaterReflectionDefinition? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TreeVariation> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -21039,6 +23240,8 @@ public abstract class TriggerDeliveryItem : JsonReader() {
   public val source_effects: TriggerEffect? by fromJson()
 
   public val target_effects: TriggerEffect? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -21072,6 +23275,8 @@ public abstract class TriggerEffectItem : JsonReader() {
    * Unknown if it works with other properties that use [TriggerEffect](prototype:TriggerEffect).
    */
   public val damage_type_filters: DamageTypeFilters? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -21108,6 +23313,8 @@ public abstract class TriggerItem : JsonReader() {
    * Only entities meeting the force condition are affected by the trigger item.
    */
   public val force: ForceCondition? by fromJson()
+
+  public companion object
 }
 
 /**
@@ -21146,6 +23353,10 @@ public open class TurretAttackModifier : BaseModifier() {
    * Modification value, which will be added to the current turret attack modifier upon researching.
    */
   public val modifier: Double by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<TurretAttackModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class UndergroundBeltStructure : JsonReader() {
@@ -21160,6 +23371,10 @@ public open class UndergroundBeltStructure : JsonReader() {
   public val direction_in_side_loading: Sprite4Way? by fromJson()
 
   public val direction_out_side_loading: Sprite4Way? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UndergroundBeltStructure> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -21185,6 +23400,10 @@ public open class UnitAISettings : JsonReader() {
    * Must be between -8 and 8.
    */
   public val path_resolution_modifier: Byte? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UnitAISettings> = JsonReaderDeserializer()
+  }
 }
 
 public open class UnitAlternativeFrameSequence : JsonReader() {
@@ -21227,6 +23446,10 @@ public open class UnitAlternativeFrameSequence : JsonReader() {
   public val prepared_animation_speed: Float by fromJson()
 
   public val back_to_walk_animation_speed: Float by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UnitAlternativeFrameSequence> = JsonReaderDeserializer()
+  }
 }
 
 public open class UnitGroupSettings : JsonReader() {
@@ -21290,6 +23513,10 @@ public open class UnitGroupSettings : JsonReader() {
    * manual groups created through the API are unaffected.
    */
   public val max_unit_group_size: UInt by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UnitGroupSettings> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -21313,6 +23540,10 @@ public open class UnitSpawnDefinitionValues : JsonReader() {
    * - Individual weights are scaled linearly so that the cumulative weight is `1`.
    */
   public val spawn_points: List<SpawnPoint> by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UnitSpawnDefinitionValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -21335,18 +23566,30 @@ public open class UnlockRecipeModifier : BaseModifier() {
    * researching.
    */
   public val recipe: RecipeID by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UnlockRecipeModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class UnlockRecipeTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val recipe: RecipeID by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UnlockRecipeTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class UseConfirmTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UseConfirmTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class UseOnSelfCapsuleAction : JsonReader() {
@@ -21358,12 +23601,20 @@ public open class UseOnSelfCapsuleAction : JsonReader() {
    * Whether using the capsule consumes an item from the stack.
    */
   public val uses_stack: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UseOnSelfCapsuleAction> = JsonReaderDeserializer()
+  }
 }
 
 public open class UsePipetteTipTrigger : JsonReader() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val count: UInt? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<UsePipetteTipTrigger> = JsonReaderDeserializer()
+  }
 }
 
 public open class VectorRotation : JsonReader() {
@@ -21373,6 +23624,10 @@ public open class VectorRotation : JsonReader() {
   public val frames: List<Vector> by fromJson()
 
   public val render_layer: RenderLayer? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<VectorRotation> = JsonReaderDeserializer()
+  }
 }
 
 @Serializable
@@ -21386,10 +23641,19 @@ public open class VerticalFlowStyleSpecification : BaseStyleSpecification() {
   public val type: UnknownStringLiteral by fromJson()
 
   public val vertical_spacing: Int? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<VerticalFlowStyleSpecification> = JsonReaderDeserializer()
+  }
 }
 
 public open class VerticalScrollBarStyleSpecification : ScrollBarStyleSpecification() {
   public val type: UnknownStringLiteral by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<VerticalScrollBarStyleSpecification> =
+        JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -21402,6 +23666,10 @@ public typealias VirtualSignalID = String
  */
 public open class VoidEnergySource : BaseEnergySource() {
   public val type: UnknownStringLiteral by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<VoidEnergySource> = JsonReaderDeserializer()
+  }
 }
 
 public open class WallPictures : JsonReader() {
@@ -21426,6 +23694,10 @@ public open class WallPictures : JsonReader() {
   public val water_connection_patch: Sprite4Way? by fromJson()
 
   public val gate_connection_patch: Sprite4Way? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<WallPictures> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -21438,6 +23710,10 @@ public open class WaterReflectionDefinition : JsonReader() {
   public val orientation_to_variation: Boolean? by fromJson()
 
   public val rotate: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<WaterReflectionDefinition> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -21447,6 +23723,10 @@ public open class WireConnectionPoint : JsonReader() {
   public val wire: WirePosition by fromJson()
 
   public val shadow: WirePosition by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<WireConnectionPoint> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -21458,6 +23738,10 @@ public open class WirePosition : JsonReader() {
   public val red: Vector? by fromJson()
 
   public val green: Vector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<WirePosition> = JsonReaderDeserializer()
+  }
 }
 
 public open class WorkerRobotBatteryModifier : SimpleModifier() {
@@ -21473,6 +23757,10 @@ public open class WorkerRobotBatteryModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<WorkerRobotBatteryModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class WorkerRobotSpeedModifier : SimpleModifier() {
@@ -21488,6 +23776,10 @@ public open class WorkerRobotSpeedModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<WorkerRobotSpeedModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class WorkerRobotStorageModifier : SimpleModifier() {
@@ -21503,6 +23795,10 @@ public open class WorkerRobotStorageModifier : SimpleModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<WorkerRobotStorageModifier> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -21563,6 +23859,10 @@ public open class WorkingSoundValues : JsonReader() {
    * Might not work with all entities that use working_sound.
    */
   public val deactivate_sound: Sound? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<WorkingSoundValues> = JsonReaderDeserializer()
+  }
 }
 
 /**
@@ -21677,6 +23977,10 @@ public open class WorkingVisualisation : JsonReader() {
   public val south_position: Vector? by fromJson()
 
   public val east_position: Vector? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<WorkingVisualisation> = JsonReaderDeserializer()
+  }
 }
 
 public open class ZoomToWorldBlueprintEnabledModifier : BoolModifier() {
@@ -21686,6 +23990,11 @@ public open class ZoomToWorldBlueprintEnabledModifier : BoolModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ZoomToWorldBlueprintEnabledModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class ZoomToWorldDeconstructionPlannerEnabledModifier : BoolModifier() {
@@ -21695,6 +24004,11 @@ public open class ZoomToWorldDeconstructionPlannerEnabledModifier : BoolModifier
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ZoomToWorldDeconstructionPlannerEnabledModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class ZoomToWorldEnabledModifier : BoolModifier() {
@@ -21704,6 +24018,10 @@ public open class ZoomToWorldEnabledModifier : BoolModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ZoomToWorldEnabledModifier> = JsonReaderDeserializer()
+  }
 }
 
 public open class ZoomToWorldGhostBuildingEnabledModifier : BoolModifier() {
@@ -21713,6 +24031,11 @@ public open class ZoomToWorldGhostBuildingEnabledModifier : BoolModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ZoomToWorldGhostBuildingEnabledModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class ZoomToWorldSelectionToolEnabledModifier : BoolModifier() {
@@ -21722,6 +24045,11 @@ public open class ZoomToWorldSelectionToolEnabledModifier : BoolModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ZoomToWorldSelectionToolEnabledModifier> =
+        JsonReaderDeserializer()
+  }
 }
 
 public open class ZoomToWorldUpgradePlannerEnabledModifier : BoolModifier() {
@@ -21731,4 +24059,417 @@ public open class ZoomToWorldUpgradePlannerEnabledModifier : BoolModifier() {
    * If `false`, do not draw the small "constant" icon over the technology effect icon.
    */
   public val use_icon_overlay_constant: Boolean? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<ZoomToWorldUpgradePlannerEnabledModifier> =
+        JsonReaderDeserializer()
+  }
+}
+
+public class PrototypeData : JsonReader() {
+  public val accumulator: Map<String, AccumulatorPrototype>? by fromJson()
+
+  public val achievement: Map<String, AchievementPrototype>? by fromJson()
+
+  public val `active-defense-equipment`: Map<String, ActiveDefenseEquipmentPrototype>? by fromJson()
+
+  public val `ambient-sound`: Map<String, AmbientSound>? by fromJson()
+
+  public val `ammo-category`: Map<String, AmmoCategory>? by fromJson()
+
+  public val ammo: Map<String, AmmoItemPrototype>? by fromJson()
+
+  public val `ammo-turret`: Map<String, AmmoTurretPrototype>? by fromJson()
+
+  public val animation: Map<String, AnimationPrototype>? by fromJson()
+
+  public val `arithmetic-combinator`: Map<String, ArithmeticCombinatorPrototype>? by fromJson()
+
+  public val armor: Map<String, ArmorPrototype>? by fromJson()
+
+  public val arrow: Map<String, ArrowPrototype>? by fromJson()
+
+  public val `artillery-flare`: Map<String, ArtilleryFlarePrototype>? by fromJson()
+
+  public val `artillery-projectile`: Map<String, ArtilleryProjectilePrototype>? by fromJson()
+
+  public val `artillery-turret`: Map<String, ArtilleryTurretPrototype>? by fromJson()
+
+  public val `artillery-wagon`: Map<String, ArtilleryWagonPrototype>? by fromJson()
+
+  public val `assembling-machine`: Map<String, AssemblingMachinePrototype>? by fromJson()
+
+  public val `autoplace-control`: Map<String, AutoplaceControl>? by fromJson()
+
+  public val `battery-equipment`: Map<String, BatteryEquipmentPrototype>? by fromJson()
+
+  public val beacon: Map<String, BeaconPrototype>? by fromJson()
+
+  public val beam: Map<String, BeamPrototype>? by fromJson()
+
+  public val `belt-immunity-equipment`: Map<String, BeltImmunityEquipmentPrototype>? by fromJson()
+
+  public val `blueprint-book`: Map<String, BlueprintBookPrototype>? by fromJson()
+
+  public val blueprint: Map<String, BlueprintItemPrototype>? by fromJson()
+
+  public val boiler: Map<String, BoilerPrototype>? by fromJson()
+
+  public val `build-entity-achievement`: Map<String, BuildEntityAchievementPrototype>? by fromJson()
+
+  public val `burner-generator`: Map<String, BurnerGeneratorPrototype>? by fromJson()
+
+  public val capsule: Map<String, CapsulePrototype>? by fromJson()
+
+  public val car: Map<String, CarPrototype>? by fromJson()
+
+  public val `cargo-wagon`: Map<String, CargoWagonPrototype>? by fromJson()
+
+  public val `character-corpse`: Map<String, CharacterCorpsePrototype>? by fromJson()
+
+  public val character: Map<String, CharacterPrototype>? by fromJson()
+
+  public val cliff: Map<String, CliffPrototype>? by fromJson()
+
+  public val `combat-robot-count`: Map<String, CombatRobotCountAchievementPrototype>? by fromJson()
+
+  public val `combat-robot`: Map<String, CombatRobotPrototype>? by fromJson()
+
+  public val `constant-combinator`: Map<String, ConstantCombinatorPrototype>? by fromJson()
+
+  public val `construct-with-robots-achievement`:
+      Map<String, ConstructWithRobotsAchievementPrototype>? by fromJson()
+
+  public val `construction-robot`: Map<String, ConstructionRobotPrototype>? by fromJson()
+
+  public val container: Map<String, ContainerPrototype>? by fromJson()
+
+  public val `copy-paste-tool`: Map<String, CopyPasteToolPrototype>? by fromJson()
+
+  public val corpse: Map<String, CorpsePrototype>? by fromJson()
+
+  public val `curved-rail`: Map<String, CurvedRailPrototype>? by fromJson()
+
+  public val `custom-input`: Map<String, CustomInputPrototype>? by fromJson()
+
+  public val `damage-type`: Map<String, DamageType>? by fromJson()
+
+  public val `decider-combinator`: Map<String, DeciderCombinatorPrototype>? by fromJson()
+
+  public val `deconstruct-with-robots-achievement`:
+      Map<String, DeconstructWithRobotsAchievementPrototype>? by fromJson()
+
+  public val `deconstructible-tile-proxy`: Map<String, DeconstructibleTileProxyPrototype>? by
+      fromJson()
+
+  public val `deconstruction-item`: Map<String, DeconstructionItemPrototype>? by fromJson()
+
+  public val `optimized-decorative`: Map<String, DecorativePrototype>? by fromJson()
+
+  public val `deliver-by-robots-achievement`: Map<String, DeliverByRobotsAchievementPrototype>? by
+      fromJson()
+
+  public val `dont-build-entity-achievement`: Map<String, DontBuildEntityAchievementPrototype>? by
+      fromJson()
+
+  public val `dont-craft-manually-achievement`: Map<String, DontCraftManuallyAchievementPrototype>?
+      by fromJson()
+
+  public val `dont-use-entity-in-energy-production-achievement`:
+      Map<String, DontUseEntityInEnergyProductionAchievementPrototype>? by fromJson()
+
+  public val `editor-controller`: Map<String, EditorControllerPrototype>? by fromJson()
+
+  public val `electric-energy-interface`: Map<String, ElectricEnergyInterfacePrototype>? by
+      fromJson()
+
+  public val `electric-pole`: Map<String, ElectricPolePrototype>? by fromJson()
+
+  public val `electric-turret`: Map<String, ElectricTurretPrototype>? by fromJson()
+
+  public val `unit-spawner`: Map<String, EnemySpawnerPrototype>? by fromJson()
+
+  public val `energy-shield-equipment`: Map<String, EnergyShieldEquipmentPrototype>? by fromJson()
+
+  public val `entity-ghost`: Map<String, EntityGhostPrototype>? by fromJson()
+
+  public val particle: Map<String, EntityParticlePrototype>? by fromJson()
+
+  public val `equipment-category`: Map<String, EquipmentCategory>? by fromJson()
+
+  public val `equipment-grid`: Map<String, EquipmentGridPrototype>? by fromJson()
+
+  public val explosion: Map<String, ExplosionPrototype>? by fromJson()
+
+  public val `finish-the-game-achievement`: Map<String, FinishTheGameAchievementPrototype>? by
+      fromJson()
+
+  public val fire: Map<String, FireFlamePrototype>? by fromJson()
+
+  public val fish: Map<String, FishPrototype>? by fromJson()
+
+  public val `flame-thrower-explosion`: Map<String, FlameThrowerExplosionPrototype>? by fromJson()
+
+  public val fluid: Map<String, FluidPrototype>? by fromJson()
+
+  public val stream: Map<String, FluidStreamPrototype>? by fromJson()
+
+  public val `fluid-turret`: Map<String, FluidTurretPrototype>? by fromJson()
+
+  public val `fluid-wagon`: Map<String, FluidWagonPrototype>? by fromJson()
+
+  public val `flying-text`: Map<String, FlyingTextPrototype>? by fromJson()
+
+  public val font: Map<String, FontPrototype>? by fromJson()
+
+  public val `fuel-category`: Map<String, FuelCategory>? by fromJson()
+
+  public val furnace: Map<String, FurnacePrototype>? by fromJson()
+
+  public val gate: Map<String, GatePrototype>? by fromJson()
+
+  public val `generator-equipment`: Map<String, GeneratorEquipmentPrototype>? by fromJson()
+
+  public val generator: Map<String, GeneratorPrototype>? by fromJson()
+
+  public val `god-controller`: Map<String, GodControllerPrototype>? by fromJson()
+
+  public val `group-attack-achievement`: Map<String, GroupAttackAchievementPrototype>? by fromJson()
+
+  public val `gui-style`: Map<String, GuiStyle>? by fromJson()
+
+  public val gun: Map<String, GunPrototype>? by fromJson()
+
+  public val `heat-interface`: Map<String, HeatInterfacePrototype>? by fromJson()
+
+  public val `heat-pipe`: Map<String, HeatPipePrototype>? by fromJson()
+
+  public val `highlight-box`: Map<String, HighlightBoxEntityPrototype>? by fromJson()
+
+  public val `infinity-container`: Map<String, InfinityContainerPrototype>? by fromJson()
+
+  public val `infinity-pipe`: Map<String, InfinityPipePrototype>? by fromJson()
+
+  public val inserter: Map<String, InserterPrototype>? by fromJson()
+
+  public val `item-entity`: Map<String, ItemEntityPrototype>? by fromJson()
+
+  public val `item-group`: Map<String, ItemGroup>? by fromJson()
+
+  public val item: Map<String, ItemPrototype>? by fromJson()
+
+  public val `item-request-proxy`: Map<String, ItemRequestProxyPrototype>? by fromJson()
+
+  public val `item-subgroup`: Map<String, ItemSubGroup>? by fromJson()
+
+  public val `item-with-entity-data`: Map<String, ItemWithEntityDataPrototype>? by fromJson()
+
+  public val `item-with-inventory`: Map<String, ItemWithInventoryPrototype>? by fromJson()
+
+  public val `item-with-label`: Map<String, ItemWithLabelPrototype>? by fromJson()
+
+  public val `item-with-tags`: Map<String, ItemWithTagsPrototype>? by fromJson()
+
+  public val `kill-achievement`: Map<String, KillAchievementPrototype>? by fromJson()
+
+  public val lab: Map<String, LabPrototype>? by fromJson()
+
+  public val lamp: Map<String, LampPrototype>? by fromJson()
+
+  public val `land-mine`: Map<String, LandMinePrototype>? by fromJson()
+
+  public val `leaf-particle`: Map<String, LeafParticlePrototype>? by fromJson()
+
+  public val `linked-belt`: Map<String, LinkedBeltPrototype>? by fromJson()
+
+  public val `linked-container`: Map<String, LinkedContainerPrototype>? by fromJson()
+
+  public val `loader-1x1`: Map<String, Loader1x1Prototype>? by fromJson()
+
+  public val loader: Map<String, Loader1x2Prototype>? by fromJson()
+
+  public val locomotive: Map<String, LocomotivePrototype>? by fromJson()
+
+  public val `logistic-container`: Map<String, LogisticContainerPrototype>? by fromJson()
+
+  public val `logistic-robot`: Map<String, LogisticRobotPrototype>? by fromJson()
+
+  public val `map-gen-presets`: Map<String, MapGenPresets>? by fromJson()
+
+  public val `map-settings`: Map<String, MapSettings>? by fromJson()
+
+  public val market: Map<String, MarketPrototype>? by fromJson()
+
+  public val `mining-drill`: Map<String, MiningDrillPrototype>? by fromJson()
+
+  public val `mining-tool`: Map<String, MiningToolPrototype>? by fromJson()
+
+  public val `module-category`: Map<String, ModuleCategory>? by fromJson()
+
+  public val module: Map<String, ModulePrototype>? by fromJson()
+
+  public val `mouse-cursor`: Map<String, MouseCursor>? by fromJson()
+
+  public val `movement-bonus-equipment`: Map<String, MovementBonusEquipmentPrototype>? by fromJson()
+
+  public val `noise-expression`: Map<String, NamedNoiseExpression>? by fromJson()
+
+  public val `night-vision-equipment`: Map<String, NightVisionEquipmentPrototype>? by fromJson()
+
+  public val `noise-layer`: Map<String, NoiseLayer>? by fromJson()
+
+  public val `offshore-pump`: Map<String, OffshorePumpPrototype>? by fromJson()
+
+  public val `optimized-particle`: Map<String, ParticlePrototype>? by fromJson()
+
+  public val `particle-source`: Map<String, ParticleSourcePrototype>? by fromJson()
+
+  public val pipe: Map<String, PipePrototype>? by fromJson()
+
+  public val `pipe-to-ground`: Map<String, PipeToGroundPrototype>? by fromJson()
+
+  public val `player-damaged-achievement`: Map<String, PlayerDamagedAchievementPrototype>? by
+      fromJson()
+
+  public val `player-port`: Map<String, PlayerPortPrototype>? by fromJson()
+
+  public val `power-switch`: Map<String, PowerSwitchPrototype>? by fromJson()
+
+  public val `produce-achievement`: Map<String, ProduceAchievementPrototype>? by fromJson()
+
+  public val `produce-per-hour-achievement`: Map<String, ProducePerHourAchievementPrototype>? by
+      fromJson()
+
+  public val `programmable-speaker`: Map<String, ProgrammableSpeakerPrototype>? by fromJson()
+
+  public val projectile: Map<String, ProjectilePrototype>? by fromJson()
+
+  public val pump: Map<String, PumpPrototype>? by fromJson()
+
+  public val radar: Map<String, RadarPrototype>? by fromJson()
+
+  public val `rail-chain-signal`: Map<String, RailChainSignalPrototype>? by fromJson()
+
+  public val `rail-planner`: Map<String, RailPlannerPrototype>? by fromJson()
+
+  public val `rail-remnants`: Map<String, RailRemnantsPrototype>? by fromJson()
+
+  public val `rail-signal`: Map<String, RailSignalPrototype>? by fromJson()
+
+  public val reactor: Map<String, ReactorPrototype>? by fromJson()
+
+  public val `recipe-category`: Map<String, RecipeCategory>? by fromJson()
+
+  public val recipe: Map<String, RecipePrototype>? by fromJson()
+
+  public val `repair-tool`: Map<String, RepairToolPrototype>? by fromJson()
+
+  public val `research-achievement`: Map<String, ResearchAchievementPrototype>? by fromJson()
+
+  public val `resource-category`: Map<String, ResourceCategory>? by fromJson()
+
+  public val resource: Map<String, ResourceEntityPrototype>? by fromJson()
+
+  public val `roboport-equipment`: Map<String, RoboportEquipmentPrototype>? by fromJson()
+
+  public val roboport: Map<String, RoboportPrototype>? by fromJson()
+
+  public val `rocket-silo`: Map<String, RocketSiloPrototype>? by fromJson()
+
+  public val `rocket-silo-rocket`: Map<String, RocketSiloRocketPrototype>? by fromJson()
+
+  public val `rocket-silo-rocket-shadow`: Map<String, RocketSiloRocketShadowPrototype>? by
+      fromJson()
+
+  public val `selection-tool`: Map<String, SelectionToolPrototype>? by fromJson()
+
+  public val shortcut: Map<String, ShortcutPrototype>? by fromJson()
+
+  public val `simple-entity`: Map<String, SimpleEntityPrototype>? by fromJson()
+
+  public val `simple-entity-with-force`: Map<String, SimpleEntityWithForcePrototype>? by fromJson()
+
+  public val `simple-entity-with-owner`: Map<String, SimpleEntityWithOwnerPrototype>? by fromJson()
+
+  public val smoke: Map<String, SimpleSmokePrototype>? by fromJson()
+
+  public val `smoke-with-trigger`: Map<String, SmokeWithTriggerPrototype>? by fromJson()
+
+  public val `solar-panel-equipment`: Map<String, SolarPanelEquipmentPrototype>? by fromJson()
+
+  public val `solar-panel`: Map<String, SolarPanelPrototype>? by fromJson()
+
+  public val sound: Map<String, SoundPrototype>? by fromJson()
+
+  public val `spectator-controller`: Map<String, SpectatorControllerPrototype>? by fromJson()
+
+  public val `speech-bubble`: Map<String, SpeechBubblePrototype>? by fromJson()
+
+  public val `spider-leg`: Map<String, SpiderLegPrototype>? by fromJson()
+
+  public val `spider-vehicle`: Map<String, SpiderVehiclePrototype>? by fromJson()
+
+  public val `spidertron-remote`: Map<String, SpidertronRemotePrototype>? by fromJson()
+
+  public val splitter: Map<String, SplitterPrototype>? by fromJson()
+
+  public val sprite: Map<String, SpritePrototype>? by fromJson()
+
+  public val sticker: Map<String, StickerPrototype>? by fromJson()
+
+  public val `storage-tank`: Map<String, StorageTankPrototype>? by fromJson()
+
+  public val `straight-rail`: Map<String, StraightRailPrototype>? by fromJson()
+
+  public val technology: Map<String, TechnologyPrototype>? by fromJson()
+
+  public val `tile-effect`: Map<String, TileEffectDefinition>? by fromJson()
+
+  public val `tile-ghost`: Map<String, TileGhostPrototype>? by fromJson()
+
+  public val tile: Map<String, TilePrototype>? by fromJson()
+
+  public val `tips-and-tricks-item`: Map<String, TipsAndTricksItem>? by fromJson()
+
+  public val `tips-and-tricks-item-category`: Map<String, TipsAndTricksItemCategory>? by fromJson()
+
+  public val tool: Map<String, ToolPrototype>? by fromJson()
+
+  public val `train-path-achievement`: Map<String, TrainPathAchievementPrototype>? by fromJson()
+
+  public val `train-stop`: Map<String, TrainStopPrototype>? by fromJson()
+
+  public val `transport-belt`: Map<String, TransportBeltPrototype>? by fromJson()
+
+  public val tree: Map<String, TreePrototype>? by fromJson()
+
+  public val `trigger-target-type`: Map<String, TriggerTargetType>? by fromJson()
+
+  public val `trivial-smoke`: Map<String, TrivialSmokePrototype>? by fromJson()
+
+  public val turret: Map<String, TurretPrototype>? by fromJson()
+
+  public val tutorial: Map<String, TutorialDefinition>? by fromJson()
+
+  public val `underground-belt`: Map<String, UndergroundBeltPrototype>? by fromJson()
+
+  public val unit: Map<String, UnitPrototype>? by fromJson()
+
+  public val `upgrade-item`: Map<String, UpgradeItemPrototype>? by fromJson()
+
+  public val `utility-constants`: Map<String, UtilityConstants>? by fromJson()
+
+  public val `utility-sounds`: Map<String, UtilitySounds>? by fromJson()
+
+  public val `utility-sprites`: Map<String, UtilitySprites>? by fromJson()
+
+  public val `virtual-signal`: Map<String, VirtualSignalPrototype>? by fromJson()
+
+  public val wall: Map<String, WallPrototype>? by fromJson()
+
+  public val `wind-sound`: Map<String, WindSound>? by fromJson()
+
+  public companion object {
+    public fun serializer(): KSerializer<PrototypeData> = JsonReaderDeserializer()
+  }
 }

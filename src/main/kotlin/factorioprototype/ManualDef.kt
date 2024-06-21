@@ -1,19 +1,17 @@
 package factorioprototype
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.descriptors.listSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
 
-typealias UnknownOverriddenType = JsonElement
-typealias UnknownUnion = JsonElement
+typealias UnknownOverriddenType = JsonElement?
+typealias UnknownUnion = JsonElement?
 
 typealias UnknownStringLiteral = String
 
@@ -23,22 +21,35 @@ typealias Tuple2<T> = List<T>
 typealias Tuple3<T> = List<T>
 typealias Tuple4<T> = List<T>
 
-typealias ItemOrList<T> = @Serializable(with = ItemOrListSerializer::class) List<T>
 
-@OptIn(ExperimentalSerializationApi::class)
-class ItemOrListSerializer<T>(
-    itemSerializer: KSerializer<T>
-) : JsonTransformingSerializer<ItemOrList<T>>(ListSerializer(itemSerializer)) {
-    override val descriptor = listSerialDescriptor(itemSerializer.descriptor)
+@Serializable(with = ItemOrListSerializer::class)
+class ItemOrList<T>(private val value: List<T>) : List<T> by value {
+    override fun toString(): String = value.toString()
+    override fun equals(other: Any?): Boolean = value == other
+    override fun hashCode(): Int = value.hashCode()
+}
+typealias ItemOrTuple2<T> = ItemOrList<T>
 
-    override fun transformDeserialize(element: JsonElement): JsonElement = when (element) {
-        is JsonObject -> JsonArray(listOf(element))
-        is JsonArray -> element
-        else -> throw IllegalArgumentException("Unknown literal type: $element")
+class ItemOrListSerializer<T>(private val itemSerializer: KSerializer<T>) : KSerializer<ItemOrList<T>> {
+    private val listSerializer = ListSerializer(itemSerializer)
+    override val descriptor = listSerializer.descriptor
+    override fun serialize(encoder: Encoder, value: ItemOrList<T>) {
+        if (value.size == 1) {
+            encoder.encodeSerializableValue(itemSerializer, value[0])
+        } else {
+            listSerializer.serialize(encoder, value)
+        }
+    }
+
+    override fun deserialize(decoder: Decoder): ItemOrList<T> {
+        decoder as JsonDecoder
+        return when (val element = decoder.decodeJsonElement()) {
+            is JsonArray -> ItemOrList(decoder.json.decodeFromJsonElement(listSerializer, element))
+            else -> ItemOrList(listOf(decoder.json.decodeFromJsonElement(itemSerializer, element)))
+        }
     }
 }
 
-typealias ItemOrTuple2<T> = ItemOrList<T>
 
 @Serializable(with = VectorSerializer::class)
 data class Vector(
