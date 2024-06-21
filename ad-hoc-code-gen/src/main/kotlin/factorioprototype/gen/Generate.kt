@@ -7,22 +7,22 @@ import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 
-private const val packageName = "factorioprototype"
+public const val packageName = "factorioprototype"
 
 class Declarations(
-    val types: Map<String, TypeSpec>,
+//    val types: Map<String, TypeSpec>,
+    val docs: ApiDocs,
+    val prototypes: Map<String, TypeSpec>,
+    val concepts: Map<String, TypeSpec>,
+    val otherTypes: Map<String, TypeSpec>,
     val typeAliases: Map<String, TypeAliasSpec>,
     val declarationsFile: FileSpec
 ) {
-    val intfs get() = types.filterValues { it.kind == TypeSpec.Kind.INTERFACE }
+    val allTypes: Map<String, TypeSpec> = prototypes + concepts + otherTypes
 }
 
 
-class InterfaceGenerator(private val docs: ApiDocs) {
-
-    private val intfs = mutableMapOf<String, TypeSpec>()
-    private val typeAliases = mutableMapOf<String, TypeAliasSpec>()
-
+class DeclarationsGenerator(private val docs: ApiDocs) {
     init {
         require(
             docs.application == "factorio" &&
@@ -31,7 +31,26 @@ class InterfaceGenerator(private val docs: ApiDocs) {
         )
     }
 
+    private val prototypes = mutableMapOf<String, TypeSpec>()
+    private val concepts = mutableMapOf<String, TypeSpec>()
+    private val otherTypes = mutableMapOf<String, TypeSpec>()
+    private val typeAliases = mutableMapOf<String, TypeAliasSpec>()
+
     private val byName = (docs.prototypes + docs.types).associateBy { it.name }
+    private val file: FileSpec.Builder = FileSpec.builder("factorioprototype", "FactorioPrototypes")
+
+    fun generate(): Declarations {
+        file.addFileComment("Automatically generated file, do not edit")
+        file.addKotlinDefaultImports()
+        findOverriddes()
+        docs.prototypes
+            .sortedBy { it.order }
+            .forEach { generatePrototype(it) }
+        docs.types
+            .sortedBy { it.order }
+            .forEach { generateTypeInterface(it) }
+        return Declarations(docs, prototypes, concepts, otherTypes, typeAliases, file.build())
+    }
 
     private tailrec fun getReferencedType(type: TypeDefinition): String? {
         val innerType = type.innerType()
@@ -47,15 +66,22 @@ class InterfaceGenerator(private val docs: ApiDocs) {
         return null
     }
 
-    private val childOverridesAsNullable = mutableMapOf<ProtoOrConcept, MutableSet<String>>()
-    private val overrideIgnore = mutableMapOf<ProtoOrConcept, MutableSet<String>>()
-    private val unknownOverrides = mutableMapOf<ProtoOrConcept, MutableSet<String>>()
+    private enum class OverrideType {
+        Ignore,
+        Unknown,
+        AsNullable,
+        Allowed
+    }
+
+    private val overriddes = mutableMapOf<ProtoOrConcept, MutableMap<String, OverrideType>>()
+    private val childOverrides = mutableMapOf<ProtoOrConcept, MutableMap<String, OverrideType>>()
     private fun findOverriddes() {
         tailrec fun findParentProp(
             prototype: ProtoOrConcept,
             propName: String
-        ): Property {
-            return prototype.properties!!.find { it.name == propName } ?: findParentProp(
+        ): Pair<ProtoOrConcept, Property> {
+            prototype.properties!!.find { it.name == propName }?.let { return prototype to it }
+            return findParentProp(
                 byName[prototype.parent!!]!!,
                 propName
             )
@@ -71,55 +97,52 @@ class InterfaceGenerator(private val docs: ApiDocs) {
             visit(parent)
             val properties = prototype.properties ?: return
             for (prop in properties.filter { it.override }) {
-                val parentProp = findParentProp(parent, prop.name)
-                if (prop.type.typeEquals(parentProp.type)) {
+                val (source, parentProp) = findParentProp(parent, prop.name)
+                val overrideType: OverrideType = if (prop.type.typeEquals(parentProp.type)) {
                     if (prop.optional && !parentProp.optional) {
-                        childOverridesAsNullable
-                            .getOrPut(parent, ::mutableSetOf)
-                            .add(prop.name)
-                    } else if (prop.optional == parentProp.optional) {
-                        if (overrideIgnore[parent]?.contains(prop.name) == true) {
-                            overrideIgnore.getOrPut(prototype, ::mutableSetOf)
-                                .add(prop.name)
-                        }
+                        OverrideType.AsNullable
+                    } else if (prop.optional == parentProp.optional && overriddes[parent]?.get(prop.name) == OverrideType.Ignore) {
+                        OverrideType.Ignore
+                    } else {
+                        OverrideType.Allowed
                     }
                 } else if (parentProp.type.isNumeric() && prop.type.isNumeric()
                     || parentProp.type.isBoolish() && prop.type.isBoolish()
                     || parentProp.type.isString() && prop.type.isString()
                 ) {
-                    overrideIgnore
-                        .getOrPut(prototype, ::mutableSetOf)
-                        .add(prop.name)
+                    OverrideType.Ignore
+                } else if (
+                    prototype.name == "TurretPrototype" &&
+                    prop.name == "corpse"
+                ) {
+                    OverrideType.Ignore
                 } else {
-                    if (
-                        prototype.name == "TurretPrototype" &&
-                        prop.name == "corpse"
-                    ) {
-                        // ignore manually
-                        overrideIgnore
-                            .getOrPut(prototype, ::mutableSetOf)
-                            .add(prop.name)
-                    } else {
-                        unknownOverrides
-                            .getOrPut(parent, ::mutableSetOf)
-                            .add(prop.name)
-                        unknownOverrides
-                            .getOrPut(prototype, ::mutableSetOf)
-                            .add(prop.name)
-                    }
+                    OverrideType.Unknown
                 }
+                overriddes.getOrPut(prototype, ::mutableMapOf)[prop.name] = overrideType
+                childOverrides.getOrPut(source, ::mutableMapOf)[prop.name] = overrideType
             }
+
         }
         for (value in byName.values) {
             visit(value)
         }
     }
 
-    private val file: FileSpec.Builder = FileSpec.builder("factorioprototype", "FactorioPrototypes")
 
-    private fun addType(type: TypeSpec) {
+    private fun addPrototypeIntf(intf: TypeSpec) {
+        file.addType(intf)
+        prototypes[intf.name!!] = intf
+    }
+
+    private fun addConceptIntf(intf: TypeSpec) {
+        file.addType(intf)
+        concepts[intf.name!!] = intf
+    }
+
+    private fun addOtherType(type: TypeSpec) {
         file.addType(type)
-        intfs[type.name!!] = type
+        otherTypes[type.name!!] = type
     }
 
     private fun addTypeAlias(typeAlias: TypeAliasSpec) {
@@ -127,43 +150,41 @@ class InterfaceGenerator(private val docs: ApiDocs) {
         typeAliases[typeAlias.name] = typeAlias
     }
 
-    fun generate(): Declarations {
-        file.addFileComment("Automatically generated file, do not edit")
-        file.addKotlinDefaultImports()
-        findOverriddes()
-        docs.prototypes
-            .sortedBy { it.order }
-            .forEach { generatePrototypeInterface(it) }
-        docs.types
-            .sortedBy { it.order }
-            .forEach { generateTypeInterface(it) }
-        return Declarations(intfs, typeAliases, file.build())
+    private fun TypeSpec.Builder.commonSetup(
+        value: ProtoOrConcept
+    ) {
+        if (value.abstract) {
+            addModifiers(KModifier.ABSTRACT)
+        } else {
+            addModifiers(KModifier.OPEN)
+        }
+        if (value.parent != null) {
+            superclass(ClassName(packageName, value.parent!!))
+        } else {
+            superclass(ClassName(packageName, "JsonReader"))
+        }
+        if (value.description.isNotEmpty()) {
+            addDescription(value.description)
+        }
     }
 
-    private fun generatePrototypeInterface(prototype: Prototype) {
+    private fun generatePrototype(prototype: Prototype) {
         require(prototype.visibility == null)
-        val result = TypeSpec.interfaceBuilder(prototype.name).apply {
-            if (prototype.parent != null) {
-                addSuperinterface(ClassName(packageName, prototype.parent))
-            }
+        val result = TypeSpec.classBuilder(prototype.name).apply {
+            commonSetup(prototype)
             for (property in prototype.properties.sortedBy { it.order }) {
-                if (overrideIgnore[prototype]?.contains(property.name) == true) {
-                    continue
-                }
+                if (overriddes[prototype]?.get(property.name) == OverrideType.Ignore) continue
                 addProperty(mapProperty(prototype, property))
             }
         }.build()
-        addType(result)
+        addPrototypeIntf(result)
     }
 
     private fun generateTypeInterface(concept: Concept) {
         if (concept.name in builtins || concept.name in toIgnore) return
         val isRootStructType = concept.type is StructType
         if (concept.properties != null) {
-            val structType = mapStructType(concept, isRootStructType)
-                .apply { addDescription(concept.description) }
-                .build()
-            addType(structType)
+            addConceptIntf(mapStructType(concept, isRootStructType))
         }
         if (!isRootStructType) {
             val resType = mapTypeDefinition(concept.type, concept, null, true)
@@ -187,20 +208,29 @@ class InterfaceGenerator(private val docs: ApiDocs) {
     private fun makeInnerStringUnion(
         source: ProtoOrConcept,
         property: Property,
+        typeDefinition: UnionType,
         values: Set<String>
     ): ClassName = innerStringUnions.getOrPut(values) {
         val noPrefix = noSourcePrefix.any { property.name.endsWith(it) }
         val name = if (noPrefix) property.name.toCamelCase()
         else source.name + property.name.toCamelCase()
-        println(name)
         val className = ClassName(packageName, name)
+        val typeDescriptions = typeDefinition.options.associate {
+            it as LiteralType
+            it.value.content to it.description
+        }
         val enumType = TypeSpec.enumBuilder(className).apply {
             for (value in values) {
-                addEnumConstant(value)
+                addEnumConstant(
+                    value,
+                    TypeSpec.anonymousClassBuilder().apply {
+                        addDescription(typeDescriptions[value])
+                    }.build()
+                )
             }
             addAnnotation(Serializable::class)
         }.build()
-        this.addType(enumType)
+        addOtherType(enumType)
         className
     }
 
@@ -322,20 +352,23 @@ class InterfaceGenerator(private val docs: ApiDocs) {
                 addAnnotation(Serializable::class)
                 addDescription(source.description)
             }.build()
-            this.addType(enumType)
+            this.addConceptIntf(enumType)
             return TypeDefinitionResult(className, enumType)
         } else {
             requireNotNull(property)
             val values = typeDefinition.options.map { (it as LiteralType).value.content }.toSet()
-            val className = makeInnerStringUnion(source, property, values)
+            val className = makeInnerStringUnion(source, property, typeDefinition, values)
             return TypeDefinitionResult(className, null)
         }
     }
 
     private fun mapProperty(from: ProtoOrConcept, property: Property): PropertySpec {
         require(property.visibility == null)
-        val nullable = property.optional || childOverridesAsNullable[from]?.contains(property.name) == true
-        val isUnknown = unknownOverrides[from]?.contains(property.name) == true
+        val nullable = property.optional ||
+                childOverrides[from]?.get(property.name) == OverrideType.AsNullable
+        val isUnknown = overriddes[from]?.get(property.name) == OverrideType.Unknown ||
+                childOverrides[from]?.get(property.name) == OverrideType.Unknown
+        val laterOverridden = childOverrides[from]?.contains(property.name) == true
         val type =
             (if (!isUnknown)
                 mapTypeDefinition(property.type, from, property).noDec()
@@ -345,22 +378,22 @@ class InterfaceGenerator(private val docs: ApiDocs) {
         return PropertySpec.builder(property.name, type).apply {
             addDescription(property.description)
             if (property.override) addModifiers(KModifier.OVERRIDE)
+            if (laterOverridden) addModifiers(KModifier.OPEN)
+            delegate("fromJson()")
         }.build()
     }
 
     private fun mapStructType(
         concept: Concept,
         isRoot: Boolean
-    ): TypeSpec.Builder {
+    ): TypeSpec {
         val name = if (isRoot) concept.name else concept.name + "Values"
-        return TypeSpec.interfaceBuilder(name).apply {
+        return TypeSpec.classBuilder(name).apply {
+            commonSetup(concept)
             for (property in concept.properties!!.sortedBy { it.order }) {
                 addProperty(mapProperty(concept, property))
             }
-            if (concept.parent != null) {
-                addSuperinterface(ClassName(packageName, concept.parent))
-            }
-        }
+        }.build()
     }
 
     companion object {
@@ -409,8 +442,8 @@ class InterfaceGenerator(private val docs: ApiDocs) {
             || this is LiteralType && value.isString
 }
 
-private fun Documentable.Builder<*>.addDescription(description: String) {
-    if (description.isNotEmpty()) addKdoc(description.replace("%", "%%"))
+private fun Documentable.Builder<*>.addDescription(description: String?) {
+    if (!description.isNullOrEmpty()) addKdoc(description.replace("%", "%%"))
 }
 
 private fun String.toCamelCase(): String {

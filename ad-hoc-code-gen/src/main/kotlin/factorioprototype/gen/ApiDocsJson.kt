@@ -51,7 +51,9 @@ class Prototype(
     val deprecated: Boolean,
     override val properties: List<Property>,
     val custom_properties: CustomProperties? = null
-) : ProtoOrConcept
+) : ProtoOrConcept {
+    override fun toString(): String = "Prototype(name='$name')"
+}
 
 @Serializable
 class Concept(
@@ -66,7 +68,9 @@ class Concept(
     val inline: Boolean,
     val type: TypeDefinition,
     override val properties: List<Property>? = null
-) : ProtoOrConcept
+) : ProtoOrConcept {
+    override fun toString(): String = "Concept(name='$name')"
+}
 
 @Serializable
 class Property(

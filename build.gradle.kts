@@ -20,4 +20,5 @@ tasks.test {
 }
 kotlin {
     jvmToolchain(17)
+    kotlinDaemonJvmArgs = listOf("-Xmx1G")
 }
