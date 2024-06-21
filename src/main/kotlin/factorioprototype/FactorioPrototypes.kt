@@ -17232,7 +17232,7 @@ public open class ImageStyleSpecification : BaseStyleSpecification(), StyleSpeci
  * Defaults to loading ingredients as items. This allows
  * [ItemIngredientPrototype](prototype:ItemIngredientPrototype) to load in a shorthand array format.
  */
-@Serializable
+@Serializable(IngredientPrototypeSerializer::class)
 public sealed interface IngredientPrototype
 
 @Serializable(InsertItemTriggerEffectItem.Serializer::class)
@@ -17317,9 +17317,9 @@ public typealias ItemID = String
  * not a mix of both. If this is specified as a table with numbered keys then the first value is the
  * item name and the second is the amount.
  */
-@Serializable(ItemIngredientPrototypeValues.Serializer::class)
+@Serializable(ItemIngredientPrototypeSerializer::class)
 @SerialName("item")
-public open class ItemIngredientPrototypeValues : JsonReader(), IngredientPrototype {
+public open class ItemIngredientPrototype : JsonReader(), IngredientPrototype {
   public val type: UnknownStringLiteral? by fromJson()
 
   public val name: ItemID by fromJson()
@@ -17337,26 +17337,16 @@ public open class ItemIngredientPrototypeValues : JsonReader(), IngredientProtot
    * [here](https://factorio.com/blog/post/fff-256).
    */
   public val catalyst_amount: UShort? by fromJson()
-
-  public object Serializer :
-      JsonReaderSerializer<ItemIngredientPrototypeValues>(ItemIngredientPrototypeValues::class)
 }
-
-/**
- * An item ingredient definition. It can be specified as a table with named or numbered keys, but
- * not a mix of both. If this is specified as a table with numbered keys then the first value is the
- * item name and the second is the amount.
- */
-public typealias ItemIngredientPrototype = UnknownUnion
 
 /**
  * An item product definition. It can be specified as a table with named or numbered keys, but not a
  * mix of both. If this is specified as a table with numbered keys then the first value is the item
  * name and the second is the amount.
  */
-@Serializable(ItemProductPrototypeValues.Serializer::class)
+@Serializable(ItemProductPrototypeSerializer::class)
 @SerialName("item")
-public open class ItemProductPrototypeValues : JsonReader(), ProductPrototype {
+public open class ItemProductPrototype : JsonReader(), ProductPrototype {
   public val type: UnknownStringLiteral? by fromJson()
 
   /**
@@ -17410,17 +17400,7 @@ public open class ItemProductPrototypeValues : JsonReader(), ProductPrototype {
    * `true`.
    */
   public val show_details_in_recipe_tooltip: Boolean? by fromJson()
-
-  public object Serializer :
-      JsonReaderSerializer<ItemProductPrototypeValues>(ItemProductPrototypeValues::class)
 }
-
-/**
- * An item product definition. It can be specified as a table with named or numbered keys, but not a
- * mix of both. If this is specified as a table with numbered keys then the first value is the item
- * name and the second is the amount.
- */
-public typealias ItemProductPrototype = UnknownUnion
 
 /**
  * An array containing the following values.
@@ -19946,7 +19926,7 @@ public open class PollutionSettings : JsonReader() {
 /**
  * Defaults to loading products as items.
  */
-@Serializable
+@Serializable(ProductPrototypeSerializer::class)
 public sealed interface ProductPrototype
 
 @Serializable

@@ -3,13 +3,16 @@ package factorioprototype
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 import kotlinx.serialization.modules.SerializersModule
+import kotlin.reflect.KClass
 
 
 typealias UnknownOverriddenType = JsonElement
@@ -169,6 +172,77 @@ object BoundingBoxSerializer : KSerializer<BoundingBox> {
         return BoundingBox(left_top, right_bottom)
     }
 }
+
+
+open class ItemSerializer<T : JsonReader>(
+    private val klass: KClass<T>
+) : KSerializer<T> {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor(klass.simpleName!!)
+
+    override fun serialize(encoder: Encoder, value: T) {
+        throw NotImplementedError("Not implemented")
+    }
+
+    override fun deserialize(decoder: Decoder): T {
+        require(decoder is JsonDecoder)
+        val element = decoder.decodeJsonElement()
+        val newElement = if (element !is JsonArray) element
+        else JsonObject(
+            mapOf(
+                "type" to JsonPrimitive("item"),
+                "name" to element[0],
+                "amount" to element[1]
+            )
+        )
+        return decoder.json.decodeFromJsonElement(
+            JsonReaderSerializer(klass),
+            newElement
+        )
+    }
+}
+
+open class ItemFluidSerializer<T>(
+    val itemKlass: KClass<out JsonReader>,
+    val fluidKlass: KClass<out JsonReader>,
+    val name: String
+) : KSerializer<T> {
+    override val descriptor = buildClassSerialDescriptor(name)
+
+    override fun serialize(encoder: Encoder, value: T) {
+        throw NotImplementedError("Not implemented")
+    }
+
+    override fun deserialize(decoder: Decoder): T {
+        require(decoder is JsonDecoder)
+        val element = decoder.decodeJsonElement()
+        val serializer = when (element) {
+            is JsonObject -> {
+                when (val type = element["type"]?.jsonPrimitive?.content) {
+                    "item", null -> ItemSerializer(itemKlass)
+                    "fluid" -> JsonReaderSerializer(fluidKlass)
+                    else -> throw SerializationException("Unknown ingredient type: $type")
+                }
+            }
+
+            is JsonArray -> ItemSerializer(itemKlass)
+            else -> throw SerializationException("Unexpected element: $element")
+        }
+        @Suppress("UNCHECKED_CAST")
+        return decoder.json.decodeFromJsonElement(serializer, element) as T
+    }
+}
+object ItemIngredientPrototypeSerializer : ItemSerializer<ItemIngredientPrototype>(ItemIngredientPrototype::class)
+object IngredientPrototypeSerializer : ItemFluidSerializer<IngredientPrototype>(
+    ItemIngredientPrototype::class,
+    FluidIngredientPrototype::class,
+    "IngredientPrototype"
+)
+object ItemProductPrototypeSerializer : ItemSerializer<ItemProductPrototype>(ItemProductPrototype::class)
+object ProductPrototypeSerializer : ItemFluidSerializer<ProductPrototype>(
+    ItemProductPrototype::class,
+    FluidProductPrototype::class,
+    "ProductPrototype"
+)
 
 internal object NoiseFunctionApplicationDeserializer : DeserializationStrategy<NoiseFunctionApplication> {
     override val descriptor get() = NoiseFunctionApplication.serializer().descriptor

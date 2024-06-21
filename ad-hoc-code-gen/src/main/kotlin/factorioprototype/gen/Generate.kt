@@ -12,6 +12,18 @@ import kotlinx.serialization.json.intOrNull
 
 public const val packageName = "factorioprototype"
 
+private val manuallySerialized = setOf(
+    "ItemIngredientPrototype",
+    "IngredientPrototype",
+    "ItemProductPrototype",
+    "ProductPrototype",
+)
+
+private val noInnerType = setOf(
+    "ItemIngredientPrototype",
+    "ItemProductPrototype",
+)
+
 @OptIn(ExperimentalSerializationApi::class)
 class DeclarationsGenerator(private val docs: ApiDocs) {
     init {
@@ -277,11 +289,23 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         }
         addDescription(value.description)
         if (!value.abstract) {
-            makeJsonReaderSerializable(this@commonSetup.build().name!!)
+            makeSerializable(this@commonSetup.build().name!!)
         }
     }
 
-    private fun TypeSpec.Builder.makeJsonReaderSerializable(className: String) {
+    private fun TypeSpec.Builder.manuallySerialize(className: ClassName) {
+        addAnnotation(
+            AnnotationSpec.builder(Serializable::class)
+                .addMember("%TSerializer::class", className)
+                .build()
+        )
+    }
+
+    private fun TypeSpec.Builder.makeSerializable(className: String) {
+        if (className in manuallySerialized) {
+            manuallySerialize(ClassName(packageName, className))
+            return
+        }
         addType(TypeSpec.objectBuilder("Serializer").apply {
             superclass(
                 ClassName(packageName, "JsonReaderSerializer").parameterizedBy(
@@ -319,7 +343,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private fun generateTypeInterface(concept: Concept) {
         if (concept.name in builtins || concept.name in toIgnore) return
-        val isRootStructType = concept.type is StructType
+        val isRootStructType = concept.type is StructType || concept.name in noInnerType
         if (concept.properties != null) {
             file.addType(generateStructConcept(concept, isRootStructType))
         }
@@ -469,8 +493,13 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
         val intf = TypeSpec.interfaceBuilder(className).apply {
             addDescription(source.description)
-            addAnnotation(Serializable::class)
             addModifiers(KModifier.SEALED)
+
+            if (source.name in manuallySerialized) {
+                manuallySerialize(className)
+            } else {
+                addAnnotation(Serializable::class)
+            }
 
             if (source == noiseFunctionApplication) {
                 addAnnotation(
@@ -630,7 +659,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private fun generatePrototypeDataClass() {
         val result = TypeSpec.classBuilder("PrototypeData").apply {
             superclass(ClassName(packageName, "JsonReader"))
-            makeJsonReaderSerializable("PrototypeData")
+            makeSerializable("PrototypeData")
 
             for (prototype in docs.prototypes.sortedBy { it.order }) {
                 val typename = prototype.typename ?: continue
