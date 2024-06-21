@@ -60,7 +60,7 @@ class ItemOrListSerializer<T>(private val itemSerializer: KSerializer<T>) : KSer
 data class Vector(
     val x: Double,
     val y: Double,
-)
+): StreamAttackParametersGunCenterShift
 
 object VectorSerializer : KSerializer<Vector> {
     override val descriptor = buildClassSerialDescriptor("Vector") {
@@ -69,7 +69,7 @@ object VectorSerializer : KSerializer<Vector> {
     }
 
     override fun serialize(encoder: Encoder, value: Vector) {
-        throw NotImplementedError("Not implemented")
+        throw NotImplementedError()
     }
 
     override fun deserialize(decoder: Decoder): Vector {
@@ -108,7 +108,7 @@ object Vector3DSerializer : KSerializer<Vector3D> {
     }
 
     override fun serialize(encoder: Encoder, value: Vector3D) {
-        throw NotImplementedError("Not implemented")
+        throw NotImplementedError()
     }
 
     override fun deserialize(decoder: Decoder): Vector3D {
@@ -148,7 +148,7 @@ object BoundingBoxSerializer : KSerializer<BoundingBox> {
     }
 
     override fun serialize(encoder: Encoder, value: BoundingBox) {
-        throw NotImplementedError("Not implemented")
+        throw NotImplementedError()
     }
 
     override fun deserialize(decoder: Decoder): BoundingBox {
@@ -180,7 +180,7 @@ open class ItemSerializer<T : JsonReader>(
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor(klass.simpleName!!)
 
     override fun serialize(encoder: Encoder, value: T) {
-        throw NotImplementedError("Not implemented")
+        throw NotImplementedError()
     }
 
     override fun deserialize(decoder: Decoder): T {
@@ -209,7 +209,7 @@ open class ItemFluidSerializer<T>(
     override val descriptor = buildClassSerialDescriptor(name)
 
     override fun serialize(encoder: Encoder, value: T) {
-        throw NotImplementedError("Not implemented")
+        throw NotImplementedError()
     }
 
     override fun deserialize(decoder: Decoder): T {
@@ -244,7 +244,42 @@ object ProductPrototypeSerializer : ItemFluidSerializer<ProductPrototype>(
     "ProductPrototype"
 )
 
-internal object NoiseFunctionApplicationDeserializer : DeserializationStrategy<NoiseFunctionApplication> {
+object StreamAttackParametersGunCenterShiftSerializer : KSerializer<StreamAttackParametersGunCenterShift> {
+    override val descriptor = buildClassSerialDescriptor("StreamAttackParametersGunCenterShift")
+
+    override fun serialize(encoder: Encoder, value: StreamAttackParametersGunCenterShift) {
+        throw NotImplementedError()
+    }
+
+    override fun deserialize(decoder: Decoder): StreamAttackParametersGunCenterShift {
+        require(decoder is JsonDecoder)
+        val element = decoder.decodeJsonElement()
+        val serializer = when (element) {
+            is JsonArray -> VectorSerializer
+            is JsonObject -> {
+                if("north" in element) GunShift4Way.serializer()
+                else if ("x" in element) Vector.serializer()
+                else throw SerializationException("Can't interpret as Vector | GunShift4Way: $element")
+            }
+            else -> throw SerializationException("Unexpected element type: $element")
+        }
+        return decoder.json.decodeFromJsonElement(serializer, element)
+    }
+}
+
+object TilePrototypeBuildSoundSerializer : KSerializer<TilePrototypeBuildSound> {
+    override val descriptor get() = TileBuildSound.serializer().descriptor
+    override fun serialize(encoder: Encoder, value: TilePrototypeBuildSound) {
+        throw NotImplementedError()
+    }
+    override fun deserialize(decoder: Decoder): TilePrototypeBuildSound {
+        return JsonReaderSerializer(TileBuildSound::class).deserialize(decoder)
+    }
+    
+}
+
+
+object NoiseFunctionApplicationDeserializer : DeserializationStrategy<NoiseFunctionApplication> {
     override val descriptor get() = NoiseFunctionApplication.serializer().descriptor
     override fun deserialize(decoder: Decoder): NoiseFunctionApplication {
         require(decoder is JsonDecoder)
@@ -261,6 +296,9 @@ val factorioPrototypeSerializersModule = SerializersModule {
     polymorphicDefaultDeserializer(NoiseNumber::class, ::maybeNoiseFunction)
     polymorphicDefaultDeserializer(NoiseExpression::class, ::maybeNoiseFunction)
 
+    polymorphicDefaultDeserializer(EVEnergySource::class) { if(it==null) ElectricEnergySource.serializer() else null }
+    polymorphicDefaultDeserializer(BVEnergySource::class) { if(it==null) BurnerEnergySource.serializer() else null }
+    polymorphicDefaultDeserializer(EHFVEnergySource::class) { if(it==null) ElectricEnergySource.serializer() else null }
 }
 
 val json = Json {

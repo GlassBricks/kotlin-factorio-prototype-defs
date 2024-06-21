@@ -71,10 +71,10 @@ abstract class JsonReader {
             ReadOnlyProperty { _, _ -> get(name, type) }
         }
 
-    internal fun init(json: Json, jsonObj: JsonObject) {
+    internal fun init(json: Json, jsonObj: JsonObject, eager: Boolean = eagerInit) {
         this.json = json
         this.jsonObj = jsonObj
-        if (eagerInit) {
+        if (eager) {
             for ((name, value) in values) {
                 if (value is Uninitialized) {
                     get<Any>(name, value.type, value.altName)

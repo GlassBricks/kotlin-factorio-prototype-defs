@@ -9,6 +9,48 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
 
 /**
+ * Includes the following types:
+ *  - ElectricEnergySource
+ *  - VoidEnergySource
+ */
+@Serializable
+public sealed interface EVEnergySource
+
+/**
+ * Includes the following types:
+ *  - BurnerEnergySource
+ *  - VoidEnergySource
+ */
+@Serializable
+public sealed interface BVEnergySource
+
+/**
+ * Includes the following types:
+ *  - ElectricEnergySource
+ *  - HeatEnergySource
+ *  - FluidEnergySource
+ *  - VoidEnergySource
+ */
+@Serializable
+public sealed interface EHFVEnergySource
+
+/**
+ * Includes the following types:
+ *  - Sound
+ *  - TileBuildSound
+ */
+@Serializable(TilePrototypeBuildSoundSerializer::class)
+public sealed interface TilePrototypeBuildSound
+
+/**
+ * Includes the following types:
+ *  - Vector
+ *  - GunShift4Way
+ */
+@Serializable(StreamAttackParametersGunCenterShiftSerializer::class)
+public sealed interface StreamAttackParametersGunCenterShift
+
+/**
  * Entity with energy source with specialised animation for charging/discharging. Used for the
  * [accumulator](https://wiki.factorio.com/Accumulator) entity.
  */
@@ -959,7 +1001,7 @@ public open class BeaconPrototype : EntityWithOwnerPrototype() {
    */
   public val energy_usage: Energy by fromJson()
 
-  public val energy_source: UnknownUnion by fromJson()
+  public val energy_source: EVEnergySource by fromJson()
 
   /**
    * The maximum distance that this beacon can supply its neighbors with its module's effects. Max
@@ -1452,7 +1494,7 @@ public open class CarPrototype : VehiclePrototype() {
    * Must be a burner energy source when using `"burner"`, otherwise it can also be a void energy
    * source.
    */
-  public val energy_source: UnknownUnion by fromJson("burner")
+  public val energy_source: BVEnergySource by fromJson("burner")
 
   /**
    * Size of the car inventory.
@@ -1809,7 +1851,7 @@ public open class CombatRobotPrototype : FlyingRobotPrototype() {
  * Abstract base type for decider and arithmetic combinators.
  */
 public sealed class CombinatorPrototype : EntityWithOwnerPrototype() {
-  public val energy_source: UnknownUnion by fromJson()
+  public val energy_source: EVEnergySource by fromJson()
 
   public val active_energy_usage: Energy by fromJson()
 
@@ -2902,7 +2944,7 @@ public open class ElectricPolePrototype : EntityWithOwnerPrototype() {
 @Serializable(ElectricTurretPrototype.Serializer::class)
 @SerialName("electric-turret")
 public open class ElectricTurretPrototype : TurretPrototype() {
-  public val energy_source: UnknownUnion by fromJson()
+  public val energy_source: EVEnergySource by fromJson()
 
   public object Serializer :
       JsonReaderSerializer<ElectricTurretPrototype>(ElectricTurretPrototype::class)
@@ -5296,7 +5338,7 @@ public open class LampPrototype : EntityWithOwnerPrototype() {
   /**
    * The emissions set on the energy source are ignored so lamps cannot produce pollution.
    */
-  public val energy_source: UnknownUnion by fromJson()
+  public val energy_source: EVEnergySource by fromJson()
 
   /**
    * What color the lamp will be when it is on, and receiving power.
@@ -5575,7 +5617,7 @@ public sealed class LoaderPrototype : TransportBeltConnectablePrototype() {
    */
   public val belt_length: Double? by fromJson()
 
-  public val energy_source: UnknownUnion? by fromJson()
+  public val energy_source: EHFVEnergySource? by fromJson()
 
   /**
    * Energy in Joules. Can't be negative.
@@ -5602,7 +5644,7 @@ public open class LocomotivePrototype : RollingStockPrototype() {
    * Must be a burner energy source when using "burner", otherwise it can also be a void energy
    * source.
    */
-  public val energy_source: UnknownUnion by fromJson("burner")
+  public val energy_source: BVEnergySource by fromJson("burner")
 
   public val front_light: LightDefinition? by fromJson()
 
@@ -6615,7 +6657,7 @@ public open class ProducePerHourAchievementPrototype : AchievementPrototype() {
 @Serializable(ProgrammableSpeakerPrototype.Serializer::class)
 @SerialName("programmable-speaker")
 public open class ProgrammableSpeakerPrototype : EntityWithOwnerPrototype() {
-  public val energy_source: UnknownUnion by fromJson()
+  public val energy_source: EVEnergySource by fromJson()
 
   public val energy_usage_per_tick: Energy by fromJson()
 
@@ -7749,7 +7791,7 @@ public open class RoboportPrototype : EntityWithOwnerPrototype() {
   /**
    * The roboport's energy source.
    */
-  public val energy_source: UnknownUnion by fromJson()
+  public val energy_source: EVEnergySource by fromJson()
 
   /**
    * The amount of energy the roboport uses when idle.
@@ -8977,7 +9019,7 @@ public open class SpiderVehiclePrototype : VehiclePrototype() {
    * Must be a burner energy source when using "burner", otherwise it can also be a void energy
    * source.
    */
-  public val energy_source: UnknownUnion by fromJson("burner")
+  public val energy_source: BVEnergySource by fromJson("burner")
 
   public val inventory_size: ItemStackIndex by fromJson()
 
@@ -9730,7 +9772,7 @@ public open class TilePrototype : PrototypeBase() {
   /**
    * If this is loaded as one Sound, it is loaded as the "small" build sound.
    */
-  public val build_sound: UnknownUnion? by fromJson()
+  public val build_sound: TilePrototypeBuildSound? by fromJson()
 
   public val mined_sound: Sound? by fromJson()
 
@@ -12784,7 +12826,24 @@ public typealias AnimationVariations = UnknownUnion
 /**
  * A union of all prototypes. A specific prototype is loaded based on the value of the `type` key.
  *
- * See the [Prototypes page](prototype:prototypes) for more information.
+ * See the [Prototypes page](prototype:prototypes) for more information.Includes the following
+ * types:
+ *  - PrototypeBase
+ *  - AmbientSound
+ *  - AnimationPrototype
+ *  - EditorControllerPrototype
+ *  - FontPrototype
+ *  - GodControllerPrototype
+ *  - MapGenPresets
+ *  - MapSettings
+ *  - MouseCursor
+ *  - SoundPrototype
+ *  - SpectatorControllerPrototype
+ *  - SpritePrototype
+ *  - TileEffectDefinition
+ *  - TipsAndTricksItemCategory
+ *  - TriggerTargetType
+ *  - WindSound
  */
 @Serializable
 public sealed interface AnyPrototype
@@ -12879,7 +12938,10 @@ public open class ArtilleryTriggerDelivery : TriggerDeliveryItem(), TriggerDeliv
 
 /**
  * Loaded as one of the [BaseAttackParameters](prototype:BaseAttackParameters) extensions, based on
- * the value of the `type` key.
+ * the value of the `type` key.Includes the following types:
+ *  - ProjectileAttackParameters
+ *  - BeamAttackParameters
+ *  - StreamAttackParameters
  */
 @Serializable
 public sealed interface AttackParameters
@@ -14082,7 +14144,7 @@ public open class BuildEntityTipTrigger : JsonReader(), TipTrigger {
 
 @Serializable(BurnerEnergySource.Serializer::class)
 @SerialName("burner")
-public open class BurnerEnergySource : BaseEnergySource(), EnergySource {
+public open class BurnerEnergySource : BaseEnergySource(), EnergySource, BVEnergySource {
   /**
    * This is only loaded, and mandatory if the energy source can be loaded as multiple energy source
    * types.
@@ -14197,7 +14259,13 @@ public open class CameraStyleSpecification : EmptyWidgetStyleSpecification(), St
 }
 
 /**
- * Loaded as one of the capsule actions, based on the value of the `type` key.
+ * Loaded as one of the capsule actions, based on the value of the `type` key.Includes the following
+ * types:
+ *  - ThrowCapsuleAction
+ *  - ActivateEquipmentCapsuleAction
+ *  - UseOnSelfCapsuleAction
+ *  - DestroyCliffsCapsuleAction
+ *  - ArtilleryRemoteCapsuleAction
  */
 @Serializable
 public sealed interface CapsuleAction
@@ -14903,7 +14971,10 @@ public open class ConnectableEntityGraphics : JsonReader() {
 
 /**
  * A constant boolean noise expression, such as a literal boolean. When using a constant number, it
- * evaluates to true for numbers bigger than zero, anything else evaluates to false.
+ * evaluates to true for numbers bigger than zero, anything else evaluates to false.Includes the
+ * following types:
+ *  - NoiseLiteralBoolean
+ *  - ConstantNoiseNumber
  */
 @Serializable
 public sealed interface ConstantNoiseBoolean
@@ -15621,7 +15692,8 @@ public open class EffectValue : JsonReader() {
 
 @Serializable(ElectricEnergySource.Serializer::class)
 @SerialName("electric")
-public open class ElectricEnergySource : BaseEnergySource(), EnergySource {
+public open class ElectricEnergySource : BaseEnergySource(), EnergySource, EVEnergySource,
+    EHFVEnergySource {
   /**
    * This is only loaded, and mandatory if the energy source can be loaded as multiple energy source
    * types.
@@ -16026,7 +16098,12 @@ public typealias Energy = String
 
 /**
  * Loaded as one of the [BaseEnergySource](prototype:BaseEnergySource) extensions, based on the
- * value of the `type` key.
+ * value of the `type` key.Includes the following types:
+ *  - ElectricEnergySource
+ *  - BurnerEnergySource
+ *  - HeatEnergySource
+ *  - FluidEnergySource
+ *  - VoidEnergySource
  */
 @Serializable
 public sealed interface EnergySource
@@ -16491,7 +16568,7 @@ public open class FluidBoxSecondaryDrawOrders : JsonReader() {
 
 @Serializable(FluidEnergySource.Serializer::class)
 @SerialName("fluid")
-public open class FluidEnergySource : BaseEnergySource(), EnergySource {
+public open class FluidEnergySource : BaseEnergySource(), EnergySource, EHFVEnergySource {
   public val type: UnknownStringLiteral by fromJson()
 
   /**
@@ -16965,7 +17042,7 @@ public open class GroupAttackTipTrigger : JsonReader(), TipTrigger {
 }
 
 @Serializable(GunShift4Way.Serializer::class)
-public open class GunShift4Way : JsonReader() {
+public open class GunShift4Way : JsonReader(), StreamAttackParametersGunCenterShift {
   public val north: Vector by fromJson()
 
   public val east: Vector? by fromJson()
@@ -17072,7 +17149,7 @@ public open class HeatConnection : JsonReader() {
 
 @Serializable(HeatEnergySource.Serializer::class)
 @SerialName("heat")
-public open class HeatEnergySource : BaseEnergySource(), EnergySource {
+public open class HeatEnergySource : BaseEnergySource(), EnergySource, EHFVEnergySource {
   public val type: UnknownStringLiteral by fromJson()
 
   /**
@@ -17230,7 +17307,10 @@ public open class ImageStyleSpecification : BaseStyleSpecification(), StyleSpeci
 
 /**
  * Defaults to loading ingredients as items. This allows
- * [ItemIngredientPrototype](prototype:ItemIngredientPrototype) to load in a shorthand array format.
+ * [ItemIngredientPrototype](prototype:ItemIngredientPrototype) to load in a shorthand array
+ * format.Includes the following types:
+ *  - ItemIngredientPrototype
+ *  - FluidIngredientPrototype
  */
 @Serializable(IngredientPrototypeSerializer::class)
 public sealed interface IngredientPrototype
@@ -18459,7 +18539,48 @@ public open class ModSetting : JsonReader() {
  * researched.
  *
  * Loaded as one of the [BaseModifier](prototype:BaseModifier) extensions, based on the value of the
- * `type` key.
+ * `type` key.Includes the following types:
+ *  - InserterStackSizeBonusModifier
+ *  - StackInserterCapacityBonusModifier
+ *  - LaboratorySpeedModifier
+ *  - LaboratoryProductivityModifier
+ *  - MaximumFollowingRobotsCountModifier
+ *  - WorkerRobotSpeedModifier
+ *  - WorkerRobotStorageModifier
+ *  - WorkerRobotBatteryModifier
+ *  - FollowerRobotLifetimeModifier
+ *  - GhostTimeToLiveModifier
+ *  - DeconstructionTimeToLiveModifier
+ *  - TurretAttackModifier
+ *  - AmmoDamageModifier
+ *  - ArtilleryRangeModifier
+ *  - GiveItemModifier
+ *  - GunSpeedModifier
+ *  - UnlockRecipeModifier
+ *  - CharacterCraftingSpeedModifier
+ *  - CharacterMiningSpeedModifier
+ *  - CharacterRunningSpeedModifier
+ *  - CharacterBuildDistanceModifier
+ *  - CharacterItemDropDistanceModifier
+ *  - CharacterReachDistanceModifier
+ *  - CharacterResourceReachDistanceModifier
+ *  - CharacterItemPickupDistanceModifier
+ *  - CharacterLootPickupDistanceModifier
+ *  - CharacterInventorySlotsBonusModifier
+ *  - CharacterHealthBonusModifier
+ *  - CharacterLogisticRequestsModifier
+ *  - CharacterLogisticTrashSlotsModifier
+ *  - MaxFailedAttemptsPerTickPerConstructionQueueModifier
+ *  - MaxSuccessfulAttemptsPerTickPerConstructionQueueModifier
+ *  - MiningDrillProductivityBonusModifier
+ *  - TrainBrakingForceBonusModifier
+ *  - ZoomToWorldEnabledModifier
+ *  - ZoomToWorldGhostBuildingEnabledModifier
+ *  - ZoomToWorldBlueprintEnabledModifier
+ *  - ZoomToWorldDeconstructionPlannerEnabledModifier
+ *  - ZoomToWorldUpgradePlannerEnabledModifier
+ *  - ZoomToWorldSelectionToolEnabledModifier
+ *  - NothingModifier
  */
 @Serializable
 public sealed interface Modifier
@@ -18528,7 +18649,10 @@ public open class NestedTriggerEffectItem : TriggerEffectItem() {
 /**
  * An array-like noise expression, for example constructed with
  * [NoiseArrayConstruction](prototype:NoiseArrayConstruction) or a variable such as
- * `noise.var("starting_positions")`.
+ * `noise.var("starting_positions")`.Includes the following types:
+ *  - NoiseVariable
+ *  - NoiseArrayConstruction
+ *  - NoiseFunctionOffsetPoints
  */
 @Serializable
 public sealed interface NoiseArray
@@ -18572,7 +18696,17 @@ public open class NoiseArrayConstruction : JsonReader(), NoiseArray, NoiseExpres
  * noise expressions.
  *
  * The most frequently used noise functions are loaded via
- * [NoiseFunctionApplication](prototype:NoiseFunctionApplication).
+ * [NoiseFunctionApplication](prototype:NoiseFunctionApplication).Includes the following types:
+ *  - NoiseVariable
+ *  - NoiseFunctionApplication
+ *  - NoiseLiteralBoolean
+ *  - NoiseLiteralNumber
+ *  - NoiseLiteralString
+ *  - NoiseLiteralObject
+ *  - NoiseLiteralExpression
+ *  - NoiseArrayConstruction
+ *  - NoiseProcedureDelimiter
+ *  - NoiseIfElseChain
  */
 @Serializable
 public sealed interface NoiseExpression
@@ -18619,7 +18753,42 @@ public open class NoiseFunctionAdd : JsonReader(), NoiseFunctionApplication, Noi
  * Function calls are their own class of expression (as opposed to every function just being its own
  * expression type) because function calls all have similar properties -- arguments are themselves
  * expressions, a function call with all-constant arguments can be constant-folded (due to [referential
- * transparency](http://en.wikipedia.org/wiki/Referential_transparency)), etc.
+ * transparency](http://en.wikipedia.org/wiki/Referential_transparency)), etc.Includes the following
+ * types:
+ *  - NoiseFunctionAdd
+ *  - NoiseFunctionSubtract
+ *  - NoiseFunctionMultiply
+ *  - NoiseFunctionDivide
+ *  - NoiseFunctionExponentiate
+ *  - NoiseFunctionAbsoluteValue
+ *  - NoiseFunctionClamp
+ *  - NoiseFunctionCompileTimeLog
+ *  - NoiseFunctionDistanceFromNearestPoint
+ *  - NoiseFunctionRidge
+ *  - NoiseFunctionTerrace
+ *  - NoiseFunctionModulo
+ *  - NoiseFunctionFloor
+ *  - NoiseFunctionCeil
+ *  - NoiseFunctionBitwiseAnd
+ *  - NoiseFunctionBitwiseOr
+ *  - NoiseFunctionBitwiseXor
+ *  - NoiseFunctionBitwiseNot
+ *  - NoiseFunctionSin
+ *  - NoiseFunctionCos
+ *  - NoiseFunctionAtan2
+ *  - NoiseFunctionLessThan
+ *  - NoiseFunctionLessOrEqual
+ *  - NoiseFunctionEquals
+ *  - NoiseFunctionFactorioBasisNoise
+ *  - NoiseFunctionFactorioQuickMultioctaveNoise
+ *  - NoiseFunctionRandomPenalty
+ *  - NoiseFunctionLog2
+ *  - NoiseFunctionNoiseLayerNameToID
+ *  - NoiseFunctionAutoplaceProbability
+ *  - NoiseFunctionAutoplaceRichness
+ *  - NoiseFunctionOffsetPoints
+ *  - NoiseFunctionFactorioMultioctaveNoise
+ *  - NoiseFunctionSpotNoise
  */
 @Serializable
 @JsonClassDiscriminator("function_name")
@@ -19273,7 +19442,45 @@ public open class NoiseLiteralString : JsonReader(), NoiseExpression {
  * [NoiseLiteralObject](prototype:NoiseLiteralObject),
  * [NoiseLiteralExpression](prototype:NoiseLiteralExpression),
  * [NoiseArrayConstruction](prototype:NoiseArrayConstruction), and
- * [NoiseFunctionOffsetPoints](prototype:NoiseFunctionOffsetPoints).
+ * [NoiseFunctionOffsetPoints](prototype:NoiseFunctionOffsetPoints).Includes the following types:
+ *  - NoiseVariable
+ *  - NoiseFunctionApplication
+ *  - NoiseLiteralNumber
+ *  - NoiseProcedureDelimiter
+ *  - NoiseIfElseChain
+ *  - NoiseFunctionAdd
+ *  - NoiseFunctionSubtract
+ *  - NoiseFunctionMultiply
+ *  - NoiseFunctionDivide
+ *  - NoiseFunctionExponentiate
+ *  - NoiseFunctionFactorioQuickMultioctaveNoise
+ *  - NoiseFunctionFactorioMultioctaveNoise
+ *  - NoiseFunctionDistanceFromNearestPoint
+ *  - NoiseFunctionFactorioBasisNoise
+ *  - NoiseFunctionAbsoluteValue
+ *  - NoiseFunctionClamp
+ *  - NoiseFunctionRidge
+ *  - NoiseFunctionTerrace
+ *  - NoiseFunctionSpotNoise
+ *  - NoiseFunctionRandomPenalty
+ *  - NoiseFunctionLog2
+ *  - NoiseFunctionModulo
+ *  - NoiseFunctionFloor
+ *  - NoiseFunctionCeil
+ *  - NoiseFunctionBitwiseAnd
+ *  - NoiseFunctionBitwiseOr
+ *  - NoiseFunctionBitwiseXor
+ *  - NoiseFunctionBitwiseNot
+ *  - NoiseFunctionSin
+ *  - NoiseFunctionAtan2
+ *  - NoiseFunctionCos
+ *  - NoiseFunctionLessThan
+ *  - NoiseFunctionLessOrEqual
+ *  - NoiseFunctionEquals
+ *  - NoiseFunctionCompileTimeLog
+ *  - NoiseFunctionNoiseLayerNameToID
+ *  - NoiseFunctionAutoplaceProbability
+ *  - NoiseFunctionAutoplaceRichness
  */
 @Serializable
 public sealed interface NoiseNumber
@@ -19924,7 +20131,9 @@ public open class PollutionSettings : JsonReader() {
 }
 
 /**
- * Defaults to loading products as items.
+ * Defaults to loading products as items.Includes the following types:
+ *  - ItemProductPrototype
+ *  - FluidProductPrototype
  */
 @Serializable(ProductPrototypeSerializer::class)
 public sealed interface ProductPrototype
@@ -21273,7 +21482,7 @@ public open class SmokeSource : JsonReader() {
 }
 
 @Serializable(SoundValues.Serializer::class)
-public open class SoundValues : JsonReader() {
+public open class SoundValues : JsonReader(), TilePrototypeBuildSound {
   public val aggregation: AggregationSpecification? by fromJson()
 
   public val allow_random_repeat: Boolean? by fromJson()
@@ -22168,7 +22377,7 @@ public open class StreamAttackParameters : BaseAttackParameters(), AttackParamet
 
   public val projectile_creation_parameters: CircularProjectileCreationSpecification? by fromJson()
 
-  public val gun_center_shift: UnknownUnion? by fromJson()
+  public val gun_center_shift: StreamAttackParametersGunCenterShift? by fromJson()
 
   /**
    * Controls which fluids can fuel this stream attack and their potential damage bonuses.
@@ -22242,7 +22451,38 @@ public open class Stripe : JsonReader() {
 
 /**
  * Loaded as one of the [BaseStyleSpecification](prototype:BaseStyleSpecification) extensions, based
- * on the value of the `type` key.
+ * on the value of the `type` key.Includes the following types:
+ *  - ActivityBarStyleSpecification
+ *  - ButtonStyleSpecification
+ *  - CameraStyleSpecification
+ *  - CheckBoxStyleSpecification
+ *  - DropDownStyleSpecification
+ *  - FlowStyleSpecification
+ *  - FrameStyleSpecification
+ *  - GraphStyleSpecification
+ *  - HorizontalFlowStyleSpecification
+ *  - LineStyleSpecification
+ *  - ImageStyleSpecification
+ *  - LabelStyleSpecification
+ *  - ListBoxStyleSpecification
+ *  - ProgressBarStyleSpecification
+ *  - RadioButtonStyleSpecification
+ *  - HorizontalScrollBarStyleSpecification
+ *  - VerticalScrollBarStyleSpecification
+ *  - ScrollPaneStyleSpecification
+ *  - SliderStyleSpecification
+ *  - SwitchStyleSpecification
+ *  - TableStyleSpecification
+ *  - TabStyleSpecification
+ *  - TextBoxStyleSpecification
+ *  - VerticalFlowStyleSpecification
+ *  - TabbedPaneStyleSpecification
+ *  - EmptyWidgetStyleSpecification
+ *  - MinimapStyleSpecification
+ *  - TechnologySlotStyleSpecification
+ *  - GlowStyleSpecification
+ *  - SpeechBubbleStyleSpecification
+ *  - DoubleSliderStyleSpecification
  */
 @Serializable
 public sealed interface StyleSpecification
@@ -22718,7 +22958,7 @@ public open class TileAndAlpha : JsonReader() {
 }
 
 @Serializable(TileBuildSound.Serializer::class)
-public open class TileBuildSound : JsonReader() {
+public open class TileBuildSound : JsonReader(), TilePrototypeBuildSound {
   public val small: Sound? by fromJson()
 
   public val medium: Sound? by fromJson()
@@ -23016,7 +23256,37 @@ public enum class TipStatus {
 }
 
 /**
- * Loaded as one of the tip triggers, based on the value of the `type` key.
+ * Loaded as one of the tip triggers, based on the value of the `type` key.Includes the following
+ * types:
+ *  - OrTipTrigger
+ *  - AndTipTrigger
+ *  - SequenceTipTrigger
+ *  - DependenciesMetTipTrigger
+ *  - TimeElapsedTipTrigger
+ *  - ResearchTechnologyTipTrigger
+ *  - UnlockRecipeTipTrigger
+ *  - CraftItemTipTrigger
+ *  - BuildEntityTipTrigger
+ *  - ManualTransferTipTrigger
+ *  - StackTransferTipTrigger
+ *  - EntityTransferTipTrigger
+ *  - SetRecipeTipTrigger
+ *  - SetFilterTipTrigger
+ *  - LimitChestTipTrigger
+ *  - UsePipetteTipTrigger
+ *  - SetLogisticRequestTipTrigger
+ *  - UseConfirmTipTrigger
+ *  - LowPowerTipTrigger
+ *  - PasteEntitySettingsTipTrigger
+ *  - FastReplaceTipTrigger
+ *  - GroupAttackTipTrigger
+ *  - FastBeltBendTipTrigger
+ *  - BeltTraverseTipTrigger
+ *  - PlaceEquipmentTipTrigger
+ *  - ClearCursorTipTrigger
+ *  - ShiftBuildTipTrigger
+ *  - GateOverRailBuildTipTrigger
+ *  - ManualWireDragTipTrigger
  */
 @Serializable
 public sealed interface TipTrigger
@@ -23263,7 +23533,13 @@ public typealias Trigger = ItemOrList<UnknownUnion>
 
 /**
  * Loaded as one of the [TriggerDeliveryItem](prototype:TriggerDeliveryItem) extensions, based on
- * the value of the `type` key.
+ * the value of the `type` key.Includes the following types:
+ *  - InstantTriggerDelivery
+ *  - ProjectileTriggerDelivery
+ *  - FlameThrowerExplosionTriggerDelivery
+ *  - BeamTriggerDelivery
+ *  - StreamTriggerDelivery
+ *  - ArtilleryTriggerDelivery
  */
 @Serializable
 public sealed interface TriggerDelivery
@@ -23699,7 +23975,8 @@ public typealias VirtualSignalID = String
  */
 @Serializable(VoidEnergySource.Serializer::class)
 @SerialName("void")
-public open class VoidEnergySource : BaseEnergySource(), EnergySource {
+public open class VoidEnergySource : BaseEnergySource(), EnergySource, EVEnergySource,
+    BVEnergySource, EHFVEnergySource {
   public val type: UnknownStringLiteral by fromJson()
 
   public object Serializer : JsonReaderSerializer<VoidEnergySource>(VoidEnergySource::class)
