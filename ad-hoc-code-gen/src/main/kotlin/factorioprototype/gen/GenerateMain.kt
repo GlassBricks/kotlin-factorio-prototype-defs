@@ -7,7 +7,7 @@ fun main() {
     val docs: ApiDocs = json.decodeFromString(url.readText())
 
     val intfs = DeclarationsGenerator(docs).generate()
-    val outDir = File("src/main/kotlin/").absoluteFile.normalize()
+    val outDir = File("src/main/generated/").absoluteFile.normalize()
     println("Writing to ${outDir.path}")
     intfs.writeTo(outDir)
 }
