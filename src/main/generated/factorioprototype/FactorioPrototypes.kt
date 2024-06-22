@@ -14820,53 +14820,6 @@ public enum class CollisionMaskLayer {
   `transport-belt-layer`,
 }
 
-/**
- * Table of red, green, blue, and alpha float values between 0 and 1. Alternatively, values can be
- * from 0-255, they are interpreted as such if at least one value is `> 1`.
- *
- * Color allows the short-hand notation of passing an array of exactly 3 or 4 numbers. The array
- * items are r, g, b and optionally a, in that order.
- *
- * The game usually expects colors to be in pre-multiplied form (color channels are pre-multiplied
- * by alpha).
- */
-@Serializable(ColorValues.Serializer::class)
-public open class ColorValues : JsonReader() {
-  /**
-   * red value
-   */
-  public val r: Float? by fromJson()
-
-  /**
-   * green value
-   */
-  public val g: Float? by fromJson()
-
-  /**
-   * blue value
-   */
-  public val b: Float? by fromJson()
-
-  /**
-   * alpha value (opacity)
-   */
-  public val a: Float? by fromJson()
-
-  public object Serializer : JsonReaderSerializer<ColorValues>(ColorValues::class)
-}
-
-/**
- * Table of red, green, blue, and alpha float values between 0 and 1. Alternatively, values can be
- * from 0-255, they are interpreted as such if at least one value is `> 1`.
- *
- * Color allows the short-hand notation of passing an array of exactly 3 or 4 numbers. The array
- * items are r, g, b and optionally a, in that order.
- *
- * The game usually expects colors to be in pre-multiplied form (color channels are pre-multiplied
- * by alpha).
- */
-public typealias Color = UnknownUnion
-
 @Serializable(ColorFilterData.Serializer::class)
 public open class ColorFilterData : JsonReader() {
   public val name: String by fromJson()

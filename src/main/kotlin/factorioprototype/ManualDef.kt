@@ -60,7 +60,7 @@ class ItemOrListSerializer<T>(private val itemSerializer: KSerializer<T>) : KSer
 data class Vector(
     val x: Double,
     val y: Double,
-): StreamAttackParametersGunCenterShift
+) : StreamAttackParametersGunCenterShift
 
 object VectorSerializer : KSerializer<Vector> {
     override val descriptor = buildClassSerialDescriptor("Vector") {
@@ -173,6 +173,70 @@ object BoundingBoxSerializer : KSerializer<BoundingBox> {
     }
 }
 
+@Serializable(with = ColorSerializer::class)
+data class Color(
+    val r: Byte,
+    val g: Byte,
+    val b: Byte,
+    val a: Byte,
+)
+
+private fun Double.coerceToByte(): Byte =
+    if (this < 0) 0.toByte() else if (this > 255) 255.toByte() else this.toInt().toByte()
+
+object ColorSerializer : KSerializer<Color> {
+    override val descriptor = buildClassSerialDescriptor("Color") {
+        element("r", Byte.serializer().descriptor)
+        element("g", Byte.serializer().descriptor)
+        element("b", Byte.serializer().descriptor)
+        element("a", Byte.serializer().descriptor)
+    }
+
+    override fun serialize(encoder: Encoder, value: Color) {
+        throw NotImplementedError()
+    }
+
+    override fun deserialize(decoder: Decoder): Color {
+        require(decoder is JsonDecoder)
+        val r: Double
+        val g: Double
+        val b: Double
+        val a: Double?
+        when (val json = decoder.decodeJsonElement()) {
+            is JsonObject -> {
+                r = json["r"]?.jsonPrimitive?.double ?: 0.0
+                g = json["g"]?.jsonPrimitive?.double ?: 0.0
+                b = json["b"]?.jsonPrimitive?.double ?: 0.0
+                a = json["a"]?.jsonPrimitive?.double ?: 0.0
+            }
+
+            is JsonArray -> {
+                r = json[0].jsonPrimitive.double
+                g = json[1].jsonPrimitive.double
+                b = json[2].jsonPrimitive.double
+                a = json.getOrNull(3)?.jsonPrimitive?.double
+            }
+
+            else -> throw IllegalArgumentException("Unexpected type for Color: $json")
+        }
+        if (r > 1 || g > 1 || b > 1 || a != null && a > 1) {
+            return Color(
+                r.coerceToByte(),
+                g.coerceToByte(),
+                b.coerceToByte(),
+                a?.coerceToByte() ?: 255.toByte()
+            )
+        }
+        return Color(
+            (r * 255).coerceToByte(),
+            (g * 255).coerceToByte(),
+            (b * 255).coerceToByte(),
+            a?.let { (it * 255).coerceToByte() } ?: 255.toByte())
+    }
+
+
+}
+
 
 open class ItemSerializer<T : JsonReader>(
     private val klass: KClass<T>
@@ -231,12 +295,14 @@ open class ItemFluidSerializer<T>(
         return decoder.json.decodeFromJsonElement(serializer, element) as T
     }
 }
+
 object ItemIngredientPrototypeSerializer : ItemSerializer<ItemIngredientPrototype>(ItemIngredientPrototype::class)
 object IngredientPrototypeSerializer : ItemFluidSerializer<IngredientPrototype>(
     ItemIngredientPrototype::class,
     FluidIngredientPrototype::class,
     "IngredientPrototype"
 )
+
 object ItemProductPrototypeSerializer : ItemSerializer<ItemProductPrototype>(ItemProductPrototype::class)
 object ProductPrototypeSerializer : ItemFluidSerializer<ProductPrototype>(
     ItemProductPrototype::class,
@@ -257,10 +323,11 @@ object StreamAttackParametersGunCenterShiftSerializer : KSerializer<StreamAttack
         val serializer = when (element) {
             is JsonArray -> VectorSerializer
             is JsonObject -> {
-                if("north" in element) GunShift4Way.serializer()
+                if ("north" in element) GunShift4Way.serializer()
                 else if ("x" in element) Vector.serializer()
                 else throw SerializationException("Can't interpret as Vector | GunShift4Way: $element")
             }
+
             else -> throw SerializationException("Unexpected element type: $element")
         }
         return decoder.json.decodeFromJsonElement(serializer, element)
@@ -272,10 +339,11 @@ object TilePrototypeBuildSoundSerializer : KSerializer<TilePrototypeBuildSound> 
     override fun serialize(encoder: Encoder, value: TilePrototypeBuildSound) {
         throw NotImplementedError()
     }
+
     override fun deserialize(decoder: Decoder): TilePrototypeBuildSound {
         return JsonReaderSerializer(TileBuildSound::class).deserialize(decoder)
     }
-    
+
 }
 
 
@@ -296,9 +364,9 @@ val factorioPrototypeSerializersModule = SerializersModule {
     polymorphicDefaultDeserializer(NoiseNumber::class, ::maybeNoiseFunction)
     polymorphicDefaultDeserializer(NoiseExpression::class, ::maybeNoiseFunction)
 
-    polymorphicDefaultDeserializer(EVEnergySource::class) { if(it==null) ElectricEnergySource.serializer() else null }
-    polymorphicDefaultDeserializer(BVEnergySource::class) { if(it==null) BurnerEnergySource.serializer() else null }
-    polymorphicDefaultDeserializer(EHFVEnergySource::class) { if(it==null) ElectricEnergySource.serializer() else null }
+    polymorphicDefaultDeserializer(EVEnergySource::class) { if (it == null) ElectricEnergySource.serializer() else null }
+    polymorphicDefaultDeserializer(BVEnergySource::class) { if (it == null) BurnerEnergySource.serializer() else null }
+    polymorphicDefaultDeserializer(EHFVEnergySource::class) { if (it == null) ElectricEnergySource.serializer() else null }
 }
 
 val json = Json {

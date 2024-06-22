@@ -37,7 +37,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     }
 
     private val byName = (docs.prototypes + docs.types).associateBy { it.name }
-    private val file: FileSpec.Builder = FileSpec.builder("factorioprototype", "FactorioPrototypes")
+    private val file: FileSpec.Builder = FileSpec.builder(packageName, "FactorioPrototypes")
 
 
     fun generate(): FileSpec {
@@ -710,6 +710,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             "Vector" to ClassName(packageName, "Vector"),
             "Vector3D" to ClassName(packageName, "Vector3D"),
             "BoundingBox" to ClassName(packageName, "BoundingBox"),
+            "Color" to ClassName(packageName, "Color"),
         )
         val toIgnore = setOf("DataExtendMethod", "Data")
     }
