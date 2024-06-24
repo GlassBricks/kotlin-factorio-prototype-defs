@@ -21,7 +21,6 @@ tasks.test {
 }
 kotlin {
     jvmToolchain(17)
-    kotlinDaemonJvmArgs = listOf("-Xmx1G")
     sourceSets {
         val main by getting {
             kotlin.srcDir("src/main/generated")
