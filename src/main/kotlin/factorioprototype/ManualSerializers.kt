@@ -1,13 +1,11 @@
 package factorioprototype
 
-import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
+import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
+import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
@@ -16,7 +14,6 @@ import kotlin.reflect.KClass
 
 
 typealias UnknownOverriddenType = JsonElement
-typealias UnknownUnion = JsonElement
 
 typealias UnknownStringLiteral = String
 
@@ -129,36 +126,49 @@ object ProductPrototypeSerializer : ItemFluidSerializer<ProductPrototype>(
     "ProductPrototype"
 )
 
-object SpawnPointSerializer : KSerializer<SpawnPoint> {
-    override val descriptor = buildClassSerialDescriptor("SpawnPoint") {
-        element<Double>("evolution_factor")
-        element<Double>("spawn_weight")
-    }
-
-    override fun serialize(encoder: Encoder, value: SpawnPoint) {
+open class ShorthandSerializer<T : JsonReader>(
+    klass: KClass<T>,
+    override val descriptor: SerialDescriptor
+) : KSerializer<T> {
+    override fun serialize(encoder: Encoder, value: T) {
         throw NotImplementedError()
     }
 
-    private val jsonReaderSerializer = JsonReaderSerializer(SpawnPoint::class)
+    private val jsonReaderSerializer = JsonReaderSerializer(klass)
 
-    override fun deserialize(decoder: Decoder): SpawnPoint {
+    @OptIn(ExperimentalSerializationApi::class)
+    override fun deserialize(decoder: Decoder): T {
         require(decoder is JsonDecoder)
         val obj = when (val element = decoder.decodeJsonElement()) {
-            is JsonArray -> {
-                JsonObject(
-                    mapOf(
-                        "evolution_factor" to element[0],
-                        "spawn_weight" to element[1]
-                    )
-                )
-            }
+            is JsonArray -> JsonObject(buildMap {
+                descriptor.elementNames.forEachIndexed { index, name ->
+                    put(name, element[index])
+                }
+            })
 
             is JsonObject -> element
             else -> throw SerializationException("Unexpected element: $element")
         }
         return jsonReaderSerializer.getFromJson(decoder.json, obj)
     }
+
 }
+
+object SpawnPointSerializer : ShorthandSerializer<SpawnPoint>(
+    SpawnPoint::class,
+    buildClassSerialDescriptor("SpawnPoint") {
+        element<Double>("evolution_factor")
+        element<Double>("spawn_weight")
+    })
+
+object UnitSpawnDefinitionSerializer : ShorthandSerializer<UnitSpawnDefinition>(
+    UnitSpawnDefinition::class,
+    buildClassSerialDescriptor("UnitSpawnDefinition") {
+        element<EntityID>("unit")
+        element<List<SpawnPoint>>("spawn_points")
+    }
+)
+
 
 object NoiseFunctionApplicationDeserializer : DeserializationStrategy<NoiseFunctionApplication> {
     override val descriptor get() = NoiseFunctionApplication.serializer().descriptor

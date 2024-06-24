@@ -14,13 +14,15 @@ private val manuallySerialized = setOf(
     "IngredientPrototype",
     "ItemProductPrototype",
     "ProductPrototype",
-    "SpawnPoint"
+    "SpawnPoint",
+    "UnitSpawnDefinition"
 )
 
 private val flattenStructType = setOf(
     "ItemIngredientPrototype",
     "ItemProductPrototype",
-    "SpawnPoint"
+    "SpawnPoint",
+    "UnitSpawnDefinition"
 )
 
 private val replaceType = mapOf("MapPosition" to BasicType("Vector"))
@@ -43,7 +45,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         setupFile()
         findOverrides()
         findUnionTypes()
-        findInnerUnions()
+        findPropertyInnerUnions()
         docs.prototypes
             .sortedBy { it.order }
             .forEach { generatePrototype(it) }
@@ -289,11 +291,9 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         return (referenced.type).followTypeAliases()
     }
 
-    private fun tryGetUnionMembers(sourceConcept: Concept?, type: TypeDefinition): Set<UnionMember>? {
-        val innerType = type.innerType()
-        if (innerType !is UnionType) return null
+    private fun tryGetUnionMembers(sourceConcept: Concept?, type: UnionType): Set<UnionMember>? {
         val els = buildList {
-            for (mRawType in innerType.options) {
+            for (mRawType in type.options) {
                 val memberType = mRawType.innerType()
                 if (memberType is StructType && sourceConcept != null) {
                     add(ConceptValues(sourceConcept))
@@ -360,7 +360,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 innerType is UnionType -> {
                     val itemOrList = tryGetItemOrListValue(innerType)?.first
                     if (itemOrList != null) {
-                        addInnerUnion(itemOrList, concept, "Values", false)
+                        tryAddInnerUnion(itemOrList, concept, "Values", false)
                         continue
                     }
                     val unionMembers = tryGetUnionMembers(
@@ -374,7 +374,9 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                     registerUnion(union)
                 }
 
-                else -> {}
+                else -> {
+                    tryAddInnerUnion(innerType, concept, "Values", false)
+                }
             }
         }
     }
@@ -382,7 +384,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private val innerUnions = mutableMapOf<Set<UnionMember>, InnerUnion>()
 
-    private fun addInnerUnion(
+    private fun tryAddInnerUnion(
         type: TypeDefinition,
         source: ProtoOrConcept,
         subName: String,
@@ -404,18 +406,27 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             return letters.concatToString() + baseName
         }
 
-        val options = tryGetUnionMembers(null, type) ?: return
-        if (options in innerUnions) return
-        val name =
-            (if (tryGetNameFromMembers) tryGetNameByLetterPrefix(options) else null)
-                ?: (source.name + subName)
+        when (type) {
+            is UnionType -> {
+                val options = tryGetUnionMembers(null, type) ?: return
+                if (options in innerUnions) return
+                val name =
+                    (if (tryGetNameFromMembers) tryGetNameByLetterPrefix(options) else null)
+                        ?: (source.name + subName)
 
-        val union = InnerUnion(name, options)
-        registerUnion(union)
-        innerUnions[options] = union
+                val union = InnerUnion(name, options)
+                registerUnion(union)
+                innerUnions[options] = union
+            }
+
+            is DictType -> tryAddInnerUnion(type.value, source, subName, tryGetNameFromMembers)
+            is TypeType -> tryAddInnerUnion(type.value, source, subName, tryGetNameFromMembers)
+            is ArrayType -> tryAddInnerUnion(type.value, source, subName, tryGetNameFromMembers)
+            is BasicType, is LiteralType, StructType, is TupleType -> {}
+        }
     }
 
-    private fun findInnerUnions() {
+    private fun findPropertyInnerUnions() {
 
         for (value in typePartialOrder) {
             val properties = value.properties ?: continue
@@ -423,7 +434,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 val type = property.type.innerType()
                 val itemOrList = tryGetItemOrListValue(type)?.first
                 val actualType = itemOrList ?: type
-                addInnerUnion(actualType, value, property.name.toCamelCase())
+                tryAddInnerUnion(actualType, value, property.name.toCamelCase())
             }
         }
     }
@@ -520,7 +531,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         if (!isSimpleStructType) {
             val mainType = mapTypeDefinition(type, MainType(concept), null, isRoot = true)
             if (mainType.declaration == null) {
-                val result = TypeAliasSpec.builder(concept.name, mainType.assertNoDec()).apply {
+                val result = TypeAliasSpec.builder(concept.name, mainType.typeName).apply {
                     addDescription(concept.description)
                 }.build()
                 file.addTypeAlias(result)
@@ -531,14 +542,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private data class TypeNameWithDecl(
         val typeName: TypeName,
         val declaration: TypeSpec?
-    ) {
-        fun assertNoDec(): TypeName {
-            require(declaration == null) {
-                "Declaration already set"
-            }
-            return typeName
-        }
-    }
+    )
 
     private fun TypeName.withNoDec(): TypeNameWithDecl = TypeNameWithDecl(this, null)
     private fun mapTypeDefinition(
@@ -559,7 +563,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
             is DictType -> Map::class.asClassName().parameterizedBy(
                 mapTypeDefinition(typeDefinition.key, source, property).typeName,
-                mapTypeDefinition(typeDefinition.value, source, property).assertNoDec()
+                mapTypeDefinition(typeDefinition.value, source, property).typeName
             ).withNoDec()
 
             is LiteralType -> {
@@ -583,7 +587,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 val value0 = typeDefinition.values[0].followTypeAliases()
                 if (typeDefinition.values.all { it.followTypeAliases() == value0 }) {
                     ClassName(packageName, "Tuple$numEls").parameterizedBy(
-                        mapTypeDefinition(typeDefinition.values[0], source, property).assertNoDec()
+                        mapTypeDefinition(typeDefinition.values[0], source, property).typeName
                     ).withNoDec()
                 } else {
                     ClassName(packageName, "UnknownTuple").withNoDec()
@@ -596,7 +600,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                     ?: tryMakeAllOneTypeUnion(typeDefinition)
                     ?: tryGenerateUnion(source, property, typeDefinition, isRoot)
                     ?: tryMakeItemOrList(source, property, typeDefinition)
-                    ?: ClassName(packageName, "UnknownUnion").withNoDec()
+                    ?: error("Unknown union type: $typeDefinition")
             }
         }
     }

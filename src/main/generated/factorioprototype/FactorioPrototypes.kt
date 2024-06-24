@@ -15059,6 +15059,44 @@ public open class ClusterTriggerItem : TriggerItem(), TriggerValues {
 }
 
 /**
+ *
+ *
+ * Includes the following types:
+ *  - [CollisionMaskLayer]
+ *  - [CollisionMaskValues.not-colliding-with-itself]
+ *  - [CollisionMaskValues.consider-tile-transitions]
+ *  - [CollisionMaskValues.colliding-with-tiles-only]
+ */
+@Serializable(CollisionMaskValues.Serializer::class)
+public sealed interface CollisionMaskValues {
+  public object Serializer :
+      FirstMatchingSerializer<CollisionMaskValues>(CollisionMaskValues::class,
+      CollisionMaskLayer::class, `not-colliding-with-itself`::class,
+      `consider-tile-transitions`::class, `colliding-with-tiles-only`::class)
+
+  @Serializable(`not-colliding-with-itself`.Serializer::class)
+  public data object `not-colliding-with-itself` :
+      LiteralValue(JsonPrimitive("not-colliding-with-itself")), CollisionMaskValues {
+    public object Serializer :
+        LiteralValueSerializer<`not-colliding-with-itself`>(`not-colliding-with-itself`::class)
+  }
+
+  @Serializable(`consider-tile-transitions`.Serializer::class)
+  public data object `consider-tile-transitions` :
+      LiteralValue(JsonPrimitive("consider-tile-transitions")), CollisionMaskValues {
+    public object Serializer :
+        LiteralValueSerializer<`consider-tile-transitions`>(`consider-tile-transitions`::class)
+  }
+
+  @Serializable(`colliding-with-tiles-only`.Serializer::class)
+  public data object `colliding-with-tiles-only` :
+      LiteralValue(JsonPrimitive("colliding-with-tiles-only")), CollisionMaskValues {
+    public object Serializer :
+        LiteralValueSerializer<`colliding-with-tiles-only`>(`colliding-with-tiles-only`::class)
+  }
+}
+
+/**
  * Every entry in the array is a specification of one layer the object collides with or a special
  * collision option. Supplying an empty table means that no layers and no collision options are set.
  *
@@ -15072,7 +15110,7 @@ public open class ClusterTriggerItem : TriggerItem(), TriggerValues {
  * The three options in addition to the standard layers are not collision masks, instead they
  * control other aspects of collision.
  */
-public typealias CollisionMask = List<UnknownUnion>
+public typealias CollisionMask = List<CollisionMaskValues>
 
 /**
  * A string specifying a collision mask layer.
@@ -15085,7 +15123,7 @@ public typealias CollisionMask = List<UnknownUnion>
  * from the lower ones.
  */
 @Serializable
-public enum class CollisionMaskLayer {
+public enum class CollisionMaskLayer : CollisionMaskValues {
   `ground-tile`,
   `water-tile`,
   `resource-layer`,
@@ -18763,6 +18801,39 @@ public enum class MapGenSettingsAutoplaceSettings {
   decorative,
 }
 
+/**
+ *
+ *
+ * Includes the following types:
+ *  - [MapGenSettingsPropertyExpressionNames.String]
+ *  - [MapGenSettingsPropertyExpressionNames.Boolean]
+ *  - [MapGenSettingsPropertyExpressionNames.Double]
+ */
+@Serializable(MapGenSettingsPropertyExpressionNames.Serializer::class)
+public sealed interface MapGenSettingsPropertyExpressionNames {
+  public object Serializer :
+      FirstMatchingSerializer<MapGenSettingsPropertyExpressionNames>(MapGenSettingsPropertyExpressionNames::class,
+      String::class, Boolean::class, Double::class)
+
+  @JvmInline
+  @Serializable
+  public value class String(
+    public val `value`: kotlin.String,
+  ) : MapGenSettingsPropertyExpressionNames
+
+  @JvmInline
+  @Serializable
+  public value class Boolean(
+    public val `value`: kotlin.Boolean,
+  ) : MapGenSettingsPropertyExpressionNames
+
+  @JvmInline
+  @Serializable
+  public value class Double(
+    public val `value`: kotlin.Double,
+  ) : MapGenSettingsPropertyExpressionNames
+}
+
 @Serializable(MapGenSettings.Serializer::class)
 public open class MapGenSettings : JsonReader() {
   /**
@@ -18794,7 +18865,8 @@ public open class MapGenSettings : JsonReader() {
    * Entries may be omitted. A notable usage is changing autoplace behavior of an entity based on the
    * preset, which cannot be read from a noise expression.
    */
-  public val property_expression_names: Map<String, UnknownUnion>? by fromJson()
+  public val property_expression_names: Map<String, MapGenSettingsPropertyExpressionNames>? by
+      fromJson()
 
   /**
    * Array of the positions of the starting areas.
@@ -25001,8 +25073,8 @@ public open class UnitGroupSettings : JsonReader() {
  * specified as a table with numbered keys then the first value is the unit and the second is the spawn
  * points.
  */
-@Serializable(UnitSpawnDefinitionValues.Serializer::class)
-public open class UnitSpawnDefinitionValues : JsonReader() {
+@Serializable(UnitSpawnDefinitionSerializer::class)
+public open class UnitSpawnDefinition : JsonReader() {
   public val unit: EntityID by fromJson()
 
   /**
@@ -25018,17 +25090,7 @@ public open class UnitSpawnDefinitionValues : JsonReader() {
    * - Individual weights are scaled linearly so that the cumulative weight is `1`.
    */
   public val spawn_points: List<SpawnPoint> by fromJson()
-
-  public object Serializer :
-      JsonReaderSerializer<UnitSpawnDefinitionValues>(UnitSpawnDefinitionValues::class)
 }
-
-/**
- * It can be specified as a table with named or numbered keys, but not a mix of both. If this is
- * specified as a table with numbered keys then the first value is the unit and the second is the spawn
- * points.
- */
-public typealias UnitSpawnDefinition = UnknownUnion
 
 @Serializable(UnlockRecipeModifier.Serializer::class)
 @SerialName("unlock-recipe")
