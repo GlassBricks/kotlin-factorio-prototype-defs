@@ -43,6 +43,12 @@ object VectorSerializer : KSerializer<Vector> {
         }
         return Vector(x, y)
     }
+    
+    fun matches(json: JsonElement): Boolean = when (json) {
+        is JsonObject -> json.containsKey("x") && json.containsKey("y")
+        is JsonArray -> json.size == 2 && json.all { it is JsonPrimitive }
+        else -> false
+    }
 }
 
 @Serializable(with = Vector3DSerializer::class)

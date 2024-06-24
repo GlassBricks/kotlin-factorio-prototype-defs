@@ -147,6 +147,9 @@ val factorioPrototypeSerializersModule = SerializersModule {
     polymorphicDefaultDeserializer(EVEnergySource::class) { if (it == null) ElectricEnergySource.serializer() else null }
     polymorphicDefaultDeserializer(BVEnergySource::class) { if (it == null) BurnerEnergySource.serializer() else null }
     polymorphicDefaultDeserializer(EHFVEnergySource::class) { if (it == null) ElectricEnergySource.serializer() else null }
+    
+    // some mysterious bug due to caches and update order... here's a hacky workaround
+    polymorphicDefaultDeserializer(Sound::class) { if (it == null) Sound.serializer() else null }
 }
 
 val json = Json {

@@ -2706,6 +2706,35 @@ public open class DeliverByRobotsAchievementPrototype : AchievementPrototype() {
 }
 
 /**
+ *
+ *
+ * Includes the following types:
+ *  - [EntityPrototypeRemainsWhenMined.EntityID]
+ *  - [EntityPrototypeRemainsWhenMined.Array]
+ */
+@Serializable(EntityPrototypeRemainsWhenMined.Serializer::class)
+public sealed interface EntityPrototypeRemainsWhenMined {
+  public object Serializer :
+      FirstMatchingSerializer<EntityPrototypeRemainsWhenMined>(EntityPrototypeRemainsWhenMined::class,
+      EntityID::class, Array::class)
+
+  @JvmInline
+  @Serializable
+  public value class EntityID(
+    public val `value`: factorioprototype.EntityID,
+  ) : EntityPrototypeRemainsWhenMined
+
+  @Serializable(Array.Serializer::class)
+  public class Array(
+    values: List<factorioprototype.EntityID>,
+  ) : ArrayValue<factorioprototype.EntityID>(values),
+      EntityPrototypeRemainsWhenMined {
+    public object Serializer : ArrayValueSerializer<Array>(Array::class,
+        typeOf<factorioprototype.EntityID>())
+  }
+}
+
+/**
  * This prototype is used for receiving an achievement when the player finishes the game without
  * building a specific entity.
  */
@@ -2716,7 +2745,7 @@ public open class DontBuildEntityAchievementPrototype : AchievementPrototype() {
    * This will disable the achievement, if this entity is placed. If you finish the game without
    * building this entity, you receive the achievement.
    */
-  public val dont_build: ItemOrList<EntityID> by fromJson()
+  public val dont_build: EntityPrototypeRemainsWhenMined by fromJson()
 
   public val amount: UInt? by fromJson()
 
@@ -2751,14 +2780,14 @@ public open class DontUseEntityInEnergyProductionAchievementPrototype : Achievem
    * This will **not** disable the achievement, if this entity is placed, and you have received any
    * amount of power from it.
    */
-  public val excluded: ItemOrList<EntityID> by fromJson()
+  public val excluded: EntityPrototypeRemainsWhenMined by fromJson()
 
   /**
    * This will disable the achievement, if this entity is placed, and you have received any amount
    * of power from it. If you finish the game without receiving power from this entity, you receive the
    * achievement.
    */
-  public val included: ItemOrList<EntityID>? by fromJson()
+  public val included: EntityPrototypeRemainsWhenMined? by fromJson()
 
   public val last_hour_only: Boolean? by fromJson()
 
@@ -2960,8 +2989,12 @@ public open class ElectricTurretPrototype : TurretPrototype() {
  *  - [CreateDecorativesTriggerEffectItem]
  *  - [TurretPrototypeSpawnDecoration.Array]
  */
-@Serializable
+@Serializable(TurretPrototypeSpawnDecoration.Serializer::class)
 public sealed interface TurretPrototypeSpawnDecoration {
+  public object Serializer :
+      FirstMatchingSerializer<TurretPrototypeSpawnDecoration>(TurretPrototypeSpawnDecoration::class,
+      CreateDecorativesTriggerEffectItem::class, Array::class)
+
   @Serializable(Array.Serializer::class)
   public class Array(
     values: List<CreateDecorativesTriggerEffectItem>,
@@ -3406,7 +3439,7 @@ public sealed class EntityPrototype : PrototypeBase() {
    * The entity that remains when this one is mined, deconstructed or fast-replaced. The entity wont
    * actually be spawned if it would collide with the entity that is in the process of being mined.
    */
-  public val remains_when_mined: ItemOrList<EntityID>? by fromJson()
+  public val remains_when_mined: EntityPrototypeRemainsWhenMined? by fromJson()
 
   /**
    * Names of the entity prototypes this entity prototype can be pasted on to in addition to the
@@ -3464,6 +3497,29 @@ public sealed class EntityPrototype : PrototypeBase() {
  *
  *
  * Includes the following types:
+ *  - [ExplosionDefinition]
+ *  - [EntityWithHealthPrototypeDyingExplosion.Array]
+ */
+@Serializable(EntityWithHealthPrototypeDyingExplosion.Serializer::class)
+public sealed interface EntityWithHealthPrototypeDyingExplosion {
+  public object Serializer :
+      FirstMatchingSerializer<EntityWithHealthPrototypeDyingExplosion>(EntityWithHealthPrototypeDyingExplosion::class,
+      ExplosionDefinition::class, Array::class)
+
+  @Serializable(Array.Serializer::class)
+  public class Array(
+    values: List<ExplosionDefinition>,
+  ) : ArrayValue<ExplosionDefinition>(values),
+      EntityWithHealthPrototypeDyingExplosion {
+    public object Serializer : ArrayValueSerializer<Array>(Array::class,
+        typeOf<ExplosionDefinition>())
+  }
+}
+
+/**
+ *
+ *
+ * Includes the following types:
  *  - [AttackReactionItem]
  *  - [EntityWithHealthPrototypeAttackReaction.Array]
  */
@@ -3508,7 +3564,7 @@ public sealed class EntityWithHealthPrototype : EntityPrototype() {
   /**
    * The entities that are spawned in place of this one when it dies.
    */
-  public val dying_explosion: ItemOrList<ExplosionDefinition>? by fromJson()
+  public val dying_explosion: EntityWithHealthPrototypeDyingExplosion? by fromJson()
 
   public val dying_trigger_effect: TriggerEffect? by fromJson()
 
@@ -3549,7 +3605,7 @@ public sealed class EntityWithHealthPrototype : EntityPrototype() {
    * Specifies the names of the [CorpsePrototype](prototype:CorpsePrototype) to be used when this
    * entity dies.
    */
-  public open val corpse: ItemOrList<EntityID>? by fromJson()
+  public open val corpse: EntityPrototypeRemainsWhenMined? by fromJson()
 
   /**
    * Sprite drawn on ground under the entity to make it feel more integrated into the ground.
@@ -7330,8 +7386,7 @@ public sealed interface RecipePrototypeExpensive {
       RecipeData::class, `false`::class)
 
   @Serializable(`false`.Serializer::class)
-  public data object `false` : LiteralValue(JsonPrimitive(false)), RecipePrototypeExpensive,
-      TechnologyPrototypeExpensive {
+  public data object `false` : LiteralValue(JsonPrimitive(false)), RecipePrototypeExpensive {
     public object Serializer : LiteralValueSerializer<`false`>(`false`::class)
   }
 }
@@ -9659,8 +9714,7 @@ public sealed interface TechnologyPrototypeExpensive {
       TechnologyData::class, `false`::class)
 
   @Serializable(`false`.Serializer::class)
-  public data object `false` : LiteralValue(JsonPrimitive(false)), TechnologyPrototypeExpensive,
-      RecipePrototypeExpensive {
+  public data object `false` : LiteralValue(JsonPrimitive(false)), TechnologyPrototypeExpensive {
     public object Serializer : LiteralValueSerializer<`false`>(`false`::class)
   }
 }
@@ -9881,15 +9935,14 @@ public open class TileGhostPrototype : EntityPrototype() {
  *
  *
  * Includes the following types:
- *  - [SoundValues]
- *  - [Sound.Array]
+ *  - [Sound]
  *  - [TileBuildSound]
  */
 @Serializable(TilePrototypeBuildSound.Serializer::class)
 public sealed interface TilePrototypeBuildSound {
   public object Serializer :
-      FirstMatchingSerializer<TilePrototypeBuildSound>(TilePrototypeBuildSound::class,
-      SoundValues::class, Sound.Array::class, TileBuildSound::class)
+      FirstMatchingSerializer<TilePrototypeBuildSound>(TilePrototypeBuildSound::class, Sound::class,
+      TileBuildSound::class)
 }
 
 /**
@@ -12373,6 +12426,32 @@ public open class UtilitySprites : PrototypeBase() {
 }
 
 /**
+ *
+ *
+ * Includes the following types:
+ *  - [VehiclePrototypeBrakingPower.Energy]
+ *  - [VehiclePrototypeBrakingPower.Double]
+ */
+@Serializable(VehiclePrototypeBrakingPower.Serializer::class)
+public sealed interface VehiclePrototypeBrakingPower {
+  public object Serializer :
+      FirstMatchingSerializer<VehiclePrototypeBrakingPower>(VehiclePrototypeBrakingPower::class,
+      Energy::class, Double::class)
+
+  @JvmInline
+  @Serializable
+  public value class Energy(
+    public val `value`: factorioprototype.Energy,
+  ) : VehiclePrototypeBrakingPower
+
+  @JvmInline
+  @Serializable
+  public value class Double(
+    public val `value`: kotlin.Double,
+  ) : VehiclePrototypeBrakingPower
+}
+
+/**
  * Abstract base of all vehicles.
  */
 public sealed class VehiclePrototype : EntityWithOwnerPrototype() {
@@ -12385,7 +12464,7 @@ public sealed class VehiclePrototype : EntityWithOwnerPrototype() {
    * Must be positive. There is no functional difference between the two ways to set braking
    * power/force.
    */
-  public val braking_power: UnknownUnion by fromJson("braking_force")
+  public val braking_power: VehiclePrototypeBrakingPower by fromJson("braking_force")
 
   /**
    * Must be positive. There is no functional difference between the two ways to set friction force.
@@ -13502,9 +13581,7 @@ public sealed interface AutoplaceSpecificationForce {
   @Serializable
   public value class String(
     public val `value`: kotlin.String,
-  ) : AutoplaceSpecificationForce,
-      LocalisedString,
-      NoiseVariableConstants
+  ) : AutoplaceSpecificationForce
 }
 
 /**
@@ -13879,7 +13956,7 @@ public sealed class BaseModifier : JsonReader() {
  * notable expressions listed here, or change how they are used in the map generation.
  */
 @Serializable
-public enum class BaseNamedNoiseExpressions {
+public enum class BaseNamedNoiseExpressions : NoiseVariableVariableName {
   /**
    * `noise.distance_from(noise.var("x"), noise.var("y"), noise.var("starting_positions"))`, so the
    * distance from the closest starting position. distance is never `< 0`.
@@ -14954,7 +15031,7 @@ public open class CheckBoxStyleSpecification : StyleWithClickableGraphicalSetSpe
 }
 
 @Serializable(CircuitConnectorLayer.Serializer::class)
-public open class CircuitConnectorLayer : JsonReader() {
+public open class CircuitConnectorLayer : JsonReader(), RCLayer {
   public val north: RenderLayer? by fromJson()
 
   public val east: RenderLayer? by fromJson()
@@ -15372,6 +15449,35 @@ public open class CreateDecorativesTriggerEffectItem : TriggerEffectItem(),
       JsonReaderSerializer<CreateDecorativesTriggerEffectItem>(CreateDecorativesTriggerEffectItem::class)
 }
 
+/**
+ *
+ *
+ * Includes the following types:
+ *  - [CreateEntityTriggerEffectItemOffsets.Vector]
+ *  - [CreateEntityTriggerEffectItemOffsets.Array]
+ */
+@Serializable(CreateEntityTriggerEffectItemOffsets.Serializer::class)
+public sealed interface CreateEntityTriggerEffectItemOffsets {
+  public object Serializer :
+      FirstMatchingSerializer<CreateEntityTriggerEffectItemOffsets>(CreateEntityTriggerEffectItemOffsets::class,
+      Vector::class, Array::class)
+
+  @JvmInline
+  @Serializable
+  public value class Vector(
+    public val `value`: factorioprototype.Vector,
+  ) : CreateEntityTriggerEffectItemOffsets
+
+  @Serializable(Array.Serializer::class)
+  public class Array(
+    values: List<factorioprototype.Vector>,
+  ) : ArrayValue<factorioprototype.Vector>(values),
+      CreateEntityTriggerEffectItemOffsets {
+    public object Serializer : ArrayValueSerializer<Array>(Array::class,
+        typeOf<factorioprototype.Vector>())
+  }
+}
+
 @Serializable(CreateEntityTriggerEffectItem.Serializer::class)
 @SerialName("create-entity")
 public open class CreateEntityTriggerEffectItem : TriggerEffectItem() {
@@ -15405,7 +15511,7 @@ public open class CreateEntityTriggerEffectItem : TriggerEffectItem() {
    * [Distractor capsule](https://wiki.factorio.com/Distractor_capsule) uses this property to spawn
    * three Distractors.
    */
-  public val offsets: ItemOrList<Vector>? by fromJson()
+  public val offsets: CreateEntityTriggerEffectItemOffsets? by fromJson()
 
   public object Serializer :
       JsonReaderSerializer<CreateEntityTriggerEffectItem>(CreateEntityTriggerEffectItem::class)
@@ -15450,7 +15556,7 @@ public open class CreateParticleTriggerEffectItem : TriggerEffectItem() {
 
   public val tile_collision_mask: CollisionMask? by fromJson()
 
-  public val offsets: ItemOrList<Vector>? by fromJson()
+  public val offsets: CreateEntityTriggerEffectItemOffsets? by fromJson()
 
   public val initial_height_deviation: Float? by fromJson()
 
@@ -15542,7 +15648,7 @@ public open class CreateTrivialSmokeEffectItem : TriggerEffectItem() {
 
   public val offset_deviation: BoundingBox? by fromJson()
 
-  public val offsets: ItemOrList<Vector>? by fromJson()
+  public val offsets: CreateEntityTriggerEffectItemOffsets? by fromJson()
 
   public val initial_height: Float? by fromJson()
 
@@ -15698,12 +15804,41 @@ public open class DamageTriggerEffectItem : TriggerEffectItem() {
       JsonReaderSerializer<DamageTriggerEffectItem>(DamageTriggerEffectItem::class)
 }
 
+/**
+ *
+ *
+ * Includes the following types:
+ *  - [DamageTypeFiltersTypes.DamageTypeID]
+ *  - [DamageTypeFiltersTypes.Array]
+ */
+@Serializable(DamageTypeFiltersTypes.Serializer::class)
+public sealed interface DamageTypeFiltersTypes {
+  public object Serializer :
+      FirstMatchingSerializer<DamageTypeFiltersTypes>(DamageTypeFiltersTypes::class,
+      DamageTypeID::class, Array::class)
+
+  @JvmInline
+  @Serializable
+  public value class DamageTypeID(
+    public val `value`: factorioprototype.DamageTypeID,
+  ) : DamageTypeFiltersTypes
+
+  @Serializable(Array.Serializer::class)
+  public class Array(
+    values: List<factorioprototype.DamageTypeID>,
+  ) : ArrayValue<factorioprototype.DamageTypeID>(values),
+      DamageTypeFiltersTypes {
+    public object Serializer : ArrayValueSerializer<Array>(Array::class,
+        typeOf<factorioprototype.DamageTypeID>())
+  }
+}
+
 @Serializable(DamageTypeFiltersValues.Serializer::class)
-public open class DamageTypeFiltersValues : JsonReader() {
+public open class DamageTypeFiltersValues : JsonReader(), DamageTypeFilters {
   /**
    * The damage types to filter for.
    */
-  public val types: ItemOrList<DamageTypeID> by fromJson()
+  public val types: DamageTypeFiltersTypes by fromJson()
 
   /**
    * Whether this is a whitelist or a blacklist of damage types. Defaults to being a blacklist.
@@ -15714,7 +15849,34 @@ public open class DamageTypeFiltersValues : JsonReader() {
       JsonReaderSerializer<DamageTypeFiltersValues>(DamageTypeFiltersValues::class)
 }
 
-public typealias DamageTypeFilters = UnknownUnion
+/**
+ *
+ *
+ * Includes the following types:
+ *  - [DamageTypeFiltersValues]
+ *  - [DamageTypeFilters.DamageTypeID]
+ *  - [DamageTypeFilters.Array]
+ */
+@Serializable(DamageTypeFilters.Serializer::class)
+public sealed interface DamageTypeFilters {
+  public object Serializer : FirstMatchingSerializer<DamageTypeFilters>(DamageTypeFilters::class,
+      DamageTypeFiltersValues::class, DamageTypeID::class, Array::class)
+
+  @JvmInline
+  @Serializable
+  public value class DamageTypeID(
+    public val `value`: factorioprototype.DamageTypeID,
+  ) : DamageTypeFilters
+
+  @Serializable(Array.Serializer::class)
+  public class Array(
+    values: List<factorioprototype.DamageTypeID>,
+  ) : ArrayValue<factorioprototype.DamageTypeID>(values),
+      DamageTypeFilters {
+    public object Serializer : ArrayValueSerializer<Array>(Array::class,
+        typeOf<factorioprototype.DamageTypeID>())
+  }
+}
 
 /**
  * The name of a [DamageType](prototype:DamageType).
@@ -16175,13 +16337,12 @@ public open class ElementImageSetValues : JsonReader(), ElementImageSet {
  *
  * Includes the following types:
  *  - [ElementImageSetValues]
- *  - [ElementImageSetLayerValues]
- *  - [Sprite]
+ *  - [ElementImageSetLayer]
  */
 @Serializable(ElementImageSet.Serializer::class)
 public sealed interface ElementImageSet {
   public object Serializer : FirstMatchingSerializer<ElementImageSet>(ElementImageSet::class,
-      ElementImageSetValues::class, ElementImageSetLayerValues::class, Sprite::class)
+      ElementImageSetValues::class, ElementImageSetLayer::class)
 }
 
 @Serializable
@@ -16200,7 +16361,7 @@ public enum class ElementImageSetLayerType {
  * If this is loaded as a Sprite, it gets used as `center`.
  */
 @Serializable(ElementImageSetLayerValues.Serializer::class)
-public open class ElementImageSetLayerValues : JsonReader(), ElementImageSetLayer, ElementImageSet {
+public open class ElementImageSetLayerValues : JsonReader(), ElementImageSetLayer {
   /**
    * Defines whether the border should be drawn inside the widget, which affects the padding and
    * content size of the widget, or outside of the widget which doesn't affect size. The outer draw
@@ -16408,7 +16569,7 @@ public open class ElementImageSetLayerValues : JsonReader(), ElementImageSetLaye
  *  - [Sprite]
  */
 @Serializable(ElementImageSetLayer.Serializer::class)
-public sealed interface ElementImageSetLayer {
+public sealed interface ElementImageSetLayer : ElementImageSet {
   public object Serializer :
       FirstMatchingSerializer<ElementImageSetLayer>(ElementImageSetLayer::class,
       ElementImageSetLayerValues::class, Sprite::class)
@@ -16790,7 +16951,7 @@ public open class EquipmentShape : JsonReader() {
 }
 
 @Serializable(ExplosionDefinitionValues.Serializer::class)
-public open class ExplosionDefinitionValues : JsonReader() {
+public open class ExplosionDefinitionValues : JsonReader(), ExplosionDefinition {
   public val name: EntityID by fromJson()
 
   public val offset: Vector? by fromJson()
@@ -16799,7 +16960,25 @@ public open class ExplosionDefinitionValues : JsonReader() {
       JsonReaderSerializer<ExplosionDefinitionValues>(ExplosionDefinitionValues::class)
 }
 
-public typealias ExplosionDefinition = UnknownUnion
+/**
+ *
+ *
+ * Includes the following types:
+ *  - [ExplosionDefinition.EntityID]
+ *  - [ExplosionDefinitionValues]
+ */
+@Serializable(ExplosionDefinition.Serializer::class)
+public sealed interface ExplosionDefinition : EntityWithHealthPrototypeDyingExplosion {
+  public object Serializer :
+      FirstMatchingSerializer<ExplosionDefinition>(ExplosionDefinition::class, EntityID::class,
+      ExplosionDefinitionValues::class)
+
+  @JvmInline
+  @Serializable
+  public value class EntityID(
+    public val `value`: factorioprototype.EntityID,
+  ) : ExplosionDefinition
+}
 
 @Serializable(FactorioBasisNoiseArguments.Serializer::class)
 public open class FactorioBasisNoiseArguments : JsonReader() {
@@ -17569,7 +17748,7 @@ public open class GroupAttackTipTrigger : JsonReader(), TipTrigger {
 }
 
 @Serializable(GunShift4Way.Serializer::class)
-public open class GunShift4Way : JsonReader() {
+public open class GunShift4Way : JsonReader(), StreamAttackParametersGunCenterShift {
   public val north: Vector by fromJson()
 
   public val east: Vector? by fromJson()
@@ -18191,13 +18370,12 @@ public open class LayeredSoundValues : JsonReader(), LayeredSound {
  *
  * Includes the following types:
  *  - [LayeredSoundValues]
- *  - [SoundValues]
- *  - [Sound.Array]
+ *  - [Sound]
  */
 @Serializable(LayeredSound.Serializer::class)
 public sealed interface LayeredSound {
   public object Serializer : FirstMatchingSerializer<LayeredSound>(LayeredSound::class,
-      LayeredSoundValues::class, SoundValues::class, Sound.Array::class)
+      LayeredSoundValues::class, Sound::class)
 }
 
 @Serializable
@@ -18591,9 +18769,7 @@ public sealed interface LocalisedString {
   @Serializable
   public value class String(
     public val `value`: kotlin.String,
-  ) : LocalisedString,
-      NoiseVariableConstants,
-      AutoplaceSpecificationForce
+  ) : LocalisedString
 
   @JvmInline
   @Serializable
@@ -19189,6 +19365,19 @@ public open class MinimapStyleSpecification : EmptyWidgetStyleSpecification(), S
  *
  *
  * Includes the following types:
+ *  - [RenderLayer]
+ *  - [CircuitConnectorLayer]
+ */
+@Serializable(RCLayer.Serializer::class)
+public sealed interface RCLayer {
+  public object Serializer : FirstMatchingSerializer<RCLayer>(RCLayer::class, RenderLayer::class,
+      CircuitConnectorLayer::class)
+}
+
+/**
+ *
+ *
+ * Includes the following types:
  *  - [MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder.Byte]
  *  - [CircuitConnectorSecondaryDrawOrder]
  */
@@ -19258,7 +19447,7 @@ public open class MiningDrillGraphicsSet : JsonReader() {
   /**
    * Render layer(s) for all directions of the circuit connectors.
    */
-  public val circuit_connector_layer: UnknownUnion? by fromJson()
+  public val circuit_connector_layer: RCLayer? by fromJson()
 
   /**
    * Secondary draw order(s) for all directions of the circuit connectors.
@@ -19291,6 +19480,52 @@ public open class MiningDrillProductivityBonusModifier : SimpleModifier(), Modif
 }
 
 /**
+ *
+ *
+ * Includes the following types:
+ *  - [ModSettingValue.Int]
+ *  - [ModSettingValue.Double]
+ *  - [ModSettingValue.Boolean]
+ *  - [ModSettingValue.String]
+ *  - [ModSettingValue.Color]
+ */
+@Serializable(ModSettingValue.Serializer::class)
+public sealed interface ModSettingValue {
+  public object Serializer : FirstMatchingSerializer<ModSettingValue>(ModSettingValue::class,
+      Int::class, Double::class, Boolean::class, String::class, Color::class)
+
+  @JvmInline
+  @Serializable
+  public value class Int(
+    public val `value`: kotlin.Int,
+  ) : ModSettingValue
+
+  @JvmInline
+  @Serializable
+  public value class Double(
+    public val `value`: kotlin.Double,
+  ) : ModSettingValue
+
+  @JvmInline
+  @Serializable
+  public value class Boolean(
+    public val `value`: kotlin.Boolean,
+  ) : ModSettingValue
+
+  @JvmInline
+  @Serializable
+  public value class String(
+    public val `value`: kotlin.String,
+  ) : ModSettingValue
+
+  @JvmInline
+  @Serializable
+  public value class Color(
+    public val `value`: factorioprototype.Color,
+  ) : ModSettingValue
+}
+
+/**
  * The user-set value of a startup [mod setting](https://wiki.factorio.com/Tutorial:Mod_settings).
  */
 @Serializable(ModSetting.Serializer::class)
@@ -19298,7 +19533,7 @@ public open class ModSetting : JsonReader() {
   /**
    * The value of the mod setting. The type depends on the kind of setting.
    */
-  public val `value`: UnknownUnion by fromJson()
+  public val `value`: ModSettingValue by fromJson()
 
   public object Serializer : JsonReaderSerializer<ModSetting>(ModSetting::class)
 }
@@ -20285,6 +20520,39 @@ public open class NoiseProcedureDelimiter : JsonReader(), NoiseNumber, NoiseExpr
 }
 
 /**
+ *
+ *
+ * Includes the following types:
+ *  - [NoiseVariableVariableName.x]
+ *  - [NoiseVariableVariableName.y]
+ *  - [NoiseVariableConstants]
+ *  - [BaseNamedNoiseExpressions]
+ *  - [NoiseVariableVariableName.String]
+ */
+@Serializable(NoiseVariableVariableName.Serializer::class)
+public sealed interface NoiseVariableVariableName {
+  public object Serializer :
+      FirstMatchingSerializer<NoiseVariableVariableName>(NoiseVariableVariableName::class, x::class,
+      y::class, NoiseVariableConstants::class, BaseNamedNoiseExpressions::class, String::class)
+
+  @Serializable(x.Serializer::class)
+  public data object x : LiteralValue(JsonPrimitive("x")), NoiseVariableVariableName {
+    public object Serializer : LiteralValueSerializer<x>(x::class)
+  }
+
+  @Serializable(y.Serializer::class)
+  public data object y : LiteralValue(JsonPrimitive("y")), NoiseVariableVariableName {
+    public object Serializer : LiteralValueSerializer<y>(y::class)
+  }
+
+  @JvmInline
+  @Serializable
+  public value class String(
+    public val `value`: kotlin.String,
+  ) : NoiseVariableVariableName
+}
+
+/**
  * Variables referencing named noise expressions may have their reference overridden by other named
  * noise expression if their `intended_property` is the variable name and it is selected by the user in
  * the map generator GUI. See the second example on
@@ -20309,7 +20577,7 @@ public open class NoiseVariable : JsonReader(), NoiseNumber, NoiseArray, NoiseEx
    * [BaseNamedNoiseExpressions](prototype:BaseNamedNoiseExpressions), or any other existing one by
    * name.
    */
-  public val variable_name: UnknownUnion by fromJson()
+  public val variable_name: NoiseVariableVariableName by fromJson()
 
   public object Serializer : JsonReaderSerializer<NoiseVariable>(NoiseVariable::class)
 }
@@ -20337,7 +20605,7 @@ public open class NoiseVariable : JsonReader(), NoiseNumber, NoiseArray, NoiseEx
  *  - [NoiseVariableConstants.peaceful_mode]
  */
 @Serializable(NoiseVariableConstants.Serializer::class)
-public sealed interface NoiseVariableConstants {
+public sealed interface NoiseVariableConstants : NoiseVariableVariableName {
   public object Serializer :
       FirstMatchingSerializer<NoiseVariableConstants>(NoiseVariableConstants::class, String::class,
       map_seed::class, map_width::class, map_height::class, water_level::class,
@@ -20351,9 +20619,7 @@ public sealed interface NoiseVariableConstants {
   @Serializable
   public value class String(
     public val `value`: kotlin.String,
-  ) : NoiseVariableConstants,
-      LocalisedString,
-      AutoplaceSpecificationForce
+  ) : NoiseVariableConstants
 
   @Serializable(map_seed.Serializer::class)
   public data object map_seed : LiteralValue(JsonPrimitive("map_seed")), NoiseVariableConstants {
@@ -21600,7 +21866,7 @@ public typealias RecipeID = String
  * highest.
  */
 @Serializable
-public enum class RenderLayer {
+public enum class RenderLayer : RCLayer {
   `water-tile`,
   `ground-tile`,
   `tile-transition`,
@@ -22291,6 +22557,39 @@ public enum class SignalColorMappingType {
   fluid,
 }
 
+/**
+ *
+ *
+ * Includes the following types:
+ *  - [SignalColorMappingName.VirtualSignalID]
+ *  - [SignalColorMappingName.ItemID]
+ *  - [SignalColorMappingName.FluidID]
+ */
+@Serializable(SignalColorMappingName.Serializer::class)
+public sealed interface SignalColorMappingName {
+  public object Serializer :
+      FirstMatchingSerializer<SignalColorMappingName>(SignalColorMappingName::class,
+      VirtualSignalID::class, ItemID::class, FluidID::class)
+
+  @JvmInline
+  @Serializable
+  public value class VirtualSignalID(
+    public val `value`: factorioprototype.VirtualSignalID,
+  ) : SignalColorMappingName
+
+  @JvmInline
+  @Serializable
+  public value class ItemID(
+    public val `value`: factorioprototype.ItemID,
+  ) : SignalColorMappingName
+
+  @JvmInline
+  @Serializable
+  public value class FluidID(
+    public val `value`: factorioprototype.FluidID,
+  ) : SignalColorMappingName
+}
+
 @Serializable(SignalColorMapping.Serializer::class)
 public open class SignalColorMapping : JsonReader() {
   public val type: SignalColorMappingType by fromJson()
@@ -22298,7 +22597,7 @@ public open class SignalColorMapping : JsonReader() {
   /**
    * Name of the signal that shows this color.
    */
-  public val name: UnknownUnion by fromJson()
+  public val name: SignalColorMappingName by fromJson()
 
   public val color: Color by fromJson()
 
@@ -22312,7 +22611,7 @@ public open class SignalIDConnector : JsonReader() {
   /**
    * Name of the signal that shows this color.
    */
-  public val name: UnknownUnion by fromJson()
+  public val name: SignalColorMappingName by fromJson()
 
   public object Serializer : JsonReaderSerializer<SignalIDConnector>(SignalIDConnector::class)
 }
@@ -22514,8 +22813,7 @@ public open class SmokeSource : JsonReader() {
 }
 
 @Serializable(SoundValues.Serializer::class)
-public open class SoundValues : JsonReader(), Sound, LayeredSound, WorkingSound,
-    TilePrototypeBuildSound {
+public open class SoundValues : JsonReader(), Sound {
   public val aggregation: AggregationSpecification? by fromJson()
 
   public val allow_random_repeat: Boolean? by fromJson()
@@ -22579,7 +22877,7 @@ public open class SoundValues : JsonReader(), Sound, LayeredSound, WorkingSound,
  *  - [Sound.Array]
  */
 @Serializable(Sound.Serializer::class)
-public sealed interface Sound {
+public sealed interface Sound : LayeredSound, WorkingSound, TilePrototypeBuildSound {
   public object Serializer : FirstMatchingSerializer<Sound>(Sound::class, SoundValues::class,
       Array::class)
 
@@ -22587,10 +22885,7 @@ public sealed interface Sound {
   public class Array(
     values: List<SoundDefinition>,
   ) : ArrayValue<SoundDefinition>(values),
-      Sound,
-      LayeredSound,
-      WorkingSound,
-      TilePrototypeBuildSound {
+      Sound {
     public object Serializer : ArrayValueSerializer<Array>(Array::class, typeOf<SoundDefinition>())
   }
 }
@@ -22954,7 +23249,7 @@ public open class SpotNoiseArguments : JsonReader() {
  * file and dimensions/position in the game, they all share the same memory.
  */
 @Serializable(Sprite.Serializer::class)
-public open class Sprite : SpriteParameters(), ElementImageSetLayer, ElementImageSet, Sprite4Way {
+public open class Sprite : SpriteParameters(), ElementImageSetLayer, Sprite4Way {
   /**
    * If this property is present, all Sprite definitions have to be placed as entries in the array,
    * and they will all be loaded from there. `layers` may not be an empty table. Each definition in the
@@ -23514,6 +23809,26 @@ public open class StorageTankPictures : JsonReader() {
   public object Serializer : JsonReaderSerializer<StorageTankPictures>(StorageTankPictures::class)
 }
 
+/**
+ *
+ *
+ * Includes the following types:
+ *  - [StreamAttackParametersGunCenterShift.Vector]
+ *  - [GunShift4Way]
+ */
+@Serializable(StreamAttackParametersGunCenterShift.Serializer::class)
+public sealed interface StreamAttackParametersGunCenterShift {
+  public object Serializer :
+      FirstMatchingSerializer<StreamAttackParametersGunCenterShift>(StreamAttackParametersGunCenterShift::class,
+      Vector::class, GunShift4Way::class)
+
+  @JvmInline
+  @Serializable
+  public value class Vector(
+    public val `value`: factorioprototype.Vector,
+  ) : StreamAttackParametersGunCenterShift
+}
+
 @Serializable(StreamAttackParameters.Serializer::class)
 @SerialName("stream")
 public open class StreamAttackParameters : BaseAttackParameters(), AttackParameters {
@@ -23525,7 +23840,7 @@ public open class StreamAttackParameters : BaseAttackParameters(), AttackParamet
 
   public val projectile_creation_parameters: CircularProjectileCreationSpecification? by fromJson()
 
-  public val gun_center_shift: UnknownUnion? by fromJson()
+  public val gun_center_shift: StreamAttackParametersGunCenterShift? by fromJson()
 
   /**
    * Controls which fluids can fuel this stream attack and their potential damage bonuses.
@@ -24786,8 +25101,12 @@ public sealed class TriggerEffectItem : JsonReader() {
  *  - [TriggerDelivery]
  *  - [TriggerItemActionDelivery.Array]
  */
-@Serializable
+@Serializable(TriggerItemActionDelivery.Serializer::class)
 public sealed interface TriggerItemActionDelivery {
+  public object Serializer :
+      FirstMatchingSerializer<TriggerItemActionDelivery>(TriggerItemActionDelivery::class,
+      TriggerDelivery::class, Array::class)
+
   @Serializable(Array.Serializer::class)
   public class Array(
     values: List<TriggerDelivery>,
@@ -25387,13 +25706,12 @@ public open class WorkingSoundValues : JsonReader(), WorkingSound {
  *
  * Includes the following types:
  *  - [WorkingSoundValues]
- *  - [SoundValues]
- *  - [Sound.Array]
+ *  - [Sound]
  */
 @Serializable(WorkingSound.Serializer::class)
 public sealed interface WorkingSound {
   public object Serializer : FirstMatchingSerializer<WorkingSound>(WorkingSound::class,
-      WorkingSoundValues::class, SoundValues::class, Sound.Array::class)
+      WorkingSoundValues::class, Sound::class)
 }
 
 @Serializable

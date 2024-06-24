@@ -4,7 +4,7 @@ import java.io.File
 
 fun main() {
     val url = object {}.javaClass.classLoader.getResource("prototype-api.json")!!
-    val docs: ApiDocs = json.decodeFromString(url.readText())
+    val docs: ApiDocs = readDocs(url)
 
     val intfs = DeclarationsGenerator(docs).generate()
     val outDir = File("src/main/generated/").absoluteFile.normalize()

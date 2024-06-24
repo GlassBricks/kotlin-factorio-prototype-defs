@@ -12,6 +12,7 @@ import kotlinx.serialization.descriptors.buildSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
+import java.net.URL
 
 @Serializable
 class ApiDocs(
@@ -83,7 +84,7 @@ class Property(
     val visibility: List<String>? = null,
     val alt_name: String? = null,
     val override: Boolean,
-    val type: TypeDefinition,
+    var type: TypeDefinition,
     val optional: Boolean,
     val default: DefaultValue? = null
 )
@@ -192,10 +193,6 @@ class CustomProperties(
 )
 
 
-val json = Json {
-    ignoreUnknownKeys = true
-}
-
 fun TypeDefinition.innerType(): TypeDefinition = when (this) {
     is TypeType -> value
     else -> this
@@ -217,4 +214,13 @@ fun TypeDefinition.typeEquals(other: TypeDefinition): Boolean {
         is LiteralType -> other is LiteralType && t.value == other.value
         is TypeType, StructType -> false
     }
+}
+
+
+private val json = Json {
+    ignoreUnknownKeys = true
+}
+
+fun readDocs(url: URL): ApiDocs {
+    return json.decodeFromStream<ApiDocs>(url.openStream())
 }

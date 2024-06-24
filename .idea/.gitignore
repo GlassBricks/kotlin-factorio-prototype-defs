@@ -2,3 +2,4 @@
 *.xml
 !vcs.xml
 !gradle.xml
+shelf/
