@@ -1,4 +1,4 @@
-package factorioprototype
+package glassbricks.factorio.prototypes
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -9,12 +9,12 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
 @Serializable(with = VectorSerializer::class)
-data class Vector(
+public data class Vector(
     val x: Double,
     val y: Double,
 )
 
-object VectorSerializer : KSerializer<Vector> {
+internal object VectorSerializer : KSerializer<Vector> {
     override val descriptor = buildClassSerialDescriptor("Vector") {
         element("x", Double.Companion.serializer().descriptor)
         element("y", Double.serializer().descriptor)
@@ -43,7 +43,7 @@ object VectorSerializer : KSerializer<Vector> {
         }
         return Vector(x, y)
     }
-    
+
     fun matches(json: JsonElement): Boolean = when (json) {
         is JsonObject -> json.containsKey("x") && json.containsKey("y")
         is JsonArray -> json.size == 2 && json.all { it is JsonPrimitive }
@@ -52,13 +52,13 @@ object VectorSerializer : KSerializer<Vector> {
 }
 
 @Serializable(with = Vector3DSerializer::class)
-data class Vector3D(
+public data class Vector3D(
     val x: Double,
     val y: Double,
     val z: Double,
 )
 
-object Vector3DSerializer : KSerializer<Vector3D> {
+internal object Vector3DSerializer : KSerializer<Vector3D> {
     override val descriptor = buildClassSerialDescriptor("Vector3D") {
         element("x", Double.serializer().descriptor)
         element("y", Double.serializer().descriptor)
@@ -94,12 +94,12 @@ object Vector3DSerializer : KSerializer<Vector3D> {
 }
 
 @Serializable(with = BoundingBoxSerializer::class)
-data class BoundingBox(
+public data class BoundingBox(
     val left_top: Vector,
     val right_bottom: Vector,
 )
 
-object BoundingBoxSerializer : KSerializer<BoundingBox> {
+internal object BoundingBoxSerializer : KSerializer<BoundingBox> {
     override val descriptor = buildClassSerialDescriptor("BoundingBox") {
         element("left_top", Vector.serializer().descriptor)
         element("right_bottom", Vector.serializer().descriptor)
@@ -111,28 +111,28 @@ object BoundingBoxSerializer : KSerializer<BoundingBox> {
 
     override fun deserialize(decoder: Decoder): BoundingBox {
         require(decoder is JsonDecoder)
-        val left_top: Vector
-        val right_bottom: Vector
+        val leftTop: Vector
+        val rightBottom: Vector
         when (val json = decoder.decodeJsonElement()) {
             is JsonObject -> {
-                left_top = json["left_top"]!!.let { decoder.json.decodeFromJsonElement(Vector.serializer(), it) }
-                right_bottom =
+                leftTop = json["left_top"]!!.let { decoder.json.decodeFromJsonElement(Vector.serializer(), it) }
+                rightBottom =
                     json["right_bottom"]!!.let { decoder.json.decodeFromJsonElement(Vector.serializer(), it) }
             }
 
             is JsonArray -> {
-                left_top = decoder.json.decodeFromJsonElement(Vector.serializer(), json[0])
-                right_bottom = decoder.json.decodeFromJsonElement(Vector.serializer(), json[1])
+                leftTop = decoder.json.decodeFromJsonElement(Vector.serializer(), json[0])
+                rightBottom = decoder.json.decodeFromJsonElement(Vector.serializer(), json[1])
             }
 
             else -> throw IllegalArgumentException("Unknown literal type: $json")
         }
-        return BoundingBox(left_top, right_bottom)
+        return BoundingBox(leftTop, rightBottom)
     }
 }
 
 @Serializable(with = ColorSerializer::class)
-data class Color(
+public data class Color(
     val r: Byte,
     val g: Byte,
     val b: Byte,
@@ -142,7 +142,7 @@ data class Color(
 private fun Double.coerceToByte(): Byte =
     if (this < 0) 0.toByte() else if (this > 255) 255.toByte() else this.toInt().toByte()
 
-object ColorSerializer : KSerializer<Color> {
+internal object ColorSerializer : KSerializer<Color> {
     override val descriptor = buildClassSerialDescriptor("Color") {
         element("r", Byte.serializer().descriptor)
         element("g", Byte.serializer().descriptor)

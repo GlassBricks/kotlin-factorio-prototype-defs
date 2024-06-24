@@ -1,5 +1,7 @@
 package factorioprototype
 
+import glassbricks.factorio.prototypes.JsonReader
+import glassbricks.factorio.prototypes.JsonReaderSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.test.Test

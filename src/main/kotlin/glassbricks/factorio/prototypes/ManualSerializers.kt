@@ -1,4 +1,4 @@
-package factorioprototype
+package glassbricks.factorio.prototypes
 
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ListSerializer
@@ -13,30 +13,30 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlin.reflect.KClass
 
 
-typealias UnknownOverriddenType = JsonElement
+public typealias UnknownOverriddenType = JsonElement
 
-typealias UnknownStringLiteral = String
+public typealias UnknownStringLiteral = String
 
-typealias UnknownTuple = JsonArray
-typealias Tuple1<T> = List<T>
-typealias Tuple2<T> = List<T>
-typealias Tuple3<T> = List<T>
-typealias Tuple4<T> = List<T>
+public typealias UnknownTuple = JsonArray
+public typealias Tuple1<T> = List<T>
+public typealias Tuple2<T> = List<T>
+public typealias Tuple3<T> = List<T>
+public typealias Tuple4<T> = List<T>
 
 
 @Serializable(with = ItemOrListSerializer::class)
-class ItemOrList<T>(private val value: List<T>) : List<T> by value {
-    constructor(value: T) : this(listOf(value))
+public class ItemOrList<T>(private val value: List<T>) : List<T> by value {
+    public constructor(value: T) : this(listOf(value))
 
     override fun toString(): String = value.toString()
     override fun equals(other: Any?): Boolean = value == other
     override fun hashCode(): Int = value.hashCode()
 }
-typealias ItemOrTuple2<T> = ItemOrList<T>
+public typealias ItemOrTuple2<T> = ItemOrList<T>
 
-class ItemOrListSerializer<T>(private val itemSerializer: KSerializer<T>) : KSerializer<ItemOrList<T>> {
+private class ItemOrListSerializer<T>(private val itemSerializer: KSerializer<T>) : KSerializer<ItemOrList<T>> {
     private val listSerializer = ListSerializer(itemSerializer)
-    override val descriptor = listSerializer.descriptor
+    override val descriptor: SerialDescriptor = listSerializer.descriptor
     override fun serialize(encoder: Encoder, value: ItemOrList<T>) {
         if (value.size == 1) {
             encoder.encodeSerializableValue(itemSerializer, value[0])
@@ -54,7 +54,7 @@ class ItemOrListSerializer<T>(private val itemSerializer: KSerializer<T>) : KSer
     }
 }
 
-open class ItemSerializer<T : JsonReader>(
+internal open class ItemSerializer<T : JsonReader>(
     private val klass: KClass<T>
 ) : KSerializer<T> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor(klass.simpleName!!)
@@ -81,12 +81,12 @@ open class ItemSerializer<T : JsonReader>(
     }
 }
 
-open class ItemFluidSerializer<T>(
+internal open class ItemFluidSerializer<T>(
     private val itemKlass: KClass<out JsonReader>,
     private val fluidKlass: KClass<out JsonReader>,
-    val name: String
+    public val name: String
 ) : KSerializer<T> {
-    override val descriptor = buildClassSerialDescriptor(name)
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor(name)
 
     override fun serialize(encoder: Encoder, value: T) {
         throw NotImplementedError()
@@ -112,21 +112,23 @@ open class ItemFluidSerializer<T>(
     }
 }
 
-object ItemIngredientPrototypeSerializer : ItemSerializer<ItemIngredientPrototype>(ItemIngredientPrototype::class)
-object IngredientPrototypeSerializer : ItemFluidSerializer<IngredientPrototype>(
+internal object ItemIngredientPrototypeSerializer :
+    ItemSerializer<ItemIngredientPrototype>(ItemIngredientPrototype::class)
+
+internal object IngredientPrototypeSerializer : ItemFluidSerializer<IngredientPrototype>(
     ItemIngredientPrototype::class,
     FluidIngredientPrototype::class,
     "IngredientPrototype"
 )
 
-object ItemProductPrototypeSerializer : ItemSerializer<ItemProductPrototype>(ItemProductPrototype::class)
-object ProductPrototypeSerializer : ItemFluidSerializer<ProductPrototype>(
+internal object ItemProductPrototypeSerializer : ItemSerializer<ItemProductPrototype>(ItemProductPrototype::class)
+internal object ProductPrototypeSerializer : ItemFluidSerializer<ProductPrototype>(
     ItemProductPrototype::class,
     FluidProductPrototype::class,
     "ProductPrototype"
 )
 
-open class ShorthandSerializer<T : JsonReader>(
+internal open class ShorthandSerializer<T : JsonReader>(
     klass: KClass<T>,
     override val descriptor: SerialDescriptor
 ) : KSerializer<T> {
@@ -154,14 +156,14 @@ open class ShorthandSerializer<T : JsonReader>(
 
 }
 
-object SpawnPointSerializer : ShorthandSerializer<SpawnPoint>(
+internal object SpawnPointSerializer : ShorthandSerializer<SpawnPoint>(
     SpawnPoint::class,
     buildClassSerialDescriptor("SpawnPoint") {
         element<Double>("evolution_factor")
         element<Double>("spawn_weight")
     })
 
-object UnitSpawnDefinitionSerializer : ShorthandSerializer<UnitSpawnDefinition>(
+internal object UnitSpawnDefinitionSerializer : ShorthandSerializer<UnitSpawnDefinition>(
     UnitSpawnDefinition::class,
     buildClassSerialDescriptor("UnitSpawnDefinition") {
         element<EntityID>("unit")
@@ -170,7 +172,7 @@ object UnitSpawnDefinitionSerializer : ShorthandSerializer<UnitSpawnDefinition>(
 )
 
 
-object NoiseFunctionApplicationDeserializer : DeserializationStrategy<NoiseFunctionApplication> {
+internal object NoiseFunctionApplicationDeserializer : DeserializationStrategy<NoiseFunctionApplication> {
     override val descriptor get() = NoiseFunctionApplication.serializer().descriptor
     override fun deserialize(decoder: Decoder): NoiseFunctionApplication {
         require(decoder is JsonDecoder)
@@ -180,7 +182,7 @@ object NoiseFunctionApplicationDeserializer : DeserializationStrategy<NoiseFunct
 }
 
 
-val factorioPrototypeSerializersModule = SerializersModule {
+public val factorioPrototypeSerializersModule: SerializersModule = SerializersModule {
     fun maybeNoiseFunction(it: String?) = if (it == "function-application")
         NoiseFunctionApplicationDeserializer
     else null
@@ -190,12 +192,9 @@ val factorioPrototypeSerializersModule = SerializersModule {
     polymorphicDefaultDeserializer(EVEnergySource::class) { if (it == null) ElectricEnergySource.serializer() else null }
     polymorphicDefaultDeserializer(BVEnergySource::class) { if (it == null) BurnerEnergySource.serializer() else null }
     polymorphicDefaultDeserializer(EHFVEnergySource::class) { if (it == null) ElectricEnergySource.serializer() else null }
-
-    // some mysterious bug due to caches and update order... here's a hacky workaround
-    polymorphicDefaultDeserializer(Sound::class) { if (it == null) Sound.serializer() else null }
 }
 
-val json = Json {
+public val json: Json = Json {
     serializersModule = factorioPrototypeSerializersModule
     allowSpecialFloatingPointValues = true
 }

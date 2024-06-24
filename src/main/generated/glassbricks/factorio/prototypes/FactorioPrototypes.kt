@@ -1,7 +1,7 @@
 // Automatically generated file, do not edit
 @file:OptIn(ExperimentalSerializationApi::class)
 
-package factorioprototype
+package glassbricks.factorio.prototypes
 
 import kotlin.jvm.JvmInline
 import kotlin.reflect.typeOf
@@ -3072,7 +3072,7 @@ public open class EntityParticlePrototype : EntityPrototype() {
 @Serializable(EntityPrototypeRemoveDecoratives.Serializer::class)
 public sealed interface EntityPrototypeRemoveDecoratives {
   public object Serializer :
-      FirstMatchingSerializer<EntityPrototypeRemoveDecoratives>(EntityPrototypeRemoveDecoratives::class,
+      UnionSerializer<EntityPrototypeRemoveDecoratives>(EntityPrototypeRemoveDecoratives::class,
       automatic::class, `true`::class, `false`::class)
 
   @Serializable(automatic.Serializer::class)
@@ -7230,8 +7230,8 @@ public open class RecipeCategory : PrototypeBase() {
 @Serializable(RecipePrototypeExpensive.Serializer::class)
 public sealed interface RecipePrototypeExpensive {
   public object Serializer :
-      FirstMatchingSerializer<RecipePrototypeExpensive>(RecipePrototypeExpensive::class,
-      RecipeData::class, `false`::class)
+      UnionSerializer<RecipePrototypeExpensive>(RecipePrototypeExpensive::class, RecipeData::class,
+      `false`::class)
 
   @Serializable(`false`.Serializer::class)
   public data object `false` : LiteralValue(JsonPrimitive(false)), RecipePrototypeExpensive {
@@ -9556,7 +9556,7 @@ public open class StraightRailPrototype : RailPrototype() {
 @Serializable(TechnologyPrototypeExpensive.Serializer::class)
 public sealed interface TechnologyPrototypeExpensive {
   public object Serializer :
-      FirstMatchingSerializer<TechnologyPrototypeExpensive>(TechnologyPrototypeExpensive::class,
+      UnionSerializer<TechnologyPrototypeExpensive>(TechnologyPrototypeExpensive::class,
       TechnologyData::class, `false`::class)
 
   @Serializable(`false`.Serializer::class)
@@ -9573,8 +9573,8 @@ public sealed interface TechnologyPrototypeExpensive {
 @Serializable(TechnologyPrototypeMaxLevel.Serializer::class)
 public sealed interface TechnologyPrototypeMaxLevel {
   public object Serializer :
-      FirstMatchingSerializer<TechnologyPrototypeMaxLevel>(TechnologyPrototypeMaxLevel::class,
-      UInt::class, infinite::class)
+      UnionSerializer<TechnologyPrototypeMaxLevel>(TechnologyPrototypeMaxLevel::class, UInt::class,
+      infinite::class)
 
   @JvmInline
   @Serializable
@@ -9783,7 +9783,7 @@ public open class TileGhostPrototype : EntityPrototype() {
 @Serializable(TilePrototypeBuildSound.Serializer::class)
 public sealed interface TilePrototypeBuildSound {
   public object Serializer :
-      FirstMatchingSerializer<TilePrototypeBuildSound>(TilePrototypeBuildSound::class, Sound::class,
+      UnionSerializer<TilePrototypeBuildSound>(TilePrototypeBuildSound::class, Sound::class,
       TileBuildSound::class)
 }
 
@@ -12275,13 +12275,13 @@ public open class UtilitySprites : PrototypeBase() {
 @Serializable(VehiclePrototypeBrakingPower.Serializer::class)
 public sealed interface VehiclePrototypeBrakingPower {
   public object Serializer :
-      FirstMatchingSerializer<VehiclePrototypeBrakingPower>(VehiclePrototypeBrakingPower::class,
+      UnionSerializer<VehiclePrototypeBrakingPower>(VehiclePrototypeBrakingPower::class,
       Energy::class, Double::class)
 
   @JvmInline
   @Serializable
   public value class Energy(
-    public val `value`: factorioprototype.Energy,
+    public val `value`: glassbricks.factorio.prototypes.Energy,
   ) : VehiclePrototypeBrakingPower
 
   @JvmInline
@@ -12779,7 +12779,7 @@ public open class Animation4WayValues : JsonReader(), Animation4Way {
  */
 @Serializable(Animation4Way.Serializer::class)
 public sealed interface Animation4Way {
-  public object Serializer : FirstMatchingSerializer<Animation4Way>(Animation4Way::class,
+  public object Serializer : UnionSerializer<Animation4Way>(Animation4Way::class,
       Animation4WayValues::class, Animation::class)
 }
 
@@ -12949,8 +12949,7 @@ public open class AnimationVariationsValues : JsonReader(), AnimationVariations 
  */
 @Serializable(AnimationVariations.Serializer::class)
 public sealed interface AnimationVariations {
-  public object Serializer :
-      FirstMatchingSerializer<AnimationVariations>(AnimationVariations::class,
+  public object Serializer : UnionSerializer<AnimationVariations>(AnimationVariations::class,
       AnimationVariationsValues::class, Animation::class, Array::class)
 
   @Serializable(Array.Serializer::class)
@@ -13395,8 +13394,8 @@ public open class AutoplaceSettings : JsonReader() {
 @Serializable(AutoplaceSpecificationForce.Serializer::class)
 public sealed interface AutoplaceSpecificationForce {
   public object Serializer :
-      FirstMatchingSerializer<AutoplaceSpecificationForce>(AutoplaceSpecificationForce::class,
-      enemy::class, player::class, neutral::class, String::class)
+      UnionSerializer<AutoplaceSpecificationForce>(AutoplaceSpecificationForce::class, enemy::class,
+      player::class, neutral::class, String::class)
 
   @Serializable(enemy.Serializer::class)
   public data object enemy : LiteralValue(JsonPrimitive("enemy")), AutoplaceSpecificationForce {
@@ -13584,8 +13583,7 @@ public open class AutoplaceSpecificationValues : JsonReader(), AutoplaceSpecific
  */
 @Serializable(AutoplaceSpecification.Serializer::class)
 public sealed interface AutoplaceSpecification {
-  public object Serializer :
-      FirstMatchingSerializer<AutoplaceSpecification>(AutoplaceSpecification::class,
+  public object Serializer : UnionSerializer<AutoplaceSpecification>(AutoplaceSpecification::class,
       AutoplaceSpecificationValues::class, AutoplacePeak::class)
 }
 
@@ -15045,8 +15043,7 @@ public open class ClusterTriggerItem : TriggerItem(), TriggerValues {
  */
 @Serializable(CollisionMaskValues.Serializer::class)
 public sealed interface CollisionMaskValues {
-  public object Serializer :
-      FirstMatchingSerializer<CollisionMaskValues>(CollisionMaskValues::class,
+  public object Serializer : UnionSerializer<CollisionMaskValues>(CollisionMaskValues::class,
       CollisionMaskLayer::class, `not-colliding-with-itself`::class,
       `consider-tile-transitions`::class, `colliding-with-tiles-only`::class)
 
@@ -15673,22 +15670,22 @@ public open class DamageTypeFiltersValues : JsonReader(), DamageTypeFilters {
  */
 @Serializable(DamageTypeFilters.Serializer::class)
 public sealed interface DamageTypeFilters {
-  public object Serializer : FirstMatchingSerializer<DamageTypeFilters>(DamageTypeFilters::class,
+  public object Serializer : UnionSerializer<DamageTypeFilters>(DamageTypeFilters::class,
       DamageTypeFiltersValues::class, DamageTypeID::class, Array::class)
 
   @JvmInline
   @Serializable
   public value class DamageTypeID(
-    public val `value`: factorioprototype.DamageTypeID,
+    public val `value`: glassbricks.factorio.prototypes.DamageTypeID,
   ) : DamageTypeFilters
 
   @Serializable(Array.Serializer::class)
   public class Array(
-    values: List<factorioprototype.DamageTypeID>,
-  ) : ArrayValue<factorioprototype.DamageTypeID>(values),
+    values: List<glassbricks.factorio.prototypes.DamageTypeID>,
+  ) : ArrayValue<glassbricks.factorio.prototypes.DamageTypeID>(values),
       DamageTypeFilters {
     public object Serializer : ArrayValueSerializer<Array>(Array::class,
-        typeOf<factorioprototype.DamageTypeID>())
+        typeOf<glassbricks.factorio.prototypes.DamageTypeID>())
   }
 }
 
@@ -16101,7 +16098,7 @@ public open class ElementImageSetValues : JsonReader(), ElementImageSet {
  */
 @Serializable(ElementImageSet.Serializer::class)
 public sealed interface ElementImageSet {
-  public object Serializer : FirstMatchingSerializer<ElementImageSet>(ElementImageSet::class,
+  public object Serializer : UnionSerializer<ElementImageSet>(ElementImageSet::class,
       ElementImageSetValues::class, ElementImageSetLayer::class)
 }
 
@@ -16330,8 +16327,7 @@ public open class ElementImageSetLayerValues : JsonReader(), ElementImageSetLaye
  */
 @Serializable(ElementImageSetLayer.Serializer::class)
 public sealed interface ElementImageSetLayer : ElementImageSet {
-  public object Serializer :
-      FirstMatchingSerializer<ElementImageSetLayer>(ElementImageSetLayer::class,
+  public object Serializer : UnionSerializer<ElementImageSetLayer>(ElementImageSetLayer::class,
       ElementImageSetLayerValues::class, Sprite::class)
 }
 
@@ -16727,14 +16723,13 @@ public open class ExplosionDefinitionValues : JsonReader(), ExplosionDefinition 
  */
 @Serializable(ExplosionDefinition.Serializer::class)
 public sealed interface ExplosionDefinition {
-  public object Serializer :
-      FirstMatchingSerializer<ExplosionDefinition>(ExplosionDefinition::class, EntityID::class,
-      ExplosionDefinitionValues::class)
+  public object Serializer : UnionSerializer<ExplosionDefinition>(ExplosionDefinition::class,
+      EntityID::class, ExplosionDefinitionValues::class)
 
   @JvmInline
   @Serializable
   public value class EntityID(
-    public val `value`: factorioprototype.EntityID,
+    public val `value`: glassbricks.factorio.prototypes.EntityID,
   ) : ExplosionDefinition
 }
 
@@ -18130,7 +18125,7 @@ public open class LayeredSoundValues : JsonReader(), LayeredSound {
  */
 @Serializable(LayeredSound.Serializer::class)
 public sealed interface LayeredSound {
-  public object Serializer : FirstMatchingSerializer<LayeredSound>(LayeredSound::class,
+  public object Serializer : UnionSerializer<LayeredSound>(LayeredSound::class,
       LayeredSoundValues::class, Sound::class)
 }
 
@@ -18501,8 +18496,8 @@ public open class LoaderStructure : JsonReader() {
  */
 @Serializable(LocalisedString.Serializer::class)
 public sealed interface LocalisedString {
-  public object Serializer : FirstMatchingSerializer<LocalisedString>(LocalisedString::class,
-      String::class, Double::class, Boolean::class, Array::class)
+  public object Serializer : UnionSerializer<LocalisedString>(LocalisedString::class, String::class,
+      Double::class, Boolean::class, Array::class)
 
   @JvmInline
   @Serializable
@@ -18780,7 +18775,7 @@ public enum class MapGenSettingsAutoplaceSettings {
 @Serializable(MapGenSettingsPropertyExpressionNames.Serializer::class)
 public sealed interface MapGenSettingsPropertyExpressionNames {
   public object Serializer :
-      FirstMatchingSerializer<MapGenSettingsPropertyExpressionNames>(MapGenSettingsPropertyExpressionNames::class,
+      UnionSerializer<MapGenSettingsPropertyExpressionNames>(MapGenSettingsPropertyExpressionNames::class,
       String::class, Boolean::class, Double::class)
 
   @JvmInline
@@ -18902,7 +18897,7 @@ public open class MapGenSettings : JsonReader() {
  */
 @Serializable(MapGenSize.Serializer::class)
 public sealed interface MapGenSize {
-  public object Serializer : FirstMatchingSerializer<MapGenSize>(MapGenSize::class, Float::class,
+  public object Serializer : UnionSerializer<MapGenSize>(MapGenSize::class, Float::class,
       none::class, `very-low`::class, `very-small`::class, `very-poor`::class, low::class,
       small::class, poor::class, normal::class, medium::class, regular::class, high::class,
       big::class, good::class, `very-high`::class, `very-big`::class, `very-good`::class)
@@ -19123,7 +19118,7 @@ public open class MinimapStyleSpecification : EmptyWidgetStyleSpecification(), S
  */
 @Serializable(RCLayer.Serializer::class)
 public sealed interface RCLayer {
-  public object Serializer : FirstMatchingSerializer<RCLayer>(RCLayer::class, RenderLayer::class,
+  public object Serializer : UnionSerializer<RCLayer>(RCLayer::class, RenderLayer::class,
       CircuitConnectorLayer::class)
 }
 
@@ -19135,7 +19130,7 @@ public sealed interface RCLayer {
 @Serializable(MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder.Serializer::class)
 public sealed interface MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder {
   public object Serializer :
-      FirstMatchingSerializer<MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder>(MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder::class,
+      UnionSerializer<MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder>(MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder::class,
       Byte::class, CircuitConnectorSecondaryDrawOrder::class)
 
   @JvmInline
@@ -19240,8 +19235,8 @@ public open class MiningDrillProductivityBonusModifier : SimpleModifier(), Modif
  */
 @Serializable(ModSettingValue.Serializer::class)
 public sealed interface ModSettingValue {
-  public object Serializer : FirstMatchingSerializer<ModSettingValue>(ModSettingValue::class,
-      Int::class, Double::class, Boolean::class, String::class, Color::class)
+  public object Serializer : UnionSerializer<ModSettingValue>(ModSettingValue::class, Int::class,
+      Double::class, Boolean::class, String::class, Color::class)
 
   @JvmInline
   @Serializable
@@ -19270,7 +19265,7 @@ public sealed interface ModSettingValue {
   @JvmInline
   @Serializable
   public value class Color(
-    public val `value`: factorioprototype.Color,
+    public val `value`: glassbricks.factorio.prototypes.Color,
   ) : ModSettingValue
 }
 
@@ -20279,7 +20274,7 @@ public open class NoiseProcedureDelimiter : JsonReader(), NoiseNumber, NoiseExpr
 @Serializable(NoiseVariableVariableName.Serializer::class)
 public sealed interface NoiseVariableVariableName {
   public object Serializer :
-      FirstMatchingSerializer<NoiseVariableVariableName>(NoiseVariableVariableName::class, x::class,
+      UnionSerializer<NoiseVariableVariableName>(NoiseVariableVariableName::class, x::class,
       y::class, NoiseVariableConstants::class, BaseNamedNoiseExpressions::class, String::class)
 
   @Serializable(x.Serializer::class)
@@ -20353,9 +20348,8 @@ public open class NoiseVariable : JsonReader(), NoiseNumber, NoiseArray, NoiseEx
  */
 @Serializable(NoiseVariableConstants.Serializer::class)
 public sealed interface NoiseVariableConstants : NoiseVariableVariableName {
-  public object Serializer :
-      FirstMatchingSerializer<NoiseVariableConstants>(NoiseVariableConstants::class, String::class,
-      map_seed::class, map_width::class, map_height::class, water_level::class,
+  public object Serializer : UnionSerializer<NoiseVariableConstants>(NoiseVariableConstants::class,
+      String::class, map_seed::class, map_width::class, map_height::class, water_level::class,
       finite_water_level::class, wlc_elevation_minimum::class, wlc_elevation_offset::class,
       cliff_elevation_offset::class, cliff_elevation_interval::class,
       `control-setting_cliffs_richness_multiplier`::class, terrace_elevation_offset::class,
@@ -21845,8 +21839,7 @@ public open class RotatedAnimation4WayValues : JsonReader(), RotatedAnimation4Wa
  */
 @Serializable(RotatedAnimation4Way.Serializer::class)
 public sealed interface RotatedAnimation4Way {
-  public object Serializer :
-      FirstMatchingSerializer<RotatedAnimation4Way>(RotatedAnimation4Way::class,
+  public object Serializer : UnionSerializer<RotatedAnimation4Way>(RotatedAnimation4Way::class,
       RotatedAnimation4WayValues::class, RotatedAnimation::class)
 }
 
@@ -22569,8 +22562,7 @@ public open class SoundValues : JsonReader(), Sound {
  */
 @Serializable(Sound.Serializer::class)
 public sealed interface Sound : LayeredSound, WorkingSound, TilePrototypeBuildSound {
-  public object Serializer : FirstMatchingSerializer<Sound>(Sound::class, SoundValues::class,
-      Array::class)
+  public object Serializer : UnionSerializer<Sound>(Sound::class, SoundValues::class, Array::class)
 
   @Serializable(Array.Serializer::class)
   public class Array(
@@ -23003,8 +22995,8 @@ public open class Sprite4WayValues : JsonReader(), Sprite4Way {
  */
 @Serializable(Sprite4Way.Serializer::class)
 public sealed interface Sprite4Way {
-  public object Serializer : FirstMatchingSerializer<Sprite4Way>(Sprite4Way::class,
-      Sprite4WayValues::class, Sprite::class)
+  public object Serializer : UnionSerializer<Sprite4Way>(Sprite4Way::class, Sprite4WayValues::class,
+      Sprite::class)
 }
 
 /**
@@ -23346,7 +23338,7 @@ public open class SpriteVariationsValues : JsonReader(), SpriteVariations {
  */
 @Serializable(SpriteVariations.Serializer::class)
 public sealed interface SpriteVariations {
-  public object Serializer : FirstMatchingSerializer<SpriteVariations>(SpriteVariations::class,
+  public object Serializer : UnionSerializer<SpriteVariations>(SpriteVariations::class,
       SpriteVariationsValues::class, SpriteSheet::class, Array::class)
 
   @Serializable(Array.Serializer::class)
@@ -23471,13 +23463,13 @@ public open class StorageTankPictures : JsonReader() {
 @Serializable(StreamAttackParametersGunCenterShift.Serializer::class)
 public sealed interface StreamAttackParametersGunCenterShift {
   public object Serializer :
-      FirstMatchingSerializer<StreamAttackParametersGunCenterShift>(StreamAttackParametersGunCenterShift::class,
+      UnionSerializer<StreamAttackParametersGunCenterShift>(StreamAttackParametersGunCenterShift::class,
       Vector::class, GunShift4Way::class)
 
   @JvmInline
   @Serializable
   public value class Vector(
-    public val `value`: factorioprototype.Vector,
+    public val `value`: glassbricks.factorio.prototypes.Vector,
   ) : StreamAttackParametersGunCenterShift
 }
 
@@ -25366,7 +25358,7 @@ public open class WorkingSoundValues : JsonReader(), WorkingSound {
  */
 @Serializable(WorkingSound.Serializer::class)
 public sealed interface WorkingSound {
-  public object Serializer : FirstMatchingSerializer<WorkingSound>(WorkingSound::class,
+  public object Serializer : UnionSerializer<WorkingSound>(WorkingSound::class,
       WorkingSoundValues::class, Sound::class)
 }
 

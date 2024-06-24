@@ -1,4 +1,4 @@
-package factorioprototype
+package glassbricks.factorio.prototypes
 
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.serializer
@@ -18,10 +18,9 @@ import kotlin.reflect.typeOf
 
 internal var eagerInit = false
 
-abstract class JsonReader {
+public abstract class JsonReader {
     private lateinit var json: Json
-    lateinit var jsonObj: JsonObject
-        internal set
+    private lateinit var jsonObj: JsonObject
 
     private val values = mutableMapOf<String, Any?>()
 
@@ -125,7 +124,7 @@ private val inlineTypes = setOf(
 )
 
 @OptIn(ExperimentalSerializationApi::class)
-fun JsonReader.tryManuallyDeserializing(
+private fun JsonReader.tryManuallyDeserializing(
     json: Json,
     name: String,
     el: JsonElement,
@@ -180,7 +179,7 @@ private fun getSerialName(
         ?: klass.simpleName!!
 
 
-open class JsonReaderSerializer<T : JsonReader>(private val klass: KClass<T>) : KSerializer<T> {
+public open class JsonReaderSerializer<T : JsonReader>(private val klass: KClass<T>) : KSerializer<T> {
     @ExperimentalSerializationApi
     override val descriptor: SerialDescriptor = object : SerialDescriptor {
         override val serialName: String = getSerialName(klass)
@@ -232,14 +231,14 @@ open class JsonReaderSerializer<T : JsonReader>(private val klass: KClass<T>) : 
         return instance
     }
 
-    override fun serialize(encoder: Encoder, value: T) = throw NotImplementedError()
+    override fun serialize(encoder: Encoder, value: T): Nothing = throw NotImplementedError()
 }
 
-abstract class LiteralValue(vararg val values: JsonPrimitive)
+public abstract class LiteralValue(public vararg val values: JsonPrimitive)
 
 @OptIn(InternalSerializationApi::class)
-open class LiteralValueSerializer<T : LiteralValue>(clazz: KClass<T>) : KSerializer<T> {
-    val value = clazz.objectInstance!!
+public open class LiteralValueSerializer<T : LiteralValue>(clazz: KClass<T>) : KSerializer<T> {
+    private val value = clazz.objectInstance!!
 
     @OptIn(ExperimentalSerializationApi::class)
     override val descriptor: SerialDescriptor = buildSerialDescriptor("LiteralValue", SerialKind.CONTEXTUAL)
@@ -261,7 +260,7 @@ open class LiteralValueSerializer<T : LiteralValue>(clazz: KClass<T>) : KSeriali
     }
 }
 
-abstract class ArrayValue<T : Any>(val values: List<T>) : List<T> by values {
+public abstract class ArrayValue<T : Any>(public val values: List<T>) : List<T> by values {
     override fun toString(): String = "${this::class.simpleName}($values)"
     override fun equals(other: Any?): Boolean =
         other?.javaClass == javaClass && (other as ArrayValue<*>).values == values
@@ -270,7 +269,7 @@ abstract class ArrayValue<T : Any>(val values: List<T>) : List<T> by values {
 }
 
 @OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
-abstract class ArrayValueSerializer<T : ArrayValue<*>>(
+public abstract class ArrayValueSerializer<T : ArrayValue<*>>(
     klass: KClass<T>,
     elementType: KType,
 ) : KSerializer<T> {
@@ -290,8 +289,9 @@ abstract class ArrayValueSerializer<T : ArrayValue<*>>(
 }
 
 
-@OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
-open class FirstMatchingSerializer<T : Any>(
+@OptIn(InternalSerializationApi::class)
+@ExperimentalSerializationApi
+public open class UnionSerializer<T : Any>(
     klass: KClass<T>,
     vararg subclasses: KClass<out T>
 ) : KSerializer<T> {
@@ -387,7 +387,7 @@ open class FirstMatchingSerializer<T : Any>(
         }
 
         fun isOtherFirstMatchingSerializer(klass: KClass<*>): Boolean {
-            return klass.serializerOrNull()?.let { it is FirstMatchingSerializer } == true
+            return klass.serializerOrNull()?.let { it is UnionSerializer } == true
         }
 
         fun isEnum(klass: KClass<*>): Boolean {
@@ -398,7 +398,7 @@ open class FirstMatchingSerializer<T : Any>(
             .filter { isJsonReader(it) }
             .associateWith {
                 @Suppress("UNCHECKED_CAST")
-                JsonReaderSerializer(it as KClass<out JsonReader>)
+                (JsonReaderSerializer(it as KClass<out JsonReader>))
             }
         // for each class, find keys that are _unique_ to that class (not shared with any other class)
         val classKeyCount = mutableMapOf<String, Int>()
@@ -446,7 +446,7 @@ open class FirstMatchingSerializer<T : Any>(
                 val values = subclass.objectInstance as LiteralValue
                 matchers.add(LiteralMatcher(values, subclass.serializer()))
             } else if (isOtherFirstMatchingSerializer(subclass)) {
-                val serializer = subclass.serializer() as FirstMatchingSerializer<*>
+                val serializer = subclass.serializer() as UnionSerializer<*>
                 matchers.addAll(serializer.classMatchers)
             } else if (isEnum(subclass)) {
                 matchers.add(EnumMatcher(subclass))

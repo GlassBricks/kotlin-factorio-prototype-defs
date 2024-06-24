@@ -1,5 +1,3 @@
-package factorioprototype.gen
-
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -7,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
-public const val packageName = "factorioprototype"
+public const val packageName = "glassbricks.factorio.prototypes"
 
 private val manuallySerialized = setOf(
     "ItemIngredientPrototype",
@@ -381,7 +379,6 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         Ignore,
         Allowed,
         Nullable,
-        SuperSet,
         Unknown
     }
 
@@ -704,7 +701,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             } else if (union.canBeAutomaticallySerialized()) {
                 addAnnotation(Serializable::class)
             } else {
-                addSubclassSerializer(union.className, "FirstMatchingSerializer") {
+                addSubclassSerializer(union.className, "UnionSerializer") {
                     for (member in union.members) {
                         when (member) {
                             is ProtoOrConceptGen ->

@@ -1,11 +1,6 @@
-package factorioprototype
+package glassbricks.factorio.prototypes
 
-import defaultDataRaw
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.descriptors.nonNullOriginal
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.decodeFromStream
-import kotlinx.serialization.serializer
 import kotlin.test.Test
 import kotlin.time.measureTime
 
@@ -15,7 +10,6 @@ class DeserializationTest {
     @Test
     fun canInstantiateSerializer() {
         val serializer = Sprite.Serializer
-//        println(serializer.descriptor.elementDescriptors.toList())
         for (i in 0 until serializer.descriptor.elementsCount) {
             println(serializer.descriptor.getElementName(i))
             println(serializer.descriptor.getElementDescriptor(i))
@@ -80,11 +74,10 @@ class DeserializationTest {
         """.trimIndent()
         val soundObject = json.decodeFromString(Sound.serializer(), sound)
         assert(soundObject is SoundValues)
-        val dataRaw = defaultDataRaw!!
+        val dataRaw = javaClass.getResource("/data-raw-dump.json")!!
         eagerInit = true
         val time = measureTime {
-            val jsonElement = json.decodeFromStream<JsonElement>(dataRaw.openStream().buffered())
-            json.decodeFromJsonElement(PrototypeData.serializer(), jsonElement)
+            loadFactorioPrototypeDataFromStream(dataRaw.openStream())
         }
         println(time)
     }
