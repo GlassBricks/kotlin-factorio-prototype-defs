@@ -11,16 +11,11 @@ import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.typeOf
 
 
 internal var eagerInit = false
-
-private class Uninitialized(
-    val altName: String?,
-    val type: KType
-)
-
 
 abstract class JsonReader {
     private lateinit var json: Json
@@ -28,6 +23,15 @@ abstract class JsonReader {
         internal set
 
     private val values = mutableMapOf<String, Any?>()
+
+
+    internal class Uninitialized(
+        val altName: String?,
+        val type: KType
+    )
+
+    @Suppress("UNCHECKED_CAST")
+    internal fun getDeclaredKeys(): Map<String, Uninitialized> = values as Map<String, Uninitialized>
 
     @Suppress("UNCHECKED_CAST")
     protected fun <T> get(name: String, type: KType, altName: String? = null): T {
@@ -67,7 +71,7 @@ abstract class JsonReader {
         PropertyDelegateProvider { _, property ->
             val type = property.returnType
             val name = property.name
-            if (eagerInit) values[name] = Uninitialized(altName, type)
+            values[name] = Uninitialized(altName, type)
             ReadOnlyProperty { _, _ -> get(name, type) }
         }
 
@@ -145,24 +149,127 @@ fun tryManuallyDeserializing(
     }
 }
 
-@OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
+private fun getSerialName(
+    klass: KClass<*>
+): String =
+    (klass.annotations.find { it is SerialName } as? SerialName)?.value
+        ?: klass.simpleName!!
+
+
 open class JsonReaderSerializer<T : JsonReader>(private val klass: KClass<T>) : KSerializer<T> {
+    @ExperimentalSerializationApi
+    override val descriptor: SerialDescriptor = object : SerialDescriptor {
+        override val serialName: String = getSerialName(klass)
+        override val kind: SerialKind get() = StructureKind.CLASS
+        override val elementsCount: Int
+        private val indices = mutableMapOf<String, Int>()
+        private val elementNames: Array<String>
+        private val elementDescriptors: Array<Any>
+
+        init {
+            val values = klass.java.getConstructor().newInstance().getDeclaredKeys()
+                .entries.toList()
+            elementsCount = values.size
+            elementNames = Array(elementsCount) { i ->
+                values[i].key
+                    .also { indices[it] = i }
+            }
+            elementDescriptors = Array(elementsCount) { values[it].value.type }
+        }
+
+
+        override fun getElementDescriptor(index: Int): SerialDescriptor {
+            val type = elementDescriptors[index]
+            if (type is KType) {
+                return serializer(type).descriptor.also { elementDescriptors[index] = it }
+            }
+            return type as SerialDescriptor
+        }
+
+        override fun getElementAnnotations(index: Int): List<Annotation> = emptyList()
+        override fun getElementIndex(name: String): Int =
+            indices[name] ?: throw SerializationException("Unknown key: $name")
+
+        override fun getElementName(index: Int): String = elementNames[index]
+        override fun isElementOptional(index: Int): Boolean = getElementDescriptor(index).isNullable
+
+        override fun toString(): String = klass.qualifiedName!!
+    }
+
+    override fun deserialize(decoder: Decoder): T {
+        val element = (decoder as JsonDecoder).decodeJsonElement().jsonObject
+        val instance = klass.java.getConstructor().newInstance()
+        instance.init(decoder.json, element)
+        return instance
+    }
+
+    override fun serialize(encoder: Encoder, value: T) = throw NotImplementedError()
+}
+
+@OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
+open class FirstMatchingSubclassSerializer<T : Any>(
+    klass: KClass<T>,
+    vararg subclasses: KClass<out T>
+) : KSerializer<T> {
+    private class ClassMatcher<T : JsonReader>(
+        val keys: List<String>,
+        val serializer: JsonReaderSerializer<T>,
+    ) {
+        fun matches(element: JsonObject): Boolean = keys.any { it in element }
+    }
+
+    init {
+        subclasses.forEach {
+            require(klass.isSubclassOf(JsonReader::class))
+        }
+    }
+
+    private val classMatchers = run {
+        val serializers = subclasses.map {
+            @Suppress("UNCHECKED_CAST")
+            JsonReaderSerializer(it as KClass<out JsonReader>)
+        }
+        // for each class, find keys that are _unique_ to that class (not shared with any other class)
+        val keyCounts = mutableMapOf<String, Int>()
+        for (serializer in serializers) {
+            val descriptor = serializer.descriptor
+            for (i in 0 until descriptor.elementsCount) {
+                val name = descriptor.getElementName(i)
+                keyCounts[name] = (keyCounts[name] ?: 0) + 1
+            }
+        }
+        serializers.map {
+            val descriptor = it.descriptor
+            for (i in 0..<descriptor.elementsCount) {
+                val elDescriptor = descriptor.getElementDescriptor(i)
+                if (!elDescriptor.isNullable) {
+                    return@map ClassMatcher(listOf(descriptor.getElementName(i)), it)
+                }
+            }
+            val allElements = descriptor.elementNames
+                .filter { keyCounts[it] == 1 }
+            if (allElements.isEmpty()) {
+                throw SerializationException("No unique keys found for class ${it.descriptor.serialName}")
+            }
+            ClassMatcher(allElements, it)
+        }
+    }
+
     override val descriptor: SerialDescriptor = buildSerialDescriptor(
         getSerialName(klass),
         SerialKind.CONTEXTUAL
     )
 
-    private fun getSerialName(klass: KClass<T>): String {
-        return (klass.annotations.find { it is SerialName } as? SerialName)?.value
-            ?: klass.simpleName!!
+    override fun serialize(encoder: Encoder, value: T) {
+        throw NotImplementedError()
     }
 
     override fun deserialize(decoder: Decoder): T {
-        val element = (decoder as JsonDecoder).decodeJsonElement()
-        val instance = klass.java.getConstructor().newInstance()
-        instance.init(decoder.json, element.jsonObject)
-        return instance
+        require(decoder is JsonDecoder)
+        val element = decoder.decodeJsonElement().jsonObject
+        val matcher = classMatchers.firstOrNull { it.matches(element) }
+            ?: throw SerializationException("No matching subclass found for $element")
+        @Suppress("UNCHECKED_CAST")
+        return matcher.serializer.deserialize(decoder) as T
     }
-
-    override fun serialize(encoder: Encoder, value: T) = throw NotImplementedError()
 }
