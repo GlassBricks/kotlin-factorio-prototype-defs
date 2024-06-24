@@ -7,6 +7,7 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
@@ -29,6 +30,7 @@ typealias Tuple4<T> = List<T>
 @Serializable(with = ItemOrListSerializer::class)
 class ItemOrList<T>(private val value: List<T>) : List<T> by value {
     constructor(value: T) : this(listOf(value))
+
     override fun toString(): String = value.toString()
     override fun equals(other: Any?): Boolean = value == other
     override fun hashCode(): Int = value.hashCode()
@@ -127,6 +129,37 @@ object ProductPrototypeSerializer : ItemFluidSerializer<ProductPrototype>(
     "ProductPrototype"
 )
 
+object SpawnPointSerializer : KSerializer<SpawnPoint> {
+    override val descriptor = buildClassSerialDescriptor("SpawnPoint") {
+        element<Double>("evolution_factor")
+        element<Double>("spawn_weight")
+    }
+
+    override fun serialize(encoder: Encoder, value: SpawnPoint) {
+        throw NotImplementedError()
+    }
+
+    private val jsonReaderSerializer = JsonReaderSerializer(SpawnPoint::class)
+
+    override fun deserialize(decoder: Decoder): SpawnPoint {
+        require(decoder is JsonDecoder)
+        val obj = when (val element = decoder.decodeJsonElement()) {
+            is JsonArray -> {
+                JsonObject(
+                    mapOf(
+                        "evolution_factor" to element[0],
+                        "spawn_weight" to element[1]
+                    )
+                )
+            }
+
+            is JsonObject -> element
+            else -> throw SerializationException("Unexpected element: $element")
+        }
+        return jsonReaderSerializer.getFromJson(decoder.json, obj)
+    }
+}
+
 object NoiseFunctionApplicationDeserializer : DeserializationStrategy<NoiseFunctionApplication> {
     override val descriptor get() = NoiseFunctionApplication.serializer().descriptor
     override fun deserialize(decoder: Decoder): NoiseFunctionApplication {
@@ -147,7 +180,7 @@ val factorioPrototypeSerializersModule = SerializersModule {
     polymorphicDefaultDeserializer(EVEnergySource::class) { if (it == null) ElectricEnergySource.serializer() else null }
     polymorphicDefaultDeserializer(BVEnergySource::class) { if (it == null) BurnerEnergySource.serializer() else null }
     polymorphicDefaultDeserializer(EHFVEnergySource::class) { if (it == null) ElectricEnergySource.serializer() else null }
-    
+
     // some mysterious bug due to caches and update order... here's a hacky workaround
     polymorphicDefaultDeserializer(Sound::class) { if (it == null) Sound.serializer() else null }
 }

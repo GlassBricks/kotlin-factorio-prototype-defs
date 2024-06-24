@@ -14,14 +14,16 @@ private val manuallySerialized = setOf(
     "IngredientPrototype",
     "ItemProductPrototype",
     "ProductPrototype",
+    "SpawnPoint"
 )
 
 private val flattenStructType = setOf(
     "ItemIngredientPrototype",
     "ItemProductPrototype",
+    "SpawnPoint"
 )
 
-private val overrideType = mapOf("MapPosition" to BasicType("Vector"))
+private val replaceType = mapOf("MapPosition" to BasicType("Vector"))
 
 @OptIn(ExperimentalSerializationApi::class)
 class DeclarationsGenerator(private val docs: ApiDocs) {
@@ -300,7 +302,9 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                         add(UnionSubtype.Primitive(predefined[memberType.value]!!))
                         continue
                     }
-                    val referencedValue = byName[memberType.value] ?: return null
+                    val referencedValue = byName[memberType.value] ?: run {
+                        return null
+                    }
                     if (referencedValue is Concept) {
                         val actualType = referencedValue.type.followTypeAliases()
                         if (actualType is BasicType && actualType.value in predefined) {
@@ -333,7 +337,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private fun findUnionTypes() {
         for (concept in typePartialOrder) {
-            if (concept !is Concept) continue
+            if (concept !is Concept || concept.name in toIgnore || concept.name in replaceType || concept.name in predefined) continue
             val innerType = concept.type.innerType()
             when {
                 innerType is StructType || concept.name in flattenStructType -> {
@@ -497,9 +501,9 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private fun generateConcept(concept: Concept) {
         if (concept.name in predefined || concept.name in toIgnore) return
-        val type = overrideType[concept.name] ?: concept.type
+        val type = replaceType[concept.name] ?: concept.type
         val isSimpleStructType = type is StructType || concept.name in flattenStructType
-        if (concept.properties != null && concept.name !in overrideType) {
+        if (concept.properties != null && concept.name !in replaceType) {
             val genType = if (isSimpleStructType) MainType(concept) else ConceptValues(concept)
             generateClass(genType)
         }

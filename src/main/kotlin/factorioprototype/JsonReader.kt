@@ -226,6 +226,11 @@ open class JsonReaderSerializer<T : JsonReader>(private val klass: KClass<T>) : 
         instance.init(decoder.json, element)
         return instance
     }
+    internal fun getFromJson(json: Json, element: JsonObject): T {
+        val instance = klass.java.getConstructor().newInstance()
+        instance.init(json, element)
+        return instance
+    }
 
     override fun serialize(encoder: Encoder, value: T) = throw NotImplementedError()
 }

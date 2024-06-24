@@ -22843,27 +22843,15 @@ public enum class SoundType {
  * specified as a table with numbered keys then the first value is the evolution factor and the second
  * is the spawn weight.
  */
-@Serializable(SpawnPointValues.Serializer::class)
-public open class SpawnPointValues : JsonReader() {
+@Serializable(SpawnPointSerializer::class)
+public open class SpawnPoint : JsonReader() {
   public val evolution_factor: Double by fromJson()
 
   /**
    * Must be `>= 0`.
    */
   public val spawn_weight: Double by fromJson()
-
-  public object Serializer : JsonReaderSerializer<SpawnPointValues>(SpawnPointValues::class)
 }
-
-/**
- * The definition of a evolution and probability weights for a [spawnable
- * unit](prototype:UnitSpawnDefinition) for a [EnemySpawnerPrototype](prototype:EnemySpawnerPrototype).
- *
- * It can be specified as a table with named or numbered keys, but not a mix of both. If this is
- * specified as a table with numbered keys then the first value is the evolution factor and the second
- * is the spawn weight.
- */
-public typealias SpawnPoint = UnknownUnion
 
 @Serializable(SpeechBubbleStyleSpecification.Serializer::class)
 @SerialName("speech_bubble_style")
