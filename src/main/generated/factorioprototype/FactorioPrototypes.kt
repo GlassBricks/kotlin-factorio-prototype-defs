@@ -951,8 +951,6 @@ public open class BatteryEquipmentPrototype : EquipmentPrototype() {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [ElectricEnergySource]
  *  - [VoidEnergySource]
@@ -1442,8 +1440,6 @@ public open class CapsulePrototype : ItemPrototype() {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [BurnerEnergySource]
  *  - [VoidEnergySource]
@@ -3068,8 +3064,6 @@ public open class EntityParticlePrototype : EntityPrototype() {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [EntityPrototypeRemoveDecoratives.automatic]
  *  - [EntityPrototypeRemoveDecoratives.true]
@@ -5594,8 +5588,6 @@ public open class Loader1x2Prototype : LoaderPrototype() {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [ElectricEnergySource]
  *  - [HeatEnergySource]
@@ -7231,8 +7223,6 @@ public open class RecipeCategory : PrototypeBase() {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [RecipeData]
  *  - [RecipePrototypeExpensive.false]
@@ -9559,8 +9549,6 @@ public open class StraightRailPrototype : RailPrototype() {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [TechnologyData]
  *  - [TechnologyPrototypeExpensive.false]
@@ -9578,8 +9566,6 @@ public sealed interface TechnologyPrototypeExpensive {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [TechnologyPrototypeMaxLevel.UInt]
  *  - [TechnologyPrototypeMaxLevel.infinite]
@@ -9790,8 +9776,6 @@ public open class TileGhostPrototype : EntityPrototype() {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [Sound]
  *  - [TileBuildSound]
@@ -12284,8 +12268,6 @@ public open class UtilitySprites : PrototypeBase() {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [VehiclePrototypeBrakingPower.Energy]
  *  - [VehiclePrototypeBrakingPower.Double]
@@ -12960,8 +12942,6 @@ public open class AnimationVariationsValues : JsonReader(), AnimationVariations 
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [AnimationVariationsValues]
  *  - [Animation]
@@ -13406,8 +13386,6 @@ public open class AutoplaceSettings : JsonReader() {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [AutoplaceSpecificationForce.enemy]
  *  - [AutoplaceSpecificationForce.player]
@@ -15059,8 +15037,6 @@ public open class ClusterTriggerItem : TriggerItem(), TriggerValues {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [CollisionMaskLayer]
  *  - [CollisionMaskValues.not-colliding-with-itself]
@@ -15690,8 +15666,6 @@ public open class DamageTypeFiltersValues : JsonReader(), DamageTypeFilters {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [DamageTypeFiltersValues]
  *  - [DamageTypeFilters.DamageTypeID]
@@ -16747,8 +16721,6 @@ public open class ExplosionDefinitionValues : JsonReader(), ExplosionDefinition 
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [ExplosionDefinition.EntityID]
  *  - [ExplosionDefinitionValues]
@@ -18152,8 +18124,6 @@ public open class LayeredSoundValues : JsonReader(), LayeredSound {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [LayeredSoundValues]
  *  - [Sound]
@@ -18802,8 +18772,6 @@ public enum class MapGenSettingsAutoplaceSettings {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [MapGenSettingsPropertyExpressionNames.String]
  *  - [MapGenSettingsPropertyExpressionNames.Boolean]
@@ -19149,8 +19117,6 @@ public open class MinimapStyleSpecification : EmptyWidgetStyleSpecification(), S
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [RenderLayer]
  *  - [CircuitConnectorLayer]
@@ -19162,8 +19128,6 @@ public sealed interface RCLayer {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder.Byte]
  *  - [CircuitConnectorSecondaryDrawOrder]
@@ -19267,8 +19231,6 @@ public open class MiningDrillProductivityBonusModifier : SimpleModifier(), Modif
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [ModSettingValue.Int]
  *  - [ModSettingValue.Double]
@@ -20307,8 +20269,6 @@ public open class NoiseProcedureDelimiter : JsonReader(), NoiseNumber, NoiseExpr
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [NoiseVariableVariableName.x]
  *  - [NoiseVariableVariableName.y]
@@ -22603,8 +22563,6 @@ public open class SoundValues : JsonReader(), Sound {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [SoundValues]
  *  - [Sound.Array]
@@ -23381,8 +23339,6 @@ public open class SpriteVariationsValues : JsonReader(), SpriteVariations {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [SpriteVariationsValues]
  *  - [SpriteSheet]
@@ -23508,8 +23464,6 @@ public open class StorageTankPictures : JsonReader() {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [StreamAttackParametersGunCenterShift.Vector]
  *  - [GunShift4Way]
@@ -24727,8 +24681,6 @@ public open class TreeVariation : JsonReader() {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [DirectTriggerItem]
  *  - [AreaTriggerItem]
@@ -24772,8 +24724,6 @@ public sealed class TriggerDeliveryItem : JsonReader() {
 }
 
 /**
- *
- *
  * Includes the following types:
  *  - [DamageTriggerEffectItem]
  *  - [CreateEntityTriggerEffectItem]

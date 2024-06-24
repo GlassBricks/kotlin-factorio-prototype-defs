@@ -690,8 +690,11 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             addModifiers(KModifier.SEALED)
 
             addDescription(concept?.description)
+            if(kdoc.isNotEmpty()){
+                addKdoc("\n\n")
+            }
             addKdoc(buildCodeBlock {
-                add("\n\nIncludes the following types:\n")
+                add("Includes the following types:\n")
                 for (member in union.members) {
                     add(" - [%L]\n", member.getClassName(union).simpleNames.joinToString("."))
                 }
