@@ -358,6 +358,11 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 }
 
                 innerType is UnionType -> {
+                    val itemOrList = tryGetItemOrListValue(innerType)?.first
+                    if (itemOrList != null) {
+                        addInnerUnion(itemOrList, concept, "Values", false)
+                        continue
+                    }
                     val unionMembers = tryGetUnionMembers(
                         concept,
                         innerType
@@ -376,7 +381,13 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
 
     private val innerUnions = mutableMapOf<Set<UnionMember>, InnerUnion>()
-    private fun findInnerUnions() {
+
+    private fun addInnerUnion(
+        type: TypeDefinition,
+        source: ProtoOrConcept,
+        subName: String,
+        tryGetNameFromMembers: Boolean = true
+    ) {
         fun tryGetNameByLetterPrefix(options: Set<UnionMember>): String? {
             if (!options.all { it is ProtoOrConceptGen }) return null
             val optionNames = options.map { (it as ProtoOrConceptGen).name }
@@ -393,27 +404,26 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             return letters.concatToString() + baseName
         }
 
-        fun visitProperty(
-            source: ProtoOrConcept,
-            property: Property,
-        ) {
-            val type = property.type.innerType()
-            val options = tryGetUnionMembers(null, type) ?: return
+        val options = tryGetUnionMembers(null, type) ?: return
+        if (options in innerUnions) return
+        val name =
+            (if (tryGetNameFromMembers) tryGetNameByLetterPrefix(options) else null)
+                ?: (source.name + subName)
 
-            if (options in innerUnions) return
+        val union = InnerUnion(name, options)
+        registerUnion(union)
+        innerUnions[options] = union
+    }
 
-            val name = tryGetNameByLetterPrefix(options)
-                ?: (source.name + property.name.toCamelCase())
-
-            val union = InnerUnion(name, options)
-            registerUnion(union)
-            innerUnions[options] = union
-        }
+    private fun findInnerUnions() {
 
         for (value in typePartialOrder) {
             val properties = value.properties ?: continue
             for (property in properties) {
-                visitProperty(value, property)
+                val type = property.type.innerType()
+                val itemOrList = tryGetItemOrListValue(type)?.first
+                val actualType = itemOrList ?: type
+                addInnerUnion(actualType, value, property.name.toCamelCase())
             }
         }
     }
@@ -584,18 +594,15 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             is UnionType -> {
                 tryMakeEnum(source, property, typeDefinition, isRoot)
                     ?: tryMakeAllOneTypeUnion(typeDefinition)
-                    ?: tryGenerateUnion(source, property)
+                    ?: tryGenerateUnion(source, property, typeDefinition, isRoot)
                     ?: tryMakeItemOrList(source, property, typeDefinition)
                     ?: ClassName(packageName, "UnknownUnion").withNoDec()
             }
         }
     }
 
-    private fun tryMakeItemOrList(
-        source: ProtoOrConceptGen,
-        property: Property?,
-        typeDefinition: UnionType
-    ): TypeNameWithDecl? {
+    private fun tryGetItemOrListValue(typeDefinition: TypeDefinition): Pair<TypeDefinition, String>? {
+        if (typeDefinition !is UnionType) return null
         if (typeDefinition.options.size != 2) return null
         val first = typeDefinition.options[0]
         val second = typeDefinition.options[1]
@@ -606,22 +613,32 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         } else {
             return null
         }
+        return first to innerName
+    }
 
+    private fun tryMakeItemOrList(
+        source: ProtoOrConceptGen,
+        property: Property?,
+        typeDefinition: UnionType
+    ): TypeNameWithDecl? {
+        val (first, innerName) = tryGetItemOrListValue(typeDefinition) ?: return null
         return ClassName(packageName, innerName).parameterizedBy(
             mapTypeDefinition(first, source, property).typeName // allow declaration here
         ).withNoDec()
     }
 
-
-    private fun tryGenerateUnion(source: ProtoOrConceptGen, property: Property?): TypeNameWithDecl? {
-        if (property == null) {
+    private fun tryGenerateUnion(
+        source: ProtoOrConceptGen, property: Property?,
+        typeDefinition: UnionType, isRoot: Boolean
+    ): TypeNameWithDecl? {
+        if (property == null && isRoot) {
             if (source is MainType && source.inner is Concept) {
                 val union = conceptUnions[source.inner as Concept] ?: return null
                 return generateUnion(union)
             }
         } else {
-            return tryGetUnionMembers(null, property.type)
-                ?.let { innerUnions[it]!! }
+            return tryGetUnionMembers(null, typeDefinition)
+                ?.let { innerUnions[it] }
                 ?.let { generateUnion(it) }
         }
         return null

@@ -210,28 +210,6 @@ public open class AmmoCategory : PrototypeBase() {
 }
 
 /**
- *
- *
- * Includes the following types:
- *  - [AmmoType]
- *  - [AmmoItemPrototypeAmmoType.Array]
- */
-@Serializable(AmmoItemPrototypeAmmoType.Serializer::class)
-public sealed interface AmmoItemPrototypeAmmoType {
-  public object Serializer :
-      FirstMatchingSerializer<AmmoItemPrototypeAmmoType>(AmmoItemPrototypeAmmoType::class,
-      AmmoType::class, Array::class)
-
-  @Serializable(Array.Serializer::class)
-  public class Array(
-    values: List<AmmoType>,
-  ) : ArrayValue<AmmoType>(values),
-      AmmoItemPrototypeAmmoType {
-    public object Serializer : ArrayValueSerializer<Array>(Array::class, typeOf<AmmoType>())
-  }
-}
-
-/**
  * Ammo used for a gun.
  */
 @Serializable(AmmoItemPrototype.Serializer::class)
@@ -244,7 +222,7 @@ public open class AmmoItemPrototype : ItemPrototype() {
    * When using an array of AmmoTypes, they have the additional
    * [AmmoType::source_type](prototype:AmmoType::source_type) property.
    */
-  public val ammo_type: AmmoItemPrototypeAmmoType by fromJson()
+  public val ammo_type: ItemOrList<AmmoType> by fromJson()
 
   /**
    * Number of shots before ammo item is consumed. Must be >= `1`.
@@ -2706,35 +2684,6 @@ public open class DeliverByRobotsAchievementPrototype : AchievementPrototype() {
 }
 
 /**
- *
- *
- * Includes the following types:
- *  - [EntityPrototypeRemainsWhenMined.EntityID]
- *  - [EntityPrototypeRemainsWhenMined.Array]
- */
-@Serializable(EntityPrototypeRemainsWhenMined.Serializer::class)
-public sealed interface EntityPrototypeRemainsWhenMined {
-  public object Serializer :
-      FirstMatchingSerializer<EntityPrototypeRemainsWhenMined>(EntityPrototypeRemainsWhenMined::class,
-      EntityID::class, Array::class)
-
-  @JvmInline
-  @Serializable
-  public value class EntityID(
-    public val `value`: factorioprototype.EntityID,
-  ) : EntityPrototypeRemainsWhenMined
-
-  @Serializable(Array.Serializer::class)
-  public class Array(
-    values: List<factorioprototype.EntityID>,
-  ) : ArrayValue<factorioprototype.EntityID>(values),
-      EntityPrototypeRemainsWhenMined {
-    public object Serializer : ArrayValueSerializer<Array>(Array::class,
-        typeOf<factorioprototype.EntityID>())
-  }
-}
-
-/**
  * This prototype is used for receiving an achievement when the player finishes the game without
  * building a specific entity.
  */
@@ -2745,7 +2694,7 @@ public open class DontBuildEntityAchievementPrototype : AchievementPrototype() {
    * This will disable the achievement, if this entity is placed. If you finish the game without
    * building this entity, you receive the achievement.
    */
-  public val dont_build: EntityPrototypeRemainsWhenMined by fromJson()
+  public val dont_build: ItemOrList<EntityID> by fromJson()
 
   public val amount: UInt? by fromJson()
 
@@ -2780,14 +2729,14 @@ public open class DontUseEntityInEnergyProductionAchievementPrototype : Achievem
    * This will **not** disable the achievement, if this entity is placed, and you have received any
    * amount of power from it.
    */
-  public val excluded: EntityPrototypeRemainsWhenMined by fromJson()
+  public val excluded: ItemOrList<EntityID> by fromJson()
 
   /**
    * This will disable the achievement, if this entity is placed, and you have received any amount
    * of power from it. If you finish the game without receiving power from this entity, you receive the
    * achievement.
    */
-  public val included: EntityPrototypeRemainsWhenMined? by fromJson()
+  public val included: ItemOrList<EntityID>? by fromJson()
 
   public val last_hour_only: Boolean? by fromJson()
 
@@ -2983,29 +2932,6 @@ public open class ElectricTurretPrototype : TurretPrototype() {
 }
 
 /**
- *
- *
- * Includes the following types:
- *  - [CreateDecorativesTriggerEffectItem]
- *  - [TurretPrototypeSpawnDecoration.Array]
- */
-@Serializable(TurretPrototypeSpawnDecoration.Serializer::class)
-public sealed interface TurretPrototypeSpawnDecoration {
-  public object Serializer :
-      FirstMatchingSerializer<TurretPrototypeSpawnDecoration>(TurretPrototypeSpawnDecoration::class,
-      CreateDecorativesTriggerEffectItem::class, Array::class)
-
-  @Serializable(Array.Serializer::class)
-  public class Array(
-    values: List<CreateDecorativesTriggerEffectItem>,
-  ) : ArrayValue<CreateDecorativesTriggerEffectItem>(values),
-      TurretPrototypeSpawnDecoration {
-    public object Serializer : ArrayValueSerializer<Array>(Array::class,
-        typeOf<CreateDecorativesTriggerEffectItem>())
-  }
-}
-
-/**
  * Can spawn entities. Used for biter/spitter nests.
  */
 @Serializable(EnemySpawnerPrototype.Serializer::class)
@@ -3086,7 +3012,7 @@ public open class EnemySpawnerPrototype : EntityWithOwnerPrototype() {
    * generator](https://wiki.factorio.com/Map_generator). Placed when enemies expand if
    * `spawn_decorations_on_expansion` is set to true.
    */
-  public val spawn_decoration: TurretPrototypeSpawnDecoration? by fromJson()
+  public val spawn_decoration: ItemOrList<CreateDecorativesTriggerEffectItem>? by fromJson()
 
   public object Serializer :
       JsonReaderSerializer<EnemySpawnerPrototype>(EnemySpawnerPrototype::class)
@@ -3171,28 +3097,6 @@ public sealed interface EntityPrototypeRemoveDecoratives {
   public data object `false` : LiteralValue(JsonPrimitive("false"), JsonPrimitive(false)),
       EntityPrototypeRemoveDecoratives {
     public object Serializer : LiteralValueSerializer<`false`>(`false`::class)
-  }
-}
-
-/**
- *
- *
- * Includes the following types:
- *  - [ItemToPlace]
- *  - [EntityPrototypePlaceableBy.Array]
- */
-@Serializable(EntityPrototypePlaceableBy.Serializer::class)
-public sealed interface EntityPrototypePlaceableBy {
-  public object Serializer :
-      FirstMatchingSerializer<EntityPrototypePlaceableBy>(EntityPrototypePlaceableBy::class,
-      ItemToPlace::class, Array::class)
-
-  @Serializable(Array.Serializer::class)
-  public class Array(
-    values: List<ItemToPlace>,
-  ) : ArrayValue<ItemToPlace>(values),
-      EntityPrototypePlaceableBy {
-    public object Serializer : ArrayValueSerializer<Array>(Array::class, typeOf<ItemToPlace>())
   }
 }
 
@@ -3433,13 +3337,13 @@ public sealed class EntityPrototype : PrototypeBase() {
    *
    * The item count specified here can't be larger than the stack size of that item.
    */
-  public val placeable_by: EntityPrototypePlaceableBy? by fromJson()
+  public val placeable_by: ItemOrList<ItemToPlace>? by fromJson()
 
   /**
    * The entity that remains when this one is mined, deconstructed or fast-replaced. The entity wont
    * actually be spawned if it would collide with the entity that is in the process of being mined.
    */
-  public val remains_when_mined: EntityPrototypeRemainsWhenMined? by fromJson()
+  public val remains_when_mined: ItemOrList<EntityID>? by fromJson()
 
   /**
    * Names of the entity prototypes this entity prototype can be pasted on to in addition to the
@@ -3494,52 +3398,6 @@ public sealed class EntityPrototype : PrototypeBase() {
 }
 
 /**
- *
- *
- * Includes the following types:
- *  - [ExplosionDefinition]
- *  - [EntityWithHealthPrototypeDyingExplosion.Array]
- */
-@Serializable(EntityWithHealthPrototypeDyingExplosion.Serializer::class)
-public sealed interface EntityWithHealthPrototypeDyingExplosion {
-  public object Serializer :
-      FirstMatchingSerializer<EntityWithHealthPrototypeDyingExplosion>(EntityWithHealthPrototypeDyingExplosion::class,
-      ExplosionDefinition::class, Array::class)
-
-  @Serializable(Array.Serializer::class)
-  public class Array(
-    values: List<ExplosionDefinition>,
-  ) : ArrayValue<ExplosionDefinition>(values),
-      EntityWithHealthPrototypeDyingExplosion {
-    public object Serializer : ArrayValueSerializer<Array>(Array::class,
-        typeOf<ExplosionDefinition>())
-  }
-}
-
-/**
- *
- *
- * Includes the following types:
- *  - [AttackReactionItem]
- *  - [EntityWithHealthPrototypeAttackReaction.Array]
- */
-@Serializable(EntityWithHealthPrototypeAttackReaction.Serializer::class)
-public sealed interface EntityWithHealthPrototypeAttackReaction {
-  public object Serializer :
-      FirstMatchingSerializer<EntityWithHealthPrototypeAttackReaction>(EntityWithHealthPrototypeAttackReaction::class,
-      AttackReactionItem::class, Array::class)
-
-  @Serializable(Array.Serializer::class)
-  public class Array(
-    values: List<AttackReactionItem>,
-  ) : ArrayValue<AttackReactionItem>(values),
-      EntityWithHealthPrototypeAttackReaction {
-    public object Serializer : ArrayValueSerializer<Array>(Array::class,
-        typeOf<AttackReactionItem>())
-  }
-}
-
-/**
  * Abstract base of all entities with health in the game.
  */
 public sealed class EntityWithHealthPrototype : EntityPrototype() {
@@ -3564,7 +3422,7 @@ public sealed class EntityWithHealthPrototype : EntityPrototype() {
   /**
    * The entities that are spawned in place of this one when it dies.
    */
-  public val dying_explosion: EntityWithHealthPrototypeDyingExplosion? by fromJson()
+  public val dying_explosion: ItemOrList<ExplosionDefinition>? by fromJson()
 
   public val dying_trigger_effect: TriggerEffect? by fromJson()
 
@@ -3580,7 +3438,7 @@ public sealed class EntityWithHealthPrototype : EntityPrototype() {
    */
   public val resistances: List<Resistance>? by fromJson()
 
-  public val attack_reaction: EntityWithHealthPrototypeAttackReaction? by fromJson()
+  public val attack_reaction: ItemOrList<AttackReactionItem>? by fromJson()
 
   /**
    * Played when this entity is repaired with a
@@ -3605,7 +3463,7 @@ public sealed class EntityWithHealthPrototype : EntityPrototype() {
    * Specifies the names of the [CorpsePrototype](prototype:CorpsePrototype) to be used when this
    * entity dies.
    */
-  public open val corpse: EntityPrototypeRemainsWhenMined? by fromJson()
+  public open val corpse: ItemOrList<EntityID>? by fromJson()
 
   /**
    * Sprite drawn on ground under the entity to make it feel more integrated into the ground.
@@ -10084,7 +9942,7 @@ public open class TilePrototype : PrototypeBase() {
 
   public val autoplace: AutoplaceSpecification? by fromJson()
 
-  public val placeable_by: EntityPrototypePlaceableBy? by fromJson()
+  public val placeable_by: ItemOrList<ItemToPlace>? by fromJson()
 
   public object Serializer : JsonReaderSerializer<TilePrototype>(TilePrototype::class)
 }
@@ -10732,7 +10590,7 @@ public open class TurretPrototype : EntityWithOwnerPrototype() {
    * generator](https://wiki.factorio.com/Map_generator). Placed when enemies expand if
    * `spawn_decorations_on_expansion` is set to true.
    */
-  public val spawn_decoration: TurretPrototypeSpawnDecoration? by fromJson()
+  public val spawn_decoration: ItemOrList<CreateDecorativesTriggerEffectItem>? by fromJson()
 
   /**
    * Whether this prototype should be a high priority target for enemy forces. See [Military units
@@ -12775,7 +12633,7 @@ public enum class AmmoTypeTargetType {
  * Definition of actual parameters used in attack.
  */
 @Serializable(AmmoType.Serializer::class)
-public open class AmmoType : JsonReader(), AmmoItemPrototypeAmmoType {
+public open class AmmoType : JsonReader() {
   /**
    * Name of a [AmmoCategory](prototype:AmmoCategory). Defines whether the attack will be affected
    * by upgrades.
@@ -13158,7 +13016,7 @@ public enum class AreaTriggerItemCollisionMode {
 
 @Serializable(AreaTriggerItem.Serializer::class)
 @SerialName("area")
-public open class AreaTriggerItem : TriggerItem() {
+public open class AreaTriggerItem : TriggerItem(), TriggerValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val radius: Double by fromJson()
@@ -13251,7 +13109,7 @@ public open class ArtilleryTriggerDelivery : TriggerDeliveryItem(), TriggerDeliv
 public sealed interface AttackParameters
 
 @Serializable(AttackReactionItem.Serializer::class)
-public open class AttackReactionItem : JsonReader(), EntityWithHealthPrototypeAttackReaction {
+public open class AttackReactionItem : JsonReader() {
   public val range: Float by fromJson()
 
   public val action: Trigger? by fromJson()
@@ -14645,7 +14503,7 @@ public open class ButtonStyleSpecification : StyleWithClickableGraphicalSetSpeci
 
 @Serializable(CameraEffectTriggerEffectItem.Serializer::class)
 @SerialName("camera-effect")
-public open class CameraEffectTriggerEffectItem : TriggerEffectItem() {
+public open class CameraEffectTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   /**
@@ -15185,7 +15043,7 @@ public open class CliffPlacementSettings : JsonReader() {
 
 @Serializable(ClusterTriggerItem.Serializer::class)
 @SerialName("cluster")
-public open class ClusterTriggerItem : TriggerItem() {
+public open class ClusterTriggerItem : TriggerItem(), TriggerValues {
   public val type: UnknownStringLiteral by fromJson()
 
   /**
@@ -15422,8 +15280,7 @@ public open class CraftingMachineTint : JsonReader() {
 
 @Serializable(CreateDecorativesTriggerEffectItem.Serializer::class)
 @SerialName("create-decorative")
-public open class CreateDecorativesTriggerEffectItem : TriggerEffectItem(),
-    TurretPrototypeSpawnDecoration {
+public open class CreateDecorativesTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val decorative: DecorativeID by fromJson()
@@ -15449,38 +15306,9 @@ public open class CreateDecorativesTriggerEffectItem : TriggerEffectItem(),
       JsonReaderSerializer<CreateDecorativesTriggerEffectItem>(CreateDecorativesTriggerEffectItem::class)
 }
 
-/**
- *
- *
- * Includes the following types:
- *  - [CreateEntityTriggerEffectItemOffsets.Vector]
- *  - [CreateEntityTriggerEffectItemOffsets.Array]
- */
-@Serializable(CreateEntityTriggerEffectItemOffsets.Serializer::class)
-public sealed interface CreateEntityTriggerEffectItemOffsets {
-  public object Serializer :
-      FirstMatchingSerializer<CreateEntityTriggerEffectItemOffsets>(CreateEntityTriggerEffectItemOffsets::class,
-      Vector::class, Array::class)
-
-  @JvmInline
-  @Serializable
-  public value class Vector(
-    public val `value`: factorioprototype.Vector,
-  ) : CreateEntityTriggerEffectItemOffsets
-
-  @Serializable(Array.Serializer::class)
-  public class Array(
-    values: List<factorioprototype.Vector>,
-  ) : ArrayValue<factorioprototype.Vector>(values),
-      CreateEntityTriggerEffectItemOffsets {
-    public object Serializer : ArrayValueSerializer<Array>(Array::class,
-        typeOf<factorioprototype.Vector>())
-  }
-}
-
 @Serializable(CreateEntityTriggerEffectItem.Serializer::class)
 @SerialName("create-entity")
-public open class CreateEntityTriggerEffectItem : TriggerEffectItem() {
+public open class CreateEntityTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public open val type: UnknownStringLiteral by fromJson()
 
   /**
@@ -15511,7 +15339,7 @@ public open class CreateEntityTriggerEffectItem : TriggerEffectItem() {
    * [Distractor capsule](https://wiki.factorio.com/Distractor_capsule) uses this property to spawn
    * three Distractors.
    */
-  public val offsets: CreateEntityTriggerEffectItemOffsets? by fromJson()
+  public val offsets: ItemOrList<Vector>? by fromJson()
 
   public object Serializer :
       JsonReaderSerializer<CreateEntityTriggerEffectItem>(CreateEntityTriggerEffectItem::class)
@@ -15519,7 +15347,8 @@ public open class CreateEntityTriggerEffectItem : TriggerEffectItem() {
 
 @Serializable(CreateExplosionTriggerEffectItem.Serializer::class)
 @SerialName("create-explosion")
-public open class CreateExplosionTriggerEffectItem : CreateEntityTriggerEffectItem() {
+public open class CreateExplosionTriggerEffectItem : CreateEntityTriggerEffectItem(),
+    TriggerEffectValues {
   public val max_movement_distance: Float? by fromJson()
 
   public val max_movement_distance_deviation: Float? by fromJson()
@@ -15534,7 +15363,8 @@ public open class CreateExplosionTriggerEffectItem : CreateEntityTriggerEffectIt
 
 @Serializable(CreateFireTriggerEffectItem.Serializer::class)
 @SerialName("create-fire")
-public open class CreateFireTriggerEffectItem : CreateEntityTriggerEffectItem() {
+public open class CreateFireTriggerEffectItem : CreateEntityTriggerEffectItem(), TriggerEffectValues
+    {
   public val initial_ground_flame_count: UByte? by fromJson()
 
   public object Serializer :
@@ -15543,7 +15373,7 @@ public open class CreateFireTriggerEffectItem : CreateEntityTriggerEffectItem() 
 
 @Serializable(CreateParticleTriggerEffectItem.Serializer::class)
 @SerialName("create-particle")
-public open class CreateParticleTriggerEffectItem : TriggerEffectItem() {
+public open class CreateParticleTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val particle_name: ParticleID by fromJson()
@@ -15556,7 +15386,7 @@ public open class CreateParticleTriggerEffectItem : TriggerEffectItem() {
 
   public val tile_collision_mask: CollisionMask? by fromJson()
 
-  public val offsets: CreateEntityTriggerEffectItemOffsets? by fromJson()
+  public val offsets: ItemOrList<Vector>? by fromJson()
 
   public val initial_height_deviation: Float? by fromJson()
 
@@ -15592,7 +15422,8 @@ public open class CreateParticleTriggerEffectItem : TriggerEffectItem() {
 
 @Serializable(CreateSmokeTriggerEffectItem.Serializer::class)
 @SerialName("create-smoke")
-public open class CreateSmokeTriggerEffectItem : CreateEntityTriggerEffectItem() {
+public open class CreateSmokeTriggerEffectItem : CreateEntityTriggerEffectItem(),
+    TriggerEffectValues {
   public val initial_height: Float? by fromJson()
 
   public val speed: Vector? by fromJson()
@@ -15619,7 +15450,7 @@ public open class CreateSmokeTriggerEffectItem : CreateEntityTriggerEffectItem()
 
 @Serializable(CreateStickerTriggerEffectItem.Serializer::class)
 @SerialName("create-sticker")
-public open class CreateStickerTriggerEffectItem : TriggerEffectItem() {
+public open class CreateStickerTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   /**
@@ -15641,14 +15472,14 @@ public open class CreateStickerTriggerEffectItem : TriggerEffectItem() {
 
 @Serializable(CreateTrivialSmokeEffectItem.Serializer::class)
 @SerialName("create-trivial-smoke")
-public open class CreateTrivialSmokeEffectItem : TriggerEffectItem() {
+public open class CreateTrivialSmokeEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val smoke_name: TrivialSmokeID by fromJson()
 
   public val offset_deviation: BoundingBox? by fromJson()
 
-  public val offsets: CreateEntityTriggerEffectItemOffsets? by fromJson()
+  public val offsets: ItemOrList<Vector>? by fromJson()
 
   public val initial_height: Float? by fromJson()
 
@@ -15780,7 +15611,7 @@ public open class DamagePrototype : JsonReader() {
 
 @Serializable(DamageTriggerEffectItem.Serializer::class)
 @SerialName("damage")
-public open class DamageTriggerEffectItem : TriggerEffectItem() {
+public open class DamageTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val damage: DamagePrototype by fromJson()
@@ -15804,41 +15635,12 @@ public open class DamageTriggerEffectItem : TriggerEffectItem() {
       JsonReaderSerializer<DamageTriggerEffectItem>(DamageTriggerEffectItem::class)
 }
 
-/**
- *
- *
- * Includes the following types:
- *  - [DamageTypeFiltersTypes.DamageTypeID]
- *  - [DamageTypeFiltersTypes.Array]
- */
-@Serializable(DamageTypeFiltersTypes.Serializer::class)
-public sealed interface DamageTypeFiltersTypes {
-  public object Serializer :
-      FirstMatchingSerializer<DamageTypeFiltersTypes>(DamageTypeFiltersTypes::class,
-      DamageTypeID::class, Array::class)
-
-  @JvmInline
-  @Serializable
-  public value class DamageTypeID(
-    public val `value`: factorioprototype.DamageTypeID,
-  ) : DamageTypeFiltersTypes
-
-  @Serializable(Array.Serializer::class)
-  public class Array(
-    values: List<factorioprototype.DamageTypeID>,
-  ) : ArrayValue<factorioprototype.DamageTypeID>(values),
-      DamageTypeFiltersTypes {
-    public object Serializer : ArrayValueSerializer<Array>(Array::class,
-        typeOf<factorioprototype.DamageTypeID>())
-  }
-}
-
 @Serializable(DamageTypeFiltersValues.Serializer::class)
 public open class DamageTypeFiltersValues : JsonReader(), DamageTypeFilters {
   /**
    * The damage types to filter for.
    */
-  public val types: DamageTypeFiltersTypes by fromJson()
+  public val types: ItemOrList<DamageTypeID> by fromJson()
 
   /**
    * Whether this is a whitelist or a blacklist of damage types. Defaults to being a blacklist.
@@ -15967,7 +15769,7 @@ public open class DestroyCliffsCapsuleAction : JsonReader(), CapsuleAction {
 
 @Serializable(DestroyCliffsTriggerEffectItem.Serializer::class)
 @SerialName("destroy-cliffs")
-public open class DestroyCliffsTriggerEffectItem : TriggerEffectItem() {
+public open class DestroyCliffsTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val radius: Float by fromJson()
@@ -15980,7 +15782,7 @@ public open class DestroyCliffsTriggerEffectItem : TriggerEffectItem() {
 
 @Serializable(DestroyDecorativesTriggerEffectItem.Serializer::class)
 @SerialName("destroy-decoratives")
-public open class DestroyDecorativesTriggerEffectItem : TriggerEffectItem() {
+public open class DestroyDecorativesTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val radius: Float by fromJson()
@@ -16044,7 +15846,7 @@ public open class DifficultySettings : JsonReader() {
 
 @Serializable(DirectTriggerItem.Serializer::class)
 @SerialName("direct")
-public open class DirectTriggerItem : TriggerItem() {
+public open class DirectTriggerItem : TriggerItem(), TriggerValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val filter_enabled: Boolean? by fromJson()
@@ -16914,7 +16716,7 @@ public open class ExplosionDefinitionValues : JsonReader(), ExplosionDefinition 
  *  - [ExplosionDefinitionValues]
  */
 @Serializable(ExplosionDefinition.Serializer::class)
-public sealed interface ExplosionDefinition : EntityWithHealthPrototypeDyingExplosion {
+public sealed interface ExplosionDefinition {
   public object Serializer :
       FirstMatchingSerializer<ExplosionDefinition>(ExplosionDefinition::class, EntityID::class,
       ExplosionDefinitionValues::class)
@@ -17970,7 +17772,7 @@ public sealed interface IngredientPrototype
 
 @Serializable(InsertItemTriggerEffectItem.Serializer::class)
 @SerialName("insert-item")
-public open class InsertItemTriggerEffectItem : TriggerEffectItem() {
+public open class InsertItemTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   /**
@@ -18024,7 +17826,7 @@ public open class InterruptibleSound : JsonReader() {
 
 @Serializable(InvokeTileEffectTriggerEffectItem.Serializer::class)
 @SerialName("invoke-tile-trigger")
-public open class InvokeTileEffectTriggerEffectItem : TriggerEffectItem() {
+public open class InvokeTileEffectTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val tile_collision_mask: CollisionMask? by fromJson()
@@ -18213,7 +18015,7 @@ public typealias ItemSubGroupID = String
  * Item that when placed creates this entity/tile.
  */
 @Serializable(ItemToPlace.Serializer::class)
-public open class ItemToPlace : JsonReader(), EntityPrototypePlaceableBy {
+public open class ItemToPlace : JsonReader() {
   /**
    * The item used to place this entity/tile.
    */
@@ -18335,7 +18137,7 @@ public enum class LightDefinitionType {
  * sources.
  */
 @Serializable(LightDefinitionValues.Serializer::class)
-public open class LightDefinitionValues : JsonReader(), LightDefinition {
+public open class LightDefinitionValues : JsonReader() {
   public val type: LightDefinitionType? by fromJson()
 
   /**
@@ -18380,25 +18182,8 @@ public open class LightDefinitionValues : JsonReader(), LightDefinition {
 /**
  * Specifies a light source. This is loaded either as a single light source or as an array of light
  * sources.
- *
- * Includes the following types:
- *  - [LightDefinitionValues]
- *  - [LightDefinition.Array]
  */
-@Serializable(LightDefinition.Serializer::class)
-public sealed interface LightDefinition {
-  public object Serializer : FirstMatchingSerializer<LightDefinition>(LightDefinition::class,
-      LightDefinitionValues::class, Array::class)
-
-  @Serializable(Array.Serializer::class)
-  public class Array(
-    values: List<LightDefinitionValues>,
-  ) : ArrayValue<LightDefinitionValues>(values),
-      LightDefinition {
-    public object Serializer : ArrayValueSerializer<Array>(Array::class,
-        typeOf<LightDefinitionValues>())
-  }
-}
+public typealias LightDefinition = ItemOrList<LightDefinitionValues>
 
 /**
  * Specifies the light flicker. Note that this defaults to "showing a white light" instead of the
@@ -18462,7 +18247,7 @@ public open class LineStyleSpecification : BaseStyleSpecification(), StyleSpecif
 
 @Serializable(LineTriggerItem.Serializer::class)
 @SerialName("line")
-public open class LineTriggerItem : TriggerItem() {
+public open class LineTriggerItem : TriggerItem(), TriggerValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val range: Double by fromJson()
@@ -19573,7 +19358,7 @@ public typealias MouseCursorID = String
 
 @Serializable(NestedTriggerEffectItem.Serializer::class)
 @SerialName("nested-result")
-public open class NestedTriggerEffectItem : TriggerEffectItem() {
+public open class NestedTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val action: Trigger by fromJson()
@@ -21155,7 +20940,7 @@ public enum class PlayFor {
 
 @Serializable(PlaySoundTriggerEffectItem.Serializer::class)
 @SerialName("play-sound")
-public open class PlaySoundTriggerEffectItem : TriggerEffectItem() {
+public open class PlaySoundTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val sound: Sound by fromJson()
@@ -21463,7 +21248,7 @@ public open class PumpConnectorGraphicsAnimation : JsonReader() {
  */
 @Serializable(PushBackTriggerEffectItem.Serializer::class)
 @SerialName("push-back")
-public open class PushBackTriggerEffectItem : TriggerEffectItem() {
+public open class PushBackTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val distance: Float by fromJson()
@@ -21889,8 +21674,7 @@ public enum class RichTextSetting {
 }
 
 @Serializable(RotatedAnimation.Serializer::class)
-public open class RotatedAnimation : AnimationParameters(), RotatedAnimation4Way,
-    RotatedAnimationVariations {
+public open class RotatedAnimation : AnimationParameters(), RotatedAnimation4Way {
   /**
    * If this property is present, all RotatedAnimation definitions have to be placed as entries in
    * the array, and they will all be loaded from there. `layers` may not be an empty table. Each
@@ -22034,27 +21818,7 @@ public sealed interface RotatedAnimation4Way {
       RotatedAnimation4WayValues::class, RotatedAnimation::class)
 }
 
-/**
- *
- *
- * Includes the following types:
- *  - [RotatedAnimation]
- *  - [RotatedAnimationVariations.Array]
- */
-@Serializable(RotatedAnimationVariations.Serializer::class)
-public sealed interface RotatedAnimationVariations {
-  public object Serializer :
-      FirstMatchingSerializer<RotatedAnimationVariations>(RotatedAnimationVariations::class,
-      RotatedAnimation::class, Array::class)
-
-  @Serializable(Array.Serializer::class)
-  public class Array(
-    values: List<RotatedAnimation>,
-  ) : ArrayValue<RotatedAnimation>(values),
-      RotatedAnimationVariations {
-    public object Serializer : ArrayValueSerializer<Array>(Array::class, typeOf<RotatedAnimation>())
-  }
-}
+public typealias RotatedAnimationVariations = ItemOrList<RotatedAnimation>
 
 /**
  * Specifies series of sprites used to visualize different rotations of the object.
@@ -22181,7 +21945,7 @@ public open class RotatedSprite : SpriteParameters() {
 
 @Serializable(ScriptTriggerEffectItem.Serializer::class)
 @SerialName("script")
-public open class ScriptTriggerEffectItem : TriggerEffectItem() {
+public open class ScriptTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   /**
@@ -22419,7 +22183,7 @@ public open class SetRecipeTipTrigger : JsonReader(), TipTrigger {
 
 @Serializable(SetTileTriggerEffectItem.Serializer::class)
 @SerialName("set-tile")
-public open class SetTileTriggerEffectItem : TriggerEffectItem() {
+public open class SetTileTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val tile_name: TileID by fromJson()
@@ -22471,7 +22235,7 @@ public open class ShiftBuildTipTrigger : JsonReader(), TipTrigger {
 
 @Serializable(ShowExplosionOnChartTriggerEffectItem.Serializer::class)
 @SerialName("show-explosion-on-chart")
-public open class ShowExplosionOnChartTriggerEffectItem : TriggerEffectItem() {
+public open class ShowExplosionOnChartTriggerEffectItem : TriggerEffectItem(), TriggerEffectValues {
   public val type: UnknownStringLiteral by fromJson()
 
   public val scale: Float by fromJson()
@@ -22875,34 +22639,11 @@ public open class SpeechBubbleStyleSpecification : BaseStyleSpecification(), Sty
 }
 
 /**
- *
- *
- * Includes the following types:
- *  - [SpiderLegSpecification]
- *  - [SpiderEnginePrototypeLegs.Array]
- */
-@Serializable(SpiderEnginePrototypeLegs.Serializer::class)
-public sealed interface SpiderEnginePrototypeLegs {
-  public object Serializer :
-      FirstMatchingSerializer<SpiderEnginePrototypeLegs>(SpiderEnginePrototypeLegs::class,
-      SpiderLegSpecification::class, Array::class)
-
-  @Serializable(Array.Serializer::class)
-  public class Array(
-    values: List<SpiderLegSpecification>,
-  ) : ArrayValue<SpiderLegSpecification>(values),
-      SpiderEnginePrototypeLegs {
-    public object Serializer : ArrayValueSerializer<Array>(Array::class,
-        typeOf<SpiderLegSpecification>())
-  }
-}
-
-/**
  * Used by [SpiderVehiclePrototype](prototype:SpiderVehiclePrototype).
  */
 @Serializable(SpiderEnginePrototype.Serializer::class)
 public open class SpiderEnginePrototype : JsonReader() {
-  public val legs: SpiderEnginePrototypeLegs by fromJson()
+  public val legs: ItemOrList<SpiderLegSpecification> by fromJson()
 
   /**
    * The string content is irrelevant, if it is present at all then the
@@ -22964,7 +22705,7 @@ public open class SpiderLegPart : JsonReader() {
  * [SpiderVehiclePrototype](prototype:SpiderVehiclePrototype).
  */
 @Serializable(SpiderLegSpecification.Serializer::class)
-public open class SpiderLegSpecification : JsonReader(), SpiderEnginePrototypeLegs {
+public open class SpiderLegSpecification : JsonReader() {
   /**
    * Name of a [SpiderLegPrototype](prototype:SpiderLegPrototype).
    */
@@ -24914,10 +24655,22 @@ public open class TreeVariation : JsonReader() {
 }
 
 /**
+ *
+ *
+ * Includes the following types:
+ *  - [DirectTriggerItem]
+ *  - [AreaTriggerItem]
+ *  - [LineTriggerItem]
+ *  - [ClusterTriggerItem]
+ */
+@Serializable
+public sealed interface TriggerValues
+
+/**
  * Loaded as one of the [TriggerItem](prototype:TriggerItem) extensions, based on the value of the
  * `type` key.
  */
-public typealias Trigger = ItemOrList<UnknownUnion>
+public typealias Trigger = ItemOrList<TriggerValues>
 
 /**
  * Loaded as one of the [TriggerDeliveryItem](prototype:TriggerDeliveryItem) extensions, based on
@@ -24932,7 +24685,7 @@ public typealias Trigger = ItemOrList<UnknownUnion>
  *  - [ArtilleryTriggerDelivery]
  */
 @Serializable
-public sealed interface TriggerDelivery : TriggerItemActionDelivery
+public sealed interface TriggerDelivery
 
 /**
  * The abstract base of all [TriggerDeliveries](prototype:TriggerDelivery).
@@ -24947,10 +24700,38 @@ public sealed class TriggerDeliveryItem : JsonReader() {
 }
 
 /**
+ *
+ *
+ * Includes the following types:
+ *  - [DamageTriggerEffectItem]
+ *  - [CreateEntityTriggerEffectItem]
+ *  - [CreateExplosionTriggerEffectItem]
+ *  - [CreateFireTriggerEffectItem]
+ *  - [CreateSmokeTriggerEffectItem]
+ *  - [CreateTrivialSmokeEffectItem]
+ *  - [CreateParticleTriggerEffectItem]
+ *  - [CreateStickerTriggerEffectItem]
+ *  - [CreateDecorativesTriggerEffectItem]
+ *  - [NestedTriggerEffectItem]
+ *  - [PlaySoundTriggerEffectItem]
+ *  - [PushBackTriggerEffectItem]
+ *  - [DestroyCliffsTriggerEffectItem]
+ *  - [ShowExplosionOnChartTriggerEffectItem]
+ *  - [InsertItemTriggerEffectItem]
+ *  - [ScriptTriggerEffectItem]
+ *  - [SetTileTriggerEffectItem]
+ *  - [InvokeTileEffectTriggerEffectItem]
+ *  - [DestroyDecorativesTriggerEffectItem]
+ *  - [CameraEffectTriggerEffectItem]
+ */
+@Serializable
+public sealed interface TriggerEffectValues
+
+/**
  * Loaded as one of the [TriggerEffectItem](prototype:TriggerEffectItem) extensions, based on the
  * value of the `type` key.
  */
-public typealias TriggerEffect = ItemOrList<UnknownUnion>
+public typealias TriggerEffect = ItemOrList<TriggerEffectValues>
 
 /**
  * The abstract base of all [TriggerEffects](prototype:TriggerEffect).
@@ -24977,28 +24758,6 @@ public sealed class TriggerEffectItem : JsonReader() {
    * Unknown if it works with other properties that use [TriggerEffect](prototype:TriggerEffect).
    */
   public val damage_type_filters: DamageTypeFilters? by fromJson()
-}
-
-/**
- *
- *
- * Includes the following types:
- *  - [TriggerDelivery]
- *  - [TriggerItemActionDelivery.Array]
- */
-@Serializable(TriggerItemActionDelivery.Serializer::class)
-public sealed interface TriggerItemActionDelivery {
-  public object Serializer :
-      FirstMatchingSerializer<TriggerItemActionDelivery>(TriggerItemActionDelivery::class,
-      TriggerDelivery::class, Array::class)
-
-  @Serializable(Array.Serializer::class)
-  public class Array(
-    values: List<TriggerDelivery>,
-  ) : ArrayValue<TriggerDelivery>(values),
-      TriggerItemActionDelivery {
-    public object Serializer : ArrayValueSerializer<Array>(Array::class, typeOf<TriggerDelivery>())
-  }
 }
 
 /**
@@ -25029,7 +24788,7 @@ public sealed class TriggerItem : JsonReader() {
    */
   public val collision_mask: CollisionMask? by fromJson()
 
-  public val action_delivery: TriggerItemActionDelivery? by fromJson()
+  public val action_delivery: ItemOrList<TriggerDelivery>? by fromJson()
 
   /**
    * Only entities meeting the force condition are affected by the trigger item.
