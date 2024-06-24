@@ -4098,7 +4098,7 @@ public open class FluidTurretPrototype : TurretPrototype() {
   /**
    * Requires ammo_type in attack_parameters.
    */
-  override val attack_parameters: UnknownOverriddenType by fromJson()
+  override val attack_parameters: StreamAttackParameters by fromJson()
 
   public object Serializer : JsonReaderSerializer<FluidTurretPrototype>(FluidTurretPrototype::class)
 }
@@ -10168,7 +10168,7 @@ public sealed class TransportBeltConnectablePrototype : EntityWithOwnerPrototype
   /**
    * This is the preferred way to specify transport belt animations.
    */
-  public open val belt_animation_set: UnknownOverriddenType? by fromJson()
+  public open val belt_animation_set: TransportBeltAnimationSet? by fromJson()
 
   /**
    * Mandatory if `belt_animation_set` is not defined.
@@ -10268,7 +10268,7 @@ public open class TransportBeltPrototype : TransportBeltConnectablePrototype() {
   /**
    * This is the preferred way to specify transport belt animations.
    */
-  override val belt_animation_set: UnknownOverriddenType? by fromJson()
+  override val belt_animation_set: TransportBeltAnimationSetWithCorners? by fromJson()
 
   /**
    * Mandatory if `belt_animation_set` is not defined.
@@ -10407,7 +10407,7 @@ public open class TurretPrototype : EntityWithOwnerPrototype() {
    * Requires ammo_type in attack_parameters unless this is a
    * [AmmoTurretPrototype](prototype:AmmoTurretPrototype).
    */
-  public open val attack_parameters: UnknownOverriddenType by fromJson()
+  public open val attack_parameters: AttackParameters by fromJson()
 
   public val folded_animation: RotatedAnimation4Way by fromJson()
 

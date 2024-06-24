@@ -43,9 +43,9 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     fun generate(): FileSpec {
         setupFile()
-        findOverrides()
         findUnionTypes()
         findPropertyInnerUnions()
+        findOverrides()
         docs.prototypes
             .sortedBy { it.order }
             .forEach { generatePrototype(it) }
@@ -112,69 +112,6 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         )
     }
 
-
-    private enum class OverrideType {
-        Ignore,
-        Unknown,
-        AsNullable,
-        Allowed
-    }
-
-    private val overrides = mutableMapOf<ProtoOrConcept, MutableMap<String, OverrideType>>()
-    private val childOverrides = mutableMapOf<ProtoOrConcept, MutableMap<String, OverrideType>>()
-    private fun findOverrides() {
-        tailrec fun findParentProp(
-            prototype: ProtoOrConcept,
-            propName: String
-        ): Pair<ProtoOrConcept, Property> {
-            prototype.properties!!.find { it.name == propName }?.let { return prototype to it }
-            return findParentProp(
-                byName[prototype.parent!!]!!,
-                propName
-            )
-        }
-
-        val visited = mutableSetOf<String>()
-        fun visit(prototype: ProtoOrConcept) {
-            if (prototype.name in visited) return
-            visited.add(prototype.name)
-
-            val parentName = prototype.parent ?: return
-            val parent = byName[parentName]!!
-            visit(parent)
-            val properties = prototype.properties ?: return
-            for (prop in properties.filter { it.override }) {
-                val (source, parentProp) = findParentProp(parent, prop.name)
-                val overrideType: OverrideType = if (prop.type.typeEquals(parentProp.type)) {
-                    if (prop.optional && !parentProp.optional) {
-                        OverrideType.AsNullable
-                    } else if (prop.optional == parentProp.optional && overrides[parent]?.get(prop.name) == OverrideType.Ignore) {
-                        OverrideType.Ignore
-                    } else {
-                        OverrideType.Allowed
-                    }
-                } else if (parentProp.type.isNumeric() && prop.type.isNumeric()
-                    || parentProp.type.isBool() && prop.type.isBool()
-                    || parentProp.type.isString() && prop.type.isString()
-                ) {
-                    OverrideType.Ignore
-                } else if (
-                    prototype.name == "TurretPrototype" &&
-                    prop.name == "corpse"
-                ) {
-                    OverrideType.Ignore
-                } else {
-                    OverrideType.Unknown
-                }
-                overrides.getOrPut(prototype, ::mutableMapOf)[prop.name] = overrideType
-                childOverrides.getOrPut(source, ::mutableMapOf)[prop.name] = overrideType
-            }
-
-        }
-        for (value in byName.values) {
-            visit(value)
-        }
-    }
 
     private sealed interface GeneratedType {
         val className: ClassName
@@ -287,8 +224,8 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         val innerType = innerType()
         if (innerType !is BasicType || innerType.value in predefined) return innerType
         val referenced = byName[innerType.value]
-        if (referenced !is Concept) return innerType
-        return (referenced.type).followTypeAliases()
+        if (referenced !is Concept || referenced.type.innerType() !is BasicType) return innerType
+        return referenced.type.followTypeAliases()
     }
 
     private fun tryGetUnionMembers(sourceConcept: Concept?, type: UnionType): Set<UnionMember>? {
@@ -358,7 +295,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 }
 
                 innerType is UnionType -> {
-                    val itemOrList = tryGetItemOrListValue(innerType)?.first
+                    val itemOrList = tryGetItemOrList(innerType)?.first
                     if (itemOrList != null) {
                         tryAddInnerUnion(itemOrList, concept, "Values", false)
                         continue
@@ -432,10 +369,102 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             val properties = value.properties ?: continue
             for (property in properties) {
                 val type = property.type.innerType()
-                val itemOrList = tryGetItemOrListValue(type)?.first
+                val itemOrList = tryGetItemOrList(type)?.first
                 val actualType = itemOrList ?: type
                 tryAddInnerUnion(actualType, value, property.name.toCamelCase())
             }
+        }
+    }
+
+
+    private enum class OverrideType {
+        Ignore,
+        Allowed,
+        Nullable,
+        SuperSet,
+        Unknown
+    }
+
+    private val overrides = mutableMapOf<ProtoOrConcept, MutableMap<String, OverrideType>>()
+    private val childOverrides = mutableMapOf<ProtoOrConcept, MutableMap<String, OverrideType>>()
+    private fun findOverrides() {
+        tailrec fun findParentProp(
+            prototype: ProtoOrConcept,
+            propName: String
+        ): Pair<ProtoOrConcept, Property> {
+            prototype.properties!!.find { it.name == propName }?.let { return prototype to it }
+            return findParentProp(
+                byName[prototype.parent!!]!!,
+                propName
+            )
+        }
+
+        val visited = mutableSetOf<String>()
+        fun visit(prototype: ProtoOrConcept) {
+            if (prototype.name in visited) return
+            visited.add(prototype.name)
+
+            val parentName = prototype.parent ?: return
+            val parent = byName[parentName]!!
+            visit(parent)
+            val properties = prototype.properties ?: return
+            fun isSubtype(
+                parentType: TypeDefinition,
+                childType: TypeDefinition
+            ): Boolean {
+                val parentType = parentType.followTypeAliases()
+                val childType = childType.followTypeAliases()
+                if (parentType is UnionType) {
+                    return parentType.options.any { it.typeEquals(childType) }
+                }
+                if (parentType is BasicType && childType is BasicType) {
+                    val parentConcept = byName[parentType.value] as? Concept ?: return false
+                    val childConcept = byName[childType.value] as? Concept ?: return false
+                    if (unionSupertypes[MainType(childConcept)]?.any { it.name == parentConcept.name } == true)
+                        return true
+                    var cur = childConcept.parent
+                    while (cur != null) {
+                        if (cur == parentConcept.name) return true
+                        cur = byName[cur]?.parent
+                    }
+                }
+                return false
+            }
+
+            for (prop in properties.filter { it.override }) {
+                val (source, parentProp) = findParentProp(parent, prop.name)
+                val overrideType: OverrideType = if (prop.type.typeEquals(parentProp.type)) {
+                    if (prop.optional && !parentProp.optional) {
+                        OverrideType.Nullable
+                    } else if (prop.optional == parentProp.optional && overrides[parent]?.get(prop.name) == OverrideType.Ignore) {
+                        OverrideType.Ignore
+                    } else {
+                        OverrideType.Allowed
+                    }
+                } else if (parentProp.type.isNumeric() && prop.type.isNumeric()
+                    || parentProp.type.isBool() && prop.type.isBool()
+                    || parentProp.type.isString() && prop.type.isString()
+                ) {
+                    OverrideType.Ignore
+                } else if (
+                    tryGetItemOrList(parentProp.type)?.first?.typeEquals(prop.type) == true
+                ) {
+                    OverrideType.Ignore
+                } else if (
+                    isSubtype(parentProp.type, prop.type)
+                ) {
+                    OverrideType.Allowed
+                } else {
+                    isSubtype(parentProp.type, prop.type)
+                    OverrideType.Unknown
+                }
+                overrides.getOrPut(prototype, ::mutableMapOf)[prop.name] = overrideType
+                childOverrides.getOrPut(source, ::mutableMapOf)[prop.name] = overrideType
+            }
+
+        }
+        for (value in byName.values) {
+            visit(value)
         }
     }
 
@@ -605,7 +634,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         }
     }
 
-    private fun tryGetItemOrListValue(typeDefinition: TypeDefinition): Pair<TypeDefinition, String>? {
+    private fun tryGetItemOrList(typeDefinition: TypeDefinition): Pair<TypeDefinition, String>? {
         if (typeDefinition !is UnionType) return null
         if (typeDefinition.options.size != 2) return null
         val first = typeDefinition.options[0]
@@ -625,7 +654,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         property: Property?,
         typeDefinition: UnionType
     ): TypeNameWithDecl? {
-        val (first, innerName) = tryGetItemOrListValue(typeDefinition) ?: return null
+        val (first, innerName) = tryGetItemOrList(typeDefinition) ?: return null
         return ClassName(packageName, innerName).parameterizedBy(
             mapTypeDefinition(first, source, property).typeName // allow declaration here
         ).withNoDec()
@@ -887,7 +916,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         require(property.visibility == null)
         val childOverrideType = childOverrides[source.inner]?.get(property.name)
         val nullable = property.optional ||
-                property.default != null || childOverrideType == OverrideType.AsNullable
+                property.default != null || childOverrideType == OverrideType.Nullable
         val isUnknown = overrides[source.inner]?.get(property.name) == OverrideType.Unknown ||
                 childOverrideType == OverrideType.Unknown
         val laterOverridden = childOverrides[source.inner]?.contains(property.name) == true
