@@ -948,9 +948,11 @@ public open class BatteryEquipmentPrototype : EquipmentPrototype() {
 }
 
 /**
+ *
+ *
  * Includes the following types:
- *  - ElectricEnergySource
- *  - VoidEnergySource
+ *  - [ElectricEnergySource]
+ *  - [VoidEnergySource]
  */
 @Serializable
 public sealed interface EVEnergySource
@@ -1437,9 +1439,11 @@ public open class CapsulePrototype : ItemPrototype() {
 }
 
 /**
+ *
+ *
  * Includes the following types:
- *  - BurnerEnergySource
- *  - VoidEnergySource
+ *  - [BurnerEnergySource]
+ *  - [VoidEnergySource]
  */
 @Serializable
 public sealed interface BVEnergySource
@@ -5554,11 +5558,13 @@ public open class Loader1x2Prototype : LoaderPrototype() {
 }
 
 /**
+ *
+ *
  * Includes the following types:
- *  - ElectricEnergySource
- *  - HeatEnergySource
- *  - FluidEnergySource
- *  - VoidEnergySource
+ *  - [ElectricEnergySource]
+ *  - [HeatEnergySource]
+ *  - [FluidEnergySource]
+ *  - [VoidEnergySource]
  */
 @Serializable
 public sealed interface EHFVEnergySource
@@ -12643,10 +12649,11 @@ public open class Animation4WayValues : JsonReader(), Animation4Way {
 }
 
 /**
- * If this is loaded as a single Animation, it applies to all directions.Includes the following
- * types:
- *  - Animation4WayValues
- *  - Animation
+ * If this is loaded as a single Animation, it applies to all directions.
+ *
+ * Includes the following types:
+ *  - [Animation4WayValues]
+ *  - [Animation]
  */
 @Serializable(Animation4Way.Serializer::class)
 public sealed interface Animation4Way {
@@ -12817,24 +12824,25 @@ public typealias AnimationVariations = UnknownUnion
 /**
  * A union of all prototypes. A specific prototype is loaded based on the value of the `type` key.
  *
- * See the [Prototypes page](prototype:prototypes) for more information.Includes the following
- * types:
- *  - PrototypeBase
- *  - AmbientSound
- *  - AnimationPrototype
- *  - EditorControllerPrototype
- *  - FontPrototype
- *  - GodControllerPrototype
- *  - MapGenPresets
- *  - MapSettings
- *  - MouseCursor
- *  - SoundPrototype
- *  - SpectatorControllerPrototype
- *  - SpritePrototype
- *  - TileEffectDefinition
- *  - TipsAndTricksItemCategory
- *  - TriggerTargetType
- *  - WindSound
+ * See the [Prototypes page](prototype:prototypes) for more information.
+ *
+ * Includes the following types:
+ *  - [PrototypeBase]
+ *  - [AmbientSound]
+ *  - [AnimationPrototype]
+ *  - [EditorControllerPrototype]
+ *  - [FontPrototype]
+ *  - [GodControllerPrototype]
+ *  - [MapGenPresets]
+ *  - [MapSettings]
+ *  - [MouseCursor]
+ *  - [SoundPrototype]
+ *  - [SpectatorControllerPrototype]
+ *  - [SpritePrototype]
+ *  - [TileEffectDefinition]
+ *  - [TipsAndTricksItemCategory]
+ *  - [TriggerTargetType]
+ *  - [WindSound]
  */
 @Serializable
 public sealed interface AnyPrototype
@@ -12929,10 +12937,12 @@ public open class ArtilleryTriggerDelivery : TriggerDeliveryItem(), TriggerDeliv
 
 /**
  * Loaded as one of the [BaseAttackParameters](prototype:BaseAttackParameters) extensions, based on
- * the value of the `type` key.Includes the following types:
- *  - ProjectileAttackParameters
- *  - BeamAttackParameters
- *  - StreamAttackParameters
+ * the value of the `type` key.
+ *
+ * Includes the following types:
+ *  - [ProjectileAttackParameters]
+ *  - [BeamAttackParameters]
+ *  - [StreamAttackParameters]
  */
 @Serializable
 public sealed interface AttackParameters
@@ -13390,10 +13400,11 @@ public open class AutoplaceSpecificationValues : JsonReader(), AutoplaceSpecific
  * - The newer noise expression-based system using `probability_expression` and
  * `richness_expression`.
  *
- * - The older peaks-based system using `peaks` and the properties listed below it.Includes the
- * following types:
- *  - AutoplaceSpecificationValues
- *  - AutoplacePeak
+ * - The older peaks-based system using `peaks` and the properties listed below it.
+ *
+ * Includes the following types:
+ *  - [AutoplaceSpecificationValues]
+ *  - [AutoplacePeak]
  */
 @Serializable(AutoplaceSpecification.Serializer::class)
 public sealed interface AutoplaceSpecification {
@@ -14328,13 +14339,14 @@ public open class CameraStyleSpecification : EmptyWidgetStyleSpecification(), St
 }
 
 /**
- * Loaded as one of the capsule actions, based on the value of the `type` key.Includes the following
- * types:
- *  - ThrowCapsuleAction
- *  - ActivateEquipmentCapsuleAction
- *  - UseOnSelfCapsuleAction
- *  - DestroyCliffsCapsuleAction
- *  - ArtilleryRemoteCapsuleAction
+ * Loaded as one of the capsule actions, based on the value of the `type` key.
+ *
+ * Includes the following types:
+ *  - [ThrowCapsuleAction]
+ *  - [ActivateEquipmentCapsuleAction]
+ *  - [UseOnSelfCapsuleAction]
+ *  - [DestroyCliffsCapsuleAction]
+ *  - [ArtilleryRemoteCapsuleAction]
  */
 @Serializable
 public sealed interface CapsuleAction
@@ -14993,10 +15005,11 @@ public open class ConnectableEntityGraphics : JsonReader() {
 
 /**
  * A constant boolean noise expression, such as a literal boolean. When using a constant number, it
- * evaluates to true for numbers bigger than zero, anything else evaluates to false.Includes the
- * following types:
- *  - NoiseLiteralBoolean
- *  - ConstantNoiseNumber
+ * evaluates to true for numbers bigger than zero, anything else evaluates to false.
+ *
+ * Includes the following types:
+ *  - [NoiseLiteralBoolean]
+ *  - [ConstantNoiseNumber]
  */
 @Serializable
 public sealed interface ConstantNoiseBoolean
@@ -15839,11 +15852,12 @@ public open class ElementImageSetValues : JsonReader(), ElementImageSet {
 }
 
 /**
- * If this is loaded as a single ElementImageSetLayer, it gets used as `base`.Includes the following
- * types:
- *  - ElementImageSetValues
- *  - ElementImageSetLayerValues
- *  - Sprite
+ * If this is loaded as a single ElementImageSetLayer, it gets used as `base`.
+ *
+ * Includes the following types:
+ *  - [ElementImageSetValues]
+ *  - [ElementImageSetLayerValues]
+ *  - [Sprite]
  */
 @Serializable(ElementImageSet.Serializer::class)
 public sealed interface ElementImageSet {
@@ -16069,9 +16083,11 @@ public open class ElementImageSetLayerValues : JsonReader(), ElementImageSetLaye
 }
 
 /**
- * If this is loaded as a Sprite, it gets used as `center`.Includes the following types:
- *  - ElementImageSetLayerValues
- *  - Sprite
+ * If this is loaded as a Sprite, it gets used as `center`.
+ *
+ * Includes the following types:
+ *  - [ElementImageSetLayerValues]
+ *  - [Sprite]
  */
 @Serializable(ElementImageSetLayer.Serializer::class)
 public sealed interface ElementImageSetLayer {
@@ -16192,12 +16208,14 @@ public typealias Energy = String
 
 /**
  * Loaded as one of the [BaseEnergySource](prototype:BaseEnergySource) extensions, based on the
- * value of the `type` key.Includes the following types:
- *  - ElectricEnergySource
- *  - BurnerEnergySource
- *  - HeatEnergySource
- *  - FluidEnergySource
- *  - VoidEnergySource
+ * value of the `type` key.
+ *
+ * Includes the following types:
+ *  - [ElectricEnergySource]
+ *  - [BurnerEnergySource]
+ *  - [HeatEnergySource]
+ *  - [FluidEnergySource]
+ *  - [VoidEnergySource]
  */
 @Serializable
 public sealed interface EnergySource
@@ -17498,10 +17516,11 @@ public open class ImageStyleSpecification : BaseStyleSpecification(), StyleSpeci
 
 /**
  * Defaults to loading ingredients as items. This allows
- * [ItemIngredientPrototype](prototype:ItemIngredientPrototype) to load in a shorthand array
- * format.Includes the following types:
- *  - ItemIngredientPrototype
- *  - FluidIngredientPrototype
+ * [ItemIngredientPrototype](prototype:ItemIngredientPrototype) to load in a shorthand array format.
+ *
+ * Includes the following types:
+ *  - [ItemIngredientPrototype]
+ *  - [FluidIngredientPrototype]
  */
 @Serializable(IngredientPrototypeSerializer::class)
 public sealed interface IngredientPrototype
@@ -18772,48 +18791,50 @@ public open class ModSetting : JsonReader() {
  * researched.
  *
  * Loaded as one of the [BaseModifier](prototype:BaseModifier) extensions, based on the value of the
- * `type` key.Includes the following types:
- *  - InserterStackSizeBonusModifier
- *  - StackInserterCapacityBonusModifier
- *  - LaboratorySpeedModifier
- *  - LaboratoryProductivityModifier
- *  - MaximumFollowingRobotsCountModifier
- *  - WorkerRobotSpeedModifier
- *  - WorkerRobotStorageModifier
- *  - WorkerRobotBatteryModifier
- *  - FollowerRobotLifetimeModifier
- *  - GhostTimeToLiveModifier
- *  - DeconstructionTimeToLiveModifier
- *  - TurretAttackModifier
- *  - AmmoDamageModifier
- *  - ArtilleryRangeModifier
- *  - GiveItemModifier
- *  - GunSpeedModifier
- *  - UnlockRecipeModifier
- *  - CharacterCraftingSpeedModifier
- *  - CharacterMiningSpeedModifier
- *  - CharacterRunningSpeedModifier
- *  - CharacterBuildDistanceModifier
- *  - CharacterItemDropDistanceModifier
- *  - CharacterReachDistanceModifier
- *  - CharacterResourceReachDistanceModifier
- *  - CharacterItemPickupDistanceModifier
- *  - CharacterLootPickupDistanceModifier
- *  - CharacterInventorySlotsBonusModifier
- *  - CharacterHealthBonusModifier
- *  - CharacterLogisticRequestsModifier
- *  - CharacterLogisticTrashSlotsModifier
- *  - MaxFailedAttemptsPerTickPerConstructionQueueModifier
- *  - MaxSuccessfulAttemptsPerTickPerConstructionQueueModifier
- *  - MiningDrillProductivityBonusModifier
- *  - TrainBrakingForceBonusModifier
- *  - ZoomToWorldEnabledModifier
- *  - ZoomToWorldGhostBuildingEnabledModifier
- *  - ZoomToWorldBlueprintEnabledModifier
- *  - ZoomToWorldDeconstructionPlannerEnabledModifier
- *  - ZoomToWorldUpgradePlannerEnabledModifier
- *  - ZoomToWorldSelectionToolEnabledModifier
- *  - NothingModifier
+ * `type` key.
+ *
+ * Includes the following types:
+ *  - [InserterStackSizeBonusModifier]
+ *  - [StackInserterCapacityBonusModifier]
+ *  - [LaboratorySpeedModifier]
+ *  - [LaboratoryProductivityModifier]
+ *  - [MaximumFollowingRobotsCountModifier]
+ *  - [WorkerRobotSpeedModifier]
+ *  - [WorkerRobotStorageModifier]
+ *  - [WorkerRobotBatteryModifier]
+ *  - [FollowerRobotLifetimeModifier]
+ *  - [GhostTimeToLiveModifier]
+ *  - [DeconstructionTimeToLiveModifier]
+ *  - [TurretAttackModifier]
+ *  - [AmmoDamageModifier]
+ *  - [ArtilleryRangeModifier]
+ *  - [GiveItemModifier]
+ *  - [GunSpeedModifier]
+ *  - [UnlockRecipeModifier]
+ *  - [CharacterCraftingSpeedModifier]
+ *  - [CharacterMiningSpeedModifier]
+ *  - [CharacterRunningSpeedModifier]
+ *  - [CharacterBuildDistanceModifier]
+ *  - [CharacterItemDropDistanceModifier]
+ *  - [CharacterReachDistanceModifier]
+ *  - [CharacterResourceReachDistanceModifier]
+ *  - [CharacterItemPickupDistanceModifier]
+ *  - [CharacterLootPickupDistanceModifier]
+ *  - [CharacterInventorySlotsBonusModifier]
+ *  - [CharacterHealthBonusModifier]
+ *  - [CharacterLogisticRequestsModifier]
+ *  - [CharacterLogisticTrashSlotsModifier]
+ *  - [MaxFailedAttemptsPerTickPerConstructionQueueModifier]
+ *  - [MaxSuccessfulAttemptsPerTickPerConstructionQueueModifier]
+ *  - [MiningDrillProductivityBonusModifier]
+ *  - [TrainBrakingForceBonusModifier]
+ *  - [ZoomToWorldEnabledModifier]
+ *  - [ZoomToWorldGhostBuildingEnabledModifier]
+ *  - [ZoomToWorldBlueprintEnabledModifier]
+ *  - [ZoomToWorldDeconstructionPlannerEnabledModifier]
+ *  - [ZoomToWorldUpgradePlannerEnabledModifier]
+ *  - [ZoomToWorldSelectionToolEnabledModifier]
+ *  - [NothingModifier]
  */
 @Serializable
 public sealed interface Modifier
@@ -18882,10 +18903,12 @@ public open class NestedTriggerEffectItem : TriggerEffectItem() {
 /**
  * An array-like noise expression, for example constructed with
  * [NoiseArrayConstruction](prototype:NoiseArrayConstruction) or a variable such as
- * `noise.var("starting_positions")`.Includes the following types:
- *  - NoiseVariable
- *  - NoiseArrayConstruction
- *  - NoiseFunctionOffsetPoints
+ * `noise.var("starting_positions")`.
+ *
+ * Includes the following types:
+ *  - [NoiseVariable]
+ *  - [NoiseArrayConstruction]
+ *  - [NoiseFunctionOffsetPoints]
  */
 @Serializable
 public sealed interface NoiseArray
@@ -18929,17 +18952,19 @@ public open class NoiseArrayConstruction : JsonReader(), NoiseArray, NoiseExpres
  * noise expressions.
  *
  * The most frequently used noise functions are loaded via
- * [NoiseFunctionApplication](prototype:NoiseFunctionApplication).Includes the following types:
- *  - NoiseVariable
- *  - NoiseFunctionApplication
- *  - NoiseLiteralBoolean
- *  - NoiseLiteralNumber
- *  - NoiseLiteralString
- *  - NoiseLiteralObject
- *  - NoiseLiteralExpression
- *  - NoiseArrayConstruction
- *  - NoiseProcedureDelimiter
- *  - NoiseIfElseChain
+ * [NoiseFunctionApplication](prototype:NoiseFunctionApplication).
+ *
+ * Includes the following types:
+ *  - [NoiseVariable]
+ *  - [NoiseFunctionApplication]
+ *  - [NoiseLiteralBoolean]
+ *  - [NoiseLiteralNumber]
+ *  - [NoiseLiteralString]
+ *  - [NoiseLiteralObject]
+ *  - [NoiseLiteralExpression]
+ *  - [NoiseArrayConstruction]
+ *  - [NoiseProcedureDelimiter]
+ *  - [NoiseIfElseChain]
  */
 @Serializable
 public sealed interface NoiseExpression
@@ -18986,42 +19011,43 @@ public open class NoiseFunctionAdd : JsonReader(), NoiseFunctionApplication, Noi
  * Function calls are their own class of expression (as opposed to every function just being its own
  * expression type) because function calls all have similar properties -- arguments are themselves
  * expressions, a function call with all-constant arguments can be constant-folded (due to [referential
- * transparency](http://en.wikipedia.org/wiki/Referential_transparency)), etc.Includes the following
- * types:
- *  - NoiseFunctionAdd
- *  - NoiseFunctionSubtract
- *  - NoiseFunctionMultiply
- *  - NoiseFunctionDivide
- *  - NoiseFunctionExponentiate
- *  - NoiseFunctionAbsoluteValue
- *  - NoiseFunctionClamp
- *  - NoiseFunctionCompileTimeLog
- *  - NoiseFunctionDistanceFromNearestPoint
- *  - NoiseFunctionRidge
- *  - NoiseFunctionTerrace
- *  - NoiseFunctionModulo
- *  - NoiseFunctionFloor
- *  - NoiseFunctionCeil
- *  - NoiseFunctionBitwiseAnd
- *  - NoiseFunctionBitwiseOr
- *  - NoiseFunctionBitwiseXor
- *  - NoiseFunctionBitwiseNot
- *  - NoiseFunctionSin
- *  - NoiseFunctionCos
- *  - NoiseFunctionAtan2
- *  - NoiseFunctionLessThan
- *  - NoiseFunctionLessOrEqual
- *  - NoiseFunctionEquals
- *  - NoiseFunctionFactorioBasisNoise
- *  - NoiseFunctionFactorioQuickMultioctaveNoise
- *  - NoiseFunctionRandomPenalty
- *  - NoiseFunctionLog2
- *  - NoiseFunctionNoiseLayerNameToID
- *  - NoiseFunctionAutoplaceProbability
- *  - NoiseFunctionAutoplaceRichness
- *  - NoiseFunctionOffsetPoints
- *  - NoiseFunctionFactorioMultioctaveNoise
- *  - NoiseFunctionSpotNoise
+ * transparency](http://en.wikipedia.org/wiki/Referential_transparency)), etc.
+ *
+ * Includes the following types:
+ *  - [NoiseFunctionAdd]
+ *  - [NoiseFunctionSubtract]
+ *  - [NoiseFunctionMultiply]
+ *  - [NoiseFunctionDivide]
+ *  - [NoiseFunctionExponentiate]
+ *  - [NoiseFunctionAbsoluteValue]
+ *  - [NoiseFunctionClamp]
+ *  - [NoiseFunctionCompileTimeLog]
+ *  - [NoiseFunctionDistanceFromNearestPoint]
+ *  - [NoiseFunctionRidge]
+ *  - [NoiseFunctionTerrace]
+ *  - [NoiseFunctionModulo]
+ *  - [NoiseFunctionFloor]
+ *  - [NoiseFunctionCeil]
+ *  - [NoiseFunctionBitwiseAnd]
+ *  - [NoiseFunctionBitwiseOr]
+ *  - [NoiseFunctionBitwiseXor]
+ *  - [NoiseFunctionBitwiseNot]
+ *  - [NoiseFunctionSin]
+ *  - [NoiseFunctionCos]
+ *  - [NoiseFunctionAtan2]
+ *  - [NoiseFunctionLessThan]
+ *  - [NoiseFunctionLessOrEqual]
+ *  - [NoiseFunctionEquals]
+ *  - [NoiseFunctionFactorioBasisNoise]
+ *  - [NoiseFunctionFactorioQuickMultioctaveNoise]
+ *  - [NoiseFunctionRandomPenalty]
+ *  - [NoiseFunctionLog2]
+ *  - [NoiseFunctionNoiseLayerNameToID]
+ *  - [NoiseFunctionAutoplaceProbability]
+ *  - [NoiseFunctionAutoplaceRichness]
+ *  - [NoiseFunctionOffsetPoints]
+ *  - [NoiseFunctionFactorioMultioctaveNoise]
+ *  - [NoiseFunctionSpotNoise]
  */
 @Serializable
 @JsonClassDiscriminator("function_name")
@@ -19675,45 +19701,47 @@ public open class NoiseLiteralString : JsonReader(), NoiseExpression {
  * [NoiseLiteralObject](prototype:NoiseLiteralObject),
  * [NoiseLiteralExpression](prototype:NoiseLiteralExpression),
  * [NoiseArrayConstruction](prototype:NoiseArrayConstruction), and
- * [NoiseFunctionOffsetPoints](prototype:NoiseFunctionOffsetPoints).Includes the following types:
- *  - NoiseVariable
- *  - NoiseFunctionApplication
- *  - NoiseLiteralNumber
- *  - NoiseProcedureDelimiter
- *  - NoiseIfElseChain
- *  - NoiseFunctionAdd
- *  - NoiseFunctionSubtract
- *  - NoiseFunctionMultiply
- *  - NoiseFunctionDivide
- *  - NoiseFunctionExponentiate
- *  - NoiseFunctionFactorioQuickMultioctaveNoise
- *  - NoiseFunctionFactorioMultioctaveNoise
- *  - NoiseFunctionDistanceFromNearestPoint
- *  - NoiseFunctionFactorioBasisNoise
- *  - NoiseFunctionAbsoluteValue
- *  - NoiseFunctionClamp
- *  - NoiseFunctionRidge
- *  - NoiseFunctionTerrace
- *  - NoiseFunctionSpotNoise
- *  - NoiseFunctionRandomPenalty
- *  - NoiseFunctionLog2
- *  - NoiseFunctionModulo
- *  - NoiseFunctionFloor
- *  - NoiseFunctionCeil
- *  - NoiseFunctionBitwiseAnd
- *  - NoiseFunctionBitwiseOr
- *  - NoiseFunctionBitwiseXor
- *  - NoiseFunctionBitwiseNot
- *  - NoiseFunctionSin
- *  - NoiseFunctionAtan2
- *  - NoiseFunctionCos
- *  - NoiseFunctionLessThan
- *  - NoiseFunctionLessOrEqual
- *  - NoiseFunctionEquals
- *  - NoiseFunctionCompileTimeLog
- *  - NoiseFunctionNoiseLayerNameToID
- *  - NoiseFunctionAutoplaceProbability
- *  - NoiseFunctionAutoplaceRichness
+ * [NoiseFunctionOffsetPoints](prototype:NoiseFunctionOffsetPoints).
+ *
+ * Includes the following types:
+ *  - [NoiseVariable]
+ *  - [NoiseFunctionApplication]
+ *  - [NoiseLiteralNumber]
+ *  - [NoiseProcedureDelimiter]
+ *  - [NoiseIfElseChain]
+ *  - [NoiseFunctionAdd]
+ *  - [NoiseFunctionSubtract]
+ *  - [NoiseFunctionMultiply]
+ *  - [NoiseFunctionDivide]
+ *  - [NoiseFunctionExponentiate]
+ *  - [NoiseFunctionFactorioQuickMultioctaveNoise]
+ *  - [NoiseFunctionFactorioMultioctaveNoise]
+ *  - [NoiseFunctionDistanceFromNearestPoint]
+ *  - [NoiseFunctionFactorioBasisNoise]
+ *  - [NoiseFunctionAbsoluteValue]
+ *  - [NoiseFunctionClamp]
+ *  - [NoiseFunctionRidge]
+ *  - [NoiseFunctionTerrace]
+ *  - [NoiseFunctionSpotNoise]
+ *  - [NoiseFunctionRandomPenalty]
+ *  - [NoiseFunctionLog2]
+ *  - [NoiseFunctionModulo]
+ *  - [NoiseFunctionFloor]
+ *  - [NoiseFunctionCeil]
+ *  - [NoiseFunctionBitwiseAnd]
+ *  - [NoiseFunctionBitwiseOr]
+ *  - [NoiseFunctionBitwiseXor]
+ *  - [NoiseFunctionBitwiseNot]
+ *  - [NoiseFunctionSin]
+ *  - [NoiseFunctionAtan2]
+ *  - [NoiseFunctionCos]
+ *  - [NoiseFunctionLessThan]
+ *  - [NoiseFunctionLessOrEqual]
+ *  - [NoiseFunctionEquals]
+ *  - [NoiseFunctionCompileTimeLog]
+ *  - [NoiseFunctionNoiseLayerNameToID]
+ *  - [NoiseFunctionAutoplaceProbability]
+ *  - [NoiseFunctionAutoplaceRichness]
  */
 @Serializable
 public sealed interface NoiseNumber
@@ -20371,9 +20399,11 @@ public open class PollutionSettings : JsonReader() {
 }
 
 /**
- * Defaults to loading products as items.Includes the following types:
- *  - ItemProductPrototype
- *  - FluidProductPrototype
+ * Defaults to loading products as items.
+ *
+ * Includes the following types:
+ *  - [ItemProductPrototype]
+ *  - [FluidProductPrototype]
  */
 @Serializable(ProductPrototypeSerializer::class)
 public sealed interface ProductPrototype
@@ -21136,9 +21166,11 @@ public open class RotatedAnimation4WayValues : JsonReader(), RotatedAnimation4Wa
 
 /**
  * A map of rotated animations for all 4 directions of the entity. If this is loaded as a single
- * RotatedAnimation, it applies to all directions.Includes the following types:
- *  - RotatedAnimation4WayValues
- *  - RotatedAnimation
+ * RotatedAnimation, it applies to all directions.
+ *
+ * Includes the following types:
+ *  - [RotatedAnimation4WayValues]
+ *  - [RotatedAnimation]
  */
 @Serializable(RotatedAnimation4Way.Serializer::class)
 public sealed interface RotatedAnimation4Way {
@@ -22287,9 +22319,11 @@ public open class Sprite4WayValues : JsonReader(), Sprite4Way {
 
 /**
  * A map of sprites for all 4 directions of the entity. If this is loaded as a single Sprite, it
- * applies to all directions.Includes the following types:
- *  - Sprite4WayValues
- *  - Sprite
+ * applies to all directions.
+ *
+ * Includes the following types:
+ *  - [Sprite4WayValues]
+ *  - [Sprite]
  */
 @Serializable(Sprite4Way.Serializer::class)
 public sealed interface Sprite4Way {
@@ -22836,38 +22870,40 @@ public open class Stripe : JsonReader() {
 
 /**
  * Loaded as one of the [BaseStyleSpecification](prototype:BaseStyleSpecification) extensions, based
- * on the value of the `type` key.Includes the following types:
- *  - ActivityBarStyleSpecification
- *  - ButtonStyleSpecification
- *  - CameraStyleSpecification
- *  - CheckBoxStyleSpecification
- *  - DropDownStyleSpecification
- *  - FlowStyleSpecification
- *  - FrameStyleSpecification
- *  - GraphStyleSpecification
- *  - HorizontalFlowStyleSpecification
- *  - LineStyleSpecification
- *  - ImageStyleSpecification
- *  - LabelStyleSpecification
- *  - ListBoxStyleSpecification
- *  - ProgressBarStyleSpecification
- *  - RadioButtonStyleSpecification
- *  - HorizontalScrollBarStyleSpecification
- *  - VerticalScrollBarStyleSpecification
- *  - ScrollPaneStyleSpecification
- *  - SliderStyleSpecification
- *  - SwitchStyleSpecification
- *  - TableStyleSpecification
- *  - TabStyleSpecification
- *  - TextBoxStyleSpecification
- *  - VerticalFlowStyleSpecification
- *  - TabbedPaneStyleSpecification
- *  - EmptyWidgetStyleSpecification
- *  - MinimapStyleSpecification
- *  - TechnologySlotStyleSpecification
- *  - GlowStyleSpecification
- *  - SpeechBubbleStyleSpecification
- *  - DoubleSliderStyleSpecification
+ * on the value of the `type` key.
+ *
+ * Includes the following types:
+ *  - [ActivityBarStyleSpecification]
+ *  - [ButtonStyleSpecification]
+ *  - [CameraStyleSpecification]
+ *  - [CheckBoxStyleSpecification]
+ *  - [DropDownStyleSpecification]
+ *  - [FlowStyleSpecification]
+ *  - [FrameStyleSpecification]
+ *  - [GraphStyleSpecification]
+ *  - [HorizontalFlowStyleSpecification]
+ *  - [LineStyleSpecification]
+ *  - [ImageStyleSpecification]
+ *  - [LabelStyleSpecification]
+ *  - [ListBoxStyleSpecification]
+ *  - [ProgressBarStyleSpecification]
+ *  - [RadioButtonStyleSpecification]
+ *  - [HorizontalScrollBarStyleSpecification]
+ *  - [VerticalScrollBarStyleSpecification]
+ *  - [ScrollPaneStyleSpecification]
+ *  - [SliderStyleSpecification]
+ *  - [SwitchStyleSpecification]
+ *  - [TableStyleSpecification]
+ *  - [TabStyleSpecification]
+ *  - [TextBoxStyleSpecification]
+ *  - [VerticalFlowStyleSpecification]
+ *  - [TabbedPaneStyleSpecification]
+ *  - [EmptyWidgetStyleSpecification]
+ *  - [MinimapStyleSpecification]
+ *  - [TechnologySlotStyleSpecification]
+ *  - [GlowStyleSpecification]
+ *  - [SpeechBubbleStyleSpecification]
+ *  - [DoubleSliderStyleSpecification]
  */
 @Serializable
 public sealed interface StyleSpecification
@@ -23662,37 +23698,38 @@ public enum class TipStatus {
 }
 
 /**
- * Loaded as one of the tip triggers, based on the value of the `type` key.Includes the following
- * types:
- *  - OrTipTrigger
- *  - AndTipTrigger
- *  - SequenceTipTrigger
- *  - DependenciesMetTipTrigger
- *  - TimeElapsedTipTrigger
- *  - ResearchTechnologyTipTrigger
- *  - UnlockRecipeTipTrigger
- *  - CraftItemTipTrigger
- *  - BuildEntityTipTrigger
- *  - ManualTransferTipTrigger
- *  - StackTransferTipTrigger
- *  - EntityTransferTipTrigger
- *  - SetRecipeTipTrigger
- *  - SetFilterTipTrigger
- *  - LimitChestTipTrigger
- *  - UsePipetteTipTrigger
- *  - SetLogisticRequestTipTrigger
- *  - UseConfirmTipTrigger
- *  - LowPowerTipTrigger
- *  - PasteEntitySettingsTipTrigger
- *  - FastReplaceTipTrigger
- *  - GroupAttackTipTrigger
- *  - FastBeltBendTipTrigger
- *  - BeltTraverseTipTrigger
- *  - PlaceEquipmentTipTrigger
- *  - ClearCursorTipTrigger
- *  - ShiftBuildTipTrigger
- *  - GateOverRailBuildTipTrigger
- *  - ManualWireDragTipTrigger
+ * Loaded as one of the tip triggers, based on the value of the `type` key.
+ *
+ * Includes the following types:
+ *  - [OrTipTrigger]
+ *  - [AndTipTrigger]
+ *  - [SequenceTipTrigger]
+ *  - [DependenciesMetTipTrigger]
+ *  - [TimeElapsedTipTrigger]
+ *  - [ResearchTechnologyTipTrigger]
+ *  - [UnlockRecipeTipTrigger]
+ *  - [CraftItemTipTrigger]
+ *  - [BuildEntityTipTrigger]
+ *  - [ManualTransferTipTrigger]
+ *  - [StackTransferTipTrigger]
+ *  - [EntityTransferTipTrigger]
+ *  - [SetRecipeTipTrigger]
+ *  - [SetFilterTipTrigger]
+ *  - [LimitChestTipTrigger]
+ *  - [UsePipetteTipTrigger]
+ *  - [SetLogisticRequestTipTrigger]
+ *  - [UseConfirmTipTrigger]
+ *  - [LowPowerTipTrigger]
+ *  - [PasteEntitySettingsTipTrigger]
+ *  - [FastReplaceTipTrigger]
+ *  - [GroupAttackTipTrigger]
+ *  - [FastBeltBendTipTrigger]
+ *  - [BeltTraverseTipTrigger]
+ *  - [PlaceEquipmentTipTrigger]
+ *  - [ClearCursorTipTrigger]
+ *  - [ShiftBuildTipTrigger]
+ *  - [GateOverRailBuildTipTrigger]
+ *  - [ManualWireDragTipTrigger]
  */
 @Serializable
 public sealed interface TipTrigger
@@ -23939,13 +23976,15 @@ public typealias Trigger = ItemOrList<UnknownUnion>
 
 /**
  * Loaded as one of the [TriggerDeliveryItem](prototype:TriggerDeliveryItem) extensions, based on
- * the value of the `type` key.Includes the following types:
- *  - InstantTriggerDelivery
- *  - ProjectileTriggerDelivery
- *  - FlameThrowerExplosionTriggerDelivery
- *  - BeamTriggerDelivery
- *  - StreamTriggerDelivery
- *  - ArtilleryTriggerDelivery
+ * the value of the `type` key.
+ *
+ * Includes the following types:
+ *  - [InstantTriggerDelivery]
+ *  - [ProjectileTriggerDelivery]
+ *  - [FlameThrowerExplosionTriggerDelivery]
+ *  - [BeamTriggerDelivery]
+ *  - [StreamTriggerDelivery]
+ *  - [ArtilleryTriggerDelivery]
  */
 @Serializable
 public sealed interface TriggerDelivery

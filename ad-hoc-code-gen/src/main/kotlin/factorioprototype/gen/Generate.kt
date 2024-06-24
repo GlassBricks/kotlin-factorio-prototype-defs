@@ -283,7 +283,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         for (concept in typePartialOrder) {
             if (concept !is Concept) continue
             val innerType = concept.type.innerType()
-            when  {
+            when {
                 innerType is StructType || concept.name in flattenStructType -> {
                     conceptCanBeUnionMember.add(concept)
                     val properties = concept.properties ?: continue
@@ -604,9 +604,9 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
             addDescription(concept?.description)
             addKdoc(buildCodeBlock {
-                add("Includes the following types:\n")
+                add("\n\nIncludes the following types:\n")
                 for (member in union.members) {
-                    add(" - %L\n", member.name)
+                    add(" - [%L]\n", member.name)
                 }
             })
             if (union.name in manuallySerialized) {
