@@ -42,7 +42,7 @@ class Prototype(
     override val lists: List<String>? = null,
     override val examples: List<String>? = null,
     override val images: List<Image>? = null,
-    val visibility: List<String>? = null,
+    @Suppress("unused") val visibility: List<String>? = null,
     override val parent: String? = null,
     override val abstract: Boolean,
     val typename: String? = null,
@@ -202,14 +202,14 @@ inline fun <T> List<T>.pairwiseEquals(other: List<T>, predicate: (T, T) -> Boole
 }
 
 fun TypeDefinition.typeEquals(other: TypeDefinition): Boolean {
-    val other = other.innerType()
+    val ot = other.innerType()
     return when (val t = innerType()) {
-        is BasicType -> other is BasicType && t.value == other.value
-        is ArrayType -> other is ArrayType && t.value.typeEquals(other.value)
-        is DictType -> other is DictType && t.key.typeEquals(other.key) && t.value.typeEquals(other.value)
-        is TupleType -> other is TupleType && t.values.pairwiseEquals(other.values) { a, b -> a.typeEquals(b) }
-        is UnionType -> other is UnionType && t.options.pairwiseEquals(other.options) { a, b -> a.typeEquals(b) }
-        is LiteralType -> other is LiteralType && t.value == other.value
+        is BasicType -> ot is BasicType && t.value == ot.value
+        is ArrayType -> ot is ArrayType && t.value.typeEquals(ot.value)
+        is DictType -> ot is DictType && t.key.typeEquals(ot.key) && t.value.typeEquals(ot.value)
+        is TupleType -> ot is TupleType && t.values.pairwiseEquals(ot.values) { a, b -> a.typeEquals(b) }
+        is UnionType -> ot is UnionType && t.options.pairwiseEquals(ot.options) { a, b -> a.typeEquals(b) }
+        is LiteralType -> ot is LiteralType && t.value == ot.value
         is TypeType, StructType -> false
     }
 }

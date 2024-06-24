@@ -405,6 +405,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             val parent = byName[parentName]!!
             visit(parent)
             val properties = prototype.properties ?: return
+            @Suppress("NAME_SHADOWING")
             fun isSubtype(
                 parentType: TypeDefinition,
                 childType: TypeDefinition
