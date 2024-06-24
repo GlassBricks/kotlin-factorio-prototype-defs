@@ -249,6 +249,34 @@ open class LiteralValueSerializer<T : LiteralValue>(clazz: KClass<T>) : KSeriali
     }
 }
 
+abstract class ArrayValue<T : Any>(val values: List<T>) : List<T> by values {
+    override fun toString(): String = "${this::class.simpleName}($values)"
+    override fun equals(other: Any?): Boolean =
+        other?.javaClass == javaClass && (other as ArrayValue<*>).values == values
+
+    override fun hashCode(): Int = values.hashCode()
+}
+
+@OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
+abstract class ArrayValueSerializer<T : ArrayValue<*>>(
+    klass: KClass<T>,
+    elementType: KType,
+) : KSerializer<T> {
+    private val elementSerializer = serializer(elementType)
+    private val constructor = klass.primaryConstructor!!
+    override val descriptor: SerialDescriptor = buildSerialDescriptor("ArrayValue", SerialKind.CONTEXTUAL)
+    override fun deserialize(decoder: Decoder): T {
+        decoder as JsonDecoder
+        val element = decoder.decodeJsonElement()
+        if (element !is JsonArray) throw SerializationException("Expected an array")
+        return constructor.call(element.map { decoder.json.decodeFromJsonElement(elementSerializer, it) })
+    }
+
+    override fun serialize(encoder: Encoder, value: T) {
+        throw NotImplementedError()
+    }
+}
+
 
 @OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
 open class FirstMatchingSerializer<T : Any>(
@@ -256,7 +284,7 @@ open class FirstMatchingSerializer<T : Any>(
     vararg subclasses: KClass<out T>
 ) : KSerializer<T> {
 
-    private sealed interface SubTypeMatcher {
+    private sealed interface JsonMatcher {
         val serializer: KSerializer<*>
         fun matches(element: JsonElement): Boolean
     }
@@ -264,7 +292,7 @@ open class FirstMatchingSerializer<T : Any>(
     private data class ClassMatcher<T : JsonReader>(
         val keys: List<String>,
         override val serializer: JsonReaderSerializer<T>,
-    ) : SubTypeMatcher {
+    ) : JsonMatcher {
         override fun matches(element: JsonElement): Boolean =
             element is JsonObject &&
                     keys.any { it in element }
@@ -272,7 +300,7 @@ open class FirstMatchingSerializer<T : Any>(
 
     private data class StringMatcher(
         override val serializer: KSerializer<*>
-    ) : SubTypeMatcher {
+    ) : JsonMatcher {
         override fun matches(element: JsonElement): Boolean =
             element is JsonPrimitive && element.isString
     }
@@ -280,7 +308,7 @@ open class FirstMatchingSerializer<T : Any>(
     private data class NumericMatcher(
         val klass: KClass<*>,
         override val serializer: KSerializer<*>,
-    ) : SubTypeMatcher {
+    ) : JsonMatcher {
         override fun matches(element: JsonElement): Boolean =
             element is JsonPrimitive &&
                     !element.isString &&
@@ -289,7 +317,7 @@ open class FirstMatchingSerializer<T : Any>(
 
     private data class BooleanMatcher(
         override val serializer: KSerializer<*>
-    ) : SubTypeMatcher {
+    ) : JsonMatcher {
         override fun matches(element: JsonElement): Boolean =
             element is JsonPrimitive && !element.isString && element.booleanOrNull != null
     }
@@ -297,10 +325,18 @@ open class FirstMatchingSerializer<T : Any>(
     private data class LiteralMatcher(
         val from: LiteralValue,
         override val serializer: KSerializer<*>
-    ) : SubTypeMatcher {
+    ) : JsonMatcher {
         override fun matches(element: JsonElement): Boolean =
             element is JsonPrimitive && element in from.values
     }
+
+    private data class ArrayMatcher(
+        override val serializer: KSerializer<*>
+    ) : JsonMatcher {
+        override fun matches(element: JsonElement): Boolean = element is JsonArray
+    }
+
+    private val classMatchers: List<JsonMatcher>
 
     init {
 
@@ -319,18 +355,21 @@ open class FirstMatchingSerializer<T : Any>(
             return klass.objectInstance is LiteralValue
         }
 
+        fun isArrayValue(klass: KClass<*>): Boolean {
+            return klass.isSubclassOf(ArrayValue::class)
+        }
+
         for (subclass in subclasses) {
             require(
                 isJsonReader(subclass)
                         || isInnerInlinePrimitive(subclass)
                         || isLiteralValue(subclass)
+                        || isArrayValue(subclass)
             ) {
                 "Subclass $subclass is not a JsonReader, inner inline primitive, or LiteralValue"
             }
         }
-    }
 
-    private val classMatchers = run {
         val classSerializers = subclasses
             .filter { it.isSubclassOf(JsonReader::class) }
             .associateWith {
@@ -346,9 +385,9 @@ open class FirstMatchingSerializer<T : Any>(
                 classKeyCount[name] = (classKeyCount[name] ?: 0) + 1
             }
         }
-        subclasses.map { klass ->
-            if (klass in classSerializers) {
-                val serializer = classSerializers[klass]!!
+        this.classMatchers = subclasses.map { subclass ->
+            if (isJsonReader(subclass)) {
+                val serializer = classSerializers[subclass]!!
                 val descriptor = serializer.descriptor
                 for (i in 0..<descriptor.elementsCount) {
                     val elDescriptor = descriptor.getElementDescriptor(i)
@@ -362,20 +401,25 @@ open class FirstMatchingSerializer<T : Any>(
                     throw SerializationException("No unique keys found for class ${serializer.descriptor.serialName}")
                 }
                 ClassMatcher(allElements, serializer)
-            } else if (klass.isValue) {
-                val serializer = klass.serializer()
-                when (val type = klass.primaryConstructor!!.parameters.first().type.classifier as KClass<*>) {
+            } else if (isInnerInlinePrimitive(subclass)) {
+                val serializer = subclass.serializer()
+                when (val type = subclass.primaryConstructor!!.parameters.first().type.classifier as KClass<*>) {
                     String::class -> StringMatcher(serializer)
                     Boolean::class -> BooleanMatcher(serializer)
                     else -> NumericMatcher(type, serializer)
                 }
+            } else if (isArrayValue(subclass)) {
+                val elementType = subclass.primaryConstructor!!.parameters.first().type
+                ArrayMatcher(serializer(elementType))
+            } else if (isLiteralValue(subclass)) {
+                val values = subclass.objectInstance as LiteralValue
+                LiteralMatcher(values, subclass.serializer())
             } else {
-                // class is literal
-                val values = klass.objectInstance as LiteralValue
-                LiteralMatcher(values, klass.serializer())
+                throw IllegalArgumentException("Subclass $subclass is not a JsonReader, inner inline primitive, or LiteralValue")
             }
         }
     }
+
 
     override val descriptor: SerialDescriptor = buildSerialDescriptor(
         getSerialName(klass),

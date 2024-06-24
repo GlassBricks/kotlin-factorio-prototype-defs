@@ -1,7 +1,6 @@
 package factorioprototype.gen
 
 import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.MemberName.Companion.member
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
@@ -98,9 +97,9 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     }
 
     private fun setupFile() {
-
         file.addFileComment("Automatically generated file, do not edit")
         file.addKotlinDefaultImports()
+        file.addImport("kotlin.reflect", "typeOf")
         file.addAnnotation(
             AnnotationSpec.builder(ClassName("kotlin", "OptIn"))
                 .addMember("%T::class", ClassName("kotlinx.serialization", "ExperimentalSerializationApi"))
@@ -172,40 +171,67 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         }
     }
 
+    private sealed interface GeneratedType {
+        val className: ClassName
+    }
 
-    private sealed interface GeneratedType : UnionMember {
+    private sealed interface ProtoOrConceptGen : UnionMember, GeneratedType {
         val name: String
         val inner: ProtoOrConcept
         override val className get() = ClassName(packageName, name)
     }
 
-    data class MainType(override val inner: ProtoOrConcept) : GeneratedType {
+    data class MainType(override val inner: ProtoOrConcept) : ProtoOrConceptGen {
         override val name: String get() = inner.name
     }
 
-    data class ConceptValues(override val inner: Concept) : GeneratedType {
+    data class ConceptValues(override val inner: Concept) : ProtoOrConceptGen {
         override val name: String get() = inner.name + "Values"
     }
 
-    private sealed interface UnionMember {
-        val className: ClassName
+    data object OtherGeneratedType : ProtoOrConceptGen {
+        override val name: String get() = throw UnsupportedOperationException()
+        override val inner: ProtoOrConcept get() = throw UnsupportedOperationException()
+    }
 
-        data class Primitive(override val className: ClassName) : UnionMember
+    private sealed class UnionSubtype : UnionMember, GeneratedType {
+        abstract override val className: ClassName
 
-        data class Literal(val values: MutableList<LiteralType>) : UnionMember {
-            constructor(value: LiteralType) : this(mutableListOf(value))
+        //        lateinit var parent: GeneratedUnion
+        var _parent: GeneratedUnion? = null
+            private set
+        val parent: GeneratedUnion
+            get() = _parent ?: throw IllegalStateException("Parent not set")
 
+        fun maybeSetParent(parent: GeneratedUnion) {
+            if (_parent == null) _parent = parent
+        }
+
+        data class Primitive(val primitiveType: String) : UnionSubtype() {
+            override val className: ClassName get() = parent.className.nestedClass(primitiveType)
+            val typeName: ClassName get() = ClassName("kotlin", primitiveType)
+        }
+
+        data class Literal(val values: MutableList<LiteralType>) : UnionSubtype() {
             override val className: ClassName
-                get() = ClassName(
-                    packageName, values.first().value.content
+                get() = parent.className.nestedClass(
+                    values.first().value.content
                         .replace(':', '_')
                 )
         }
 
+        data class Array(val subType: TypeDefinition) : UnionSubtype() {
+            override val className: ClassName get() = parent.className.nestedClass("Array")
+        }
+    }
+
+    private sealed interface UnionMember {
+        val className: ClassName
     }
 
     private fun UnionMember.isClass(): Boolean = when (this) {
-        !is GeneratedType -> false
+        !is ProtoOrConceptGen -> false
+        OtherGeneratedType -> false
         is ConceptValues -> true
         is MainType -> inner is Prototype || (inner as? Concept)?.type is StructType
     }
@@ -237,10 +263,20 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private val conceptUnions = mutableMapOf<Concept, ConceptUnion>()
 
     private val _unionSupertypes = mutableMapOf<GeneratedType, MutableSet<GeneratedUnion>>()
+
     private fun registerUnion(union: GeneratedUnion) {
         for (type in union.members) {
             if (type is GeneratedType) {
+                if (
+                    !(type is UnionSubtype && type._parent == null) &&
+                    type.className.simpleName == "LocalisedString"
+                ) {
+                    println()
+                }
                 _unionSupertypes.getOrPut(type, ::mutableSetOf).add(union)
+            }
+            if (type is UnionSubtype) {
+                type.maybeSetParent(union)
             }
         }
     }
@@ -265,50 +301,57 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private fun tryGetUnionMembers(sourceConcept: Concept?, type: TypeDefinition): Set<UnionMember>? {
         val innerType = type.innerType()
         if (innerType !is UnionType) return null
-
         val els = buildList {
             fun maybeInlineMembers(referencedValue: ProtoOrConcept): Boolean {
                 if (referencedValue !is Concept) return false
                 val conceptUnion = conceptUnions[referencedValue] ?: return false
                 if (conceptUnion.members.all { member ->
-                        member is ConceptValues ||
-                                member is MainType &&
-                                getDiscriminatorValue(member.inner) == null
+                        when (member) {
+                            is ConceptValues -> true
+                            is MainType -> getDiscriminatorValue(member.inner) == null
+                            is UnionSubtype.Array -> true
+                            is UnionSubtype.Literal -> false
+                            is UnionSubtype.Primitive -> false
+                            OtherGeneratedType -> false
+                        }
                     }) {
                     addAll(conceptUnion.members)
                     return true
                 }
                 return false
             }
-            for (member in innerType.options) {
-                val inner = member.innerType()
-                if (inner is StructType && sourceConcept != null) {
+            for (mRawType in innerType.options) {
+                val memberType = mRawType.innerType()
+                if (memberType is StructType && sourceConcept != null) {
                     add(ConceptValues(sourceConcept))
-                } else if (inner is BasicType) {
-                    if (inner.value in builtins) {
-                        add(UnionMember.Primitive(builtins[inner.value]!!))
+                } else if (memberType is BasicType) {
+                    if (memberType.value in builtins) {
+                        add(UnionSubtype.Primitive(builtins[memberType.value]!!.simpleName))
                         continue
                     }
-                    val referencedValue = byName[inner.value] ?: return null
+                    val referencedValue = byName[memberType.value] ?: return null
                     if (!canBeUnionMember(referencedValue))
                         return null
                     if (!maybeInlineMembers(referencedValue))
                         add(MainType(referencedValue))
-                } else if (inner is LiteralType) {
+                } else if (memberType is LiteralType) {
                     val matching = this@buildList.find { m: UnionMember ->
-                        m is UnionMember.Literal && m.values.first().value.content == inner.value.content
+                        m is UnionSubtype.Literal && m.values.first().value.content == memberType.value.content
                     }
                     if (matching != null) {
-                        (matching as UnionMember.Literal).values.add(inner)
+                        (matching as UnionSubtype.Literal).values.add(memberType)
                     } else {
-                        add(UnionMember.Literal(inner))
+                        add(UnionSubtype.Literal(mutableListOf(memberType)))
                     }
+                } else if (memberType is ArrayType) {
+                    if (this@buildList.any { it: UnionMember -> it is UnionSubtype.Array }) return null
+                    add(UnionSubtype.Array(memberType.value))
                 } else {
                     return null
                 }
             }
         }
-        if (els.all { it is UnionMember.Literal && it.values.all { value -> value.isString() } }) return null
+        if (els.all { it is UnionSubtype.Literal && it.values.all { value -> value.isString() } }) return null
         return els.toSet()
     }
 
@@ -342,7 +385,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                     conceptCanBeUnionMember.add(concept)
                     for (member in unionMembers) {
                         require(
-                            member !is GeneratedType ||
+                            member !is ProtoOrConceptGen ||
                                     canBeUnionMember(member.inner)
                         ) {
                             "Union member $member cannot be a union member of $concept"
@@ -362,8 +405,8 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private val innerUnions = mutableMapOf<Set<UnionMember>, InnerUnion>()
     private fun findInnerUnions() {
         fun tryGetNameByLetterPrefix(options: Set<UnionMember>): String? {
-            if (!options.all { it is GeneratedType }) return null
-            val optionNames = options.map { (it as GeneratedType).name }
+            if (!options.all { it is ProtoOrConceptGen }) return null
+            val optionNames = options.map { (it as ProtoOrConceptGen).name }
             val baseName = optionNames.reduce(String::commonSuffixWith)
             if (baseName.isEmpty()) return null
             val uniqueNames = optionNames.map { it.removeSuffix(baseName) }
@@ -400,7 +443,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         }
     }
 
-    private fun TypeSpec.Builder.setupClass(value: GeneratedType) {
+    private fun TypeSpec.Builder.setupClass(value: ProtoOrConceptGen) {
         if (value.inner.abstract) {
             addModifiers(KModifier.SEALED)
         } else {
@@ -447,7 +490,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             addManualSerializerAnnotation(ClassName(packageName, className))
             return
         }
-        addSubclassSerializer(ClassName(packageName,className), "JsonReaderSerializer")
+        addSubclassSerializer(ClassName(packageName, className), "JsonReaderSerializer")
     }
 
     private fun TypeSpec.Builder.addSubclassSerializer(
@@ -471,7 +514,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     }
 
     private fun generateClass(
-        type: GeneratedType,
+        type: ProtoOrConceptGen,
     ) {
         val result = TypeSpec.classBuilder(type.className).apply { setupClass(type) }.build()
         file.addType(result)
@@ -528,7 +571,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private fun TypeName.withNoDec(): TypeNameWithDecl = TypeNameWithDecl(this, null)
     private fun mapTypeDefinition(
         typeDefinition: TypeDefinition,
-        source: GeneratedType,
+        source: ProtoOrConceptGen,
         property: Property?,
         isRoot: Boolean = false
     ): TypeNameWithDecl {
@@ -587,7 +630,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     }
 
     private fun tryMakeItemOrList(
-        source: GeneratedType,
+        source: ProtoOrConceptGen,
         property: Property?,
         typeDefinition: UnionType
     ): TypeNameWithDecl? {
@@ -608,7 +651,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     }
 
 
-    private fun tryGenerateUnion(source: GeneratedType, property: Property?): TypeNameWithDecl? {
+    private fun tryGenerateUnion(source: ProtoOrConceptGen, property: Property?): TypeNameWithDecl? {
         if (property == null) {
             if (source is MainType && source.inner is Concept) {
                 val union = conceptUnions[source.inner as Concept] ?: return null
@@ -624,8 +667,8 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private fun shouldUseFirstMatchingSerializer(union: GeneratedUnion): Boolean = union.members.all {
         when (it) {
-            is GeneratedType -> it.isClass() && getDiscriminatorValue(it.inner) == null
-            is UnionMember.Primitive, is UnionMember.Literal -> true
+            is ProtoOrConceptGen -> it.isClass() && getDiscriminatorValue(it.inner) == null
+            is UnionSubtype.Primitive, is UnionSubtype.Literal, is UnionSubtype.Array -> true
         }
     }
 
@@ -645,7 +688,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             addKdoc(buildCodeBlock {
                 add("\n\nIncludes the following types:\n")
                 for (member in union.members) {
-                    add(" - [%L]\n", member.className.simpleName)
+                    add(" - [%L]\n", member.className.simpleNames.joinToString("."))
                 }
             })
             if (union.name in manuallySerialized) {
@@ -654,13 +697,13 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 addSubclassSerializer(union.className, "FirstMatchingSerializer") {
                     for (member in union.members) {
                         when (member) {
-                            is GeneratedType ->
+                            is ProtoOrConceptGen ->
                                 addSuperclassConstructorParameter("%T::class", member.className)
 
-                            is UnionMember.Primitive, is UnionMember.Literal -> {
+                            is UnionSubtype -> {
                                 addSuperclassConstructorParameter(
                                     "%T::class",
-                                    union.className.nestedClass(member.className.simpleName)
+                                    member.className
                                 )
                             }
                         }
@@ -670,52 +713,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 addAnnotation(Serializable::class)
             }
 
-            for (member in union.members) when (member) {
-                is GeneratedType -> {}
-                is UnionMember.Primitive -> {
-                    // @JvmInline value class PrimitiveName(val value: PrimitiveType) : UnionName
-                    addType(TypeSpec.classBuilder(member.className.simpleName).apply {
-                        addModifiers(KModifier.VALUE)
-                        addAnnotation(JvmInline::class)
-                        addAnnotation(Serializable::class)
-                        addSuperinterface(union.className)
-                        addProperty(
-                            PropertySpec.builder("value", member.className)
-                                .initializer("value").build()
-                        )
-                        primaryConstructor(
-                            FunSpec.constructorBuilder()
-                                .addParameter("value", member.className)
-                                .build()
-                        )
-                    }.build())
-                }
-
-                is UnionMember.Literal -> {
-                    // data object LiteralName : LiteralValue(value), UnionName
-                    val subName = union.className.nestedClass(member.className.simpleName)
-                    addType(TypeSpec.objectBuilder(subName).apply {
-                        addSubclassSerializer(subName, "LiteralValueSerializer")
-                        addModifiers(KModifier.DATA)
-                        superclass(ClassName(packageName, "LiteralValue"))
-                        addSuperinterface(union.className)
-                        for (value in member.values) {
-                            if (value.value.isString)
-                                addSuperclassConstructorParameter(
-                                    "%T(%S)",
-                                    JsonPrimitive::class.asClassName(),
-                                    value.value.content
-                                )
-                            else
-                                addSuperclassConstructorParameter(
-                                    "%T(%L)",
-                                    JsonPrimitive::class.asClassName(),
-                                    value.value.content
-                                )
-                        }
-                    }.build())
-                }
-            }
+            for (member in union.members) addUnionMember(member, union, concept)
 
             if (concept == noiseFunctionApplication) {
                 addAnnotation(
@@ -740,8 +738,93 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         return TypeNameWithDecl(union.className, intf)
     }
 
+    private fun TypeSpec.Builder.addUnionMember(
+        member: UnionMember,
+        union: GeneratedUnion,
+        concept: Concept?
+    ) {
+        if (member !is UnionSubtype) return
+        if (member.parent != union) return
+        val superTypes = _unionSupertypes[member]
+        fun TypeSpec.Builder.addSuperInterfaces() {
+            addSuperinterface(union.className)
+            if (superTypes != null) {
+                for (superType in superTypes) {
+                    addSuperinterface(superType.className)
+                }
+            }
+        }
+        when (member) {
+            is UnionSubtype.Primitive -> {
+                // @JvmInline value class PrimitiveName(val value: PrimitiveType) : UnionName
+                addType(TypeSpec.classBuilder(member.className).apply {
+                    addModifiers(KModifier.VALUE)
+                    addAnnotation(JvmInline::class)
+                    addAnnotation(Serializable::class)
+                    addSuperInterfaces()
+                    addProperty(
+                        PropertySpec.builder("value", member.typeName)
+                            .initializer("value").build()
+                    )
+                    primaryConstructor(
+                        FunSpec.constructorBuilder()
+                            .addParameter("value", member.typeName)
+                            .build()
+                    )
+                }.build())
+            }
+
+            is UnionSubtype.Literal -> {
+                // data object LiteralName : LiteralValue(value), UnionName
+                addType(TypeSpec.objectBuilder(member.className).apply {
+                    addSubclassSerializer(member.className, "LiteralValueSerializer")
+                    addModifiers(KModifier.DATA)
+                    superclass(ClassName(packageName, "LiteralValue"))
+                    addSuperInterfaces()
+                    for (value in member.values) {
+                        if (value.value.isString)
+                            addSuperclassConstructorParameter(
+                                "%T(%S)",
+                                JsonPrimitive::class.asClassName(),
+                                value.value.content
+                            )
+                        else
+                            addSuperclassConstructorParameter(
+                                "%T(%L)",
+                                JsonPrimitive::class.asClassName(),
+                                value.value.content
+                            )
+                    }
+                }.build())
+            }
+
+            is UnionSubtype.Array -> {
+                val source = if (concept != null) MainType(concept) else OtherGeneratedType
+                val innerType = mapTypeDefinition(member.subType, source, null)
+                // class Array(values: List<T>) : ArrayValues<T>(values)
+                addType(TypeSpec.classBuilder(member.className).apply {
+                    primaryConstructor(
+                        FunSpec.constructorBuilder()
+                            .addParameter("values", List::class.asClassName().parameterizedBy(innerType.typeName))
+                            .build()
+                    )
+                    superclass(
+                        ClassName(packageName, "ArrayValue")
+                            .parameterizedBy(innerType.typeName)
+                    )
+                    addSuperclassConstructorParameter("values")
+                    addSuperInterfaces()
+
+                    addSubclassSerializer(member.className, "ArrayValueSerializer") {
+                        addSuperclassConstructorParameter("typeOf<%T>()", innerType.typeName)
+                    }
+                }.build())
+            }
+        }
+    }
+
     private fun tryMakeStringUnion(
-        source: GeneratedType,
+        source: ProtoOrConceptGen,
         property: Property?,
         typeDefinition: UnionType,
         isRoot: Boolean
@@ -763,7 +846,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     )
 
     private fun makeStringUnion(
-        source: GeneratedType,
+        source: ProtoOrConceptGen,
         property: Property?,
         typeDefinition: UnionType,
         isRoot: Boolean
@@ -818,7 +901,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     }
 
 
-    private fun mapProperty(source: GeneratedType, property: Property): PropertySpec {
+    private fun mapProperty(source: ProtoOrConceptGen, property: Property): PropertySpec {
         require(property.visibility == null)
         val childOverrideType = childOverrides[source.inner]?.get(property.name)
         val nullable = property.optional ||
@@ -932,6 +1015,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private fun TypeDefinition.isString(): Boolean = this is BasicType && value == "string"
             || this is LiteralType && value.isString
+
 }
 
 private fun Documentable.Builder<*>.addDescription(description: String?) {
