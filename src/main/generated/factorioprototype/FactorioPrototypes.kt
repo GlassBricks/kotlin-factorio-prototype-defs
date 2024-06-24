@@ -1822,14 +1822,6 @@ public open class CombatRobotPrototype : FlyingRobotPrototype() {
 }
 
 /**
- * Includes the following types:
- *  - ElectricEnergySource
- *  - VoidEnergySource
- */
-@Serializable
-public sealed interface EVEnergySource
-
-/**
  * Abstract base type for decider and arithmetic combinators.
  */
 public sealed class CombinatorPrototype : EntityWithOwnerPrototype() {
@@ -2919,14 +2911,6 @@ public open class ElectricPolePrototype : EntityWithOwnerPrototype() {
   public object Serializer :
       JsonReaderSerializer<ElectricPolePrototype>(ElectricPolePrototype::class)
 }
-
-/**
- * Includes the following types:
- *  - ElectricEnergySource
- *  - VoidEnergySource
- */
-@Serializable
-public sealed interface EVEnergySource
 
 /**
  * A turret that uses electricity as ammunition.
@@ -5298,14 +5282,6 @@ public open class LabPrototype : EntityWithOwnerPrototype() {
   public object Serializer : JsonReaderSerializer<LabPrototype>(LabPrototype::class)
 }
 
-/**
- * Includes the following types:
- *  - ElectricEnergySource
- *  - VoidEnergySource
- */
-@Serializable
-public sealed interface EVEnergySource
-
 @Serializable
 public enum class LampPrototypeGlowRenderMode {
   additive,
@@ -5637,14 +5613,6 @@ public sealed class LoaderPrototype : TransportBeltConnectablePrototype() {
    */
   override val collision_mask: CollisionMask? by fromJson()
 }
-
-/**
- * Includes the following types:
- *  - BurnerEnergySource
- *  - VoidEnergySource
- */
-@Serializable
-public sealed interface BVEnergySource
 
 /**
  * A [locomotive](https://wiki.factorio.com/Locomotive).
@@ -6666,14 +6634,6 @@ public open class ProducePerHourAchievementPrototype : AchievementPrototype() {
   public object Serializer :
       JsonReaderSerializer<ProducePerHourAchievementPrototype>(ProducePerHourAchievementPrototype::class)
 }
-
-/**
- * Includes the following types:
- *  - ElectricEnergySource
- *  - VoidEnergySource
- */
-@Serializable
-public sealed interface EVEnergySource
 
 /**
  * A [programmable speaker](https://wiki.factorio.com/Programmable_speaker).
@@ -7805,14 +7765,6 @@ public open class RoboportEquipmentPrototype : EquipmentPrototype() {
   public object Serializer :
       JsonReaderSerializer<RoboportEquipmentPrototype>(RoboportEquipmentPrototype::class)
 }
-
-/**
- * Includes the following types:
- *  - ElectricEnergySource
- *  - VoidEnergySource
- */
-@Serializable
-public sealed interface EVEnergySource
 
 /**
  * A [roboport](https://wiki.factorio.com/Roboport).
@@ -9040,14 +8992,6 @@ public open class SpiderLegPrototype : EntityWithHealthPrototype() {
 
   public object Serializer : JsonReaderSerializer<SpiderLegPrototype>(SpiderLegPrototype::class)
 }
-
-/**
- * Includes the following types:
- *  - BurnerEnergySource
- *  - VoidEnergySource
- */
-@Serializable
-public sealed interface BVEnergySource
 
 /**
  * A [spidertron](https://wiki.factorio.com/Spidertron).
@@ -13662,17 +13606,64 @@ public sealed class BaseModifier : JsonReader() {
  */
 @Serializable
 public enum class BaseNamedNoiseExpressions {
+  /**
+   * `noise.distance_from(noise.var("x"), noise.var("y"), noise.var("starting_positions"))`, so the
+   * distance from the closest starting position. distance is never `< 0`.
+   */
   distance,
+  /**
+   * `noise.max(0.0, noise.var("distance") - noise.var("starting_area_radius")) /
+   * noise.var("starting_area_radius")`
+   */
   tier_from_start,
+  /**
+   * `noise.var("tier_from_start")`, so same as `tier_from_start`.
+   */
   tier,
+  /**
+   * `1 - noise.min(1.0, noise.var("tier_from_start") / 2.0)`
+   */
   starting_area_weight,
+  /**
+   * A value between `0` and `1` that determines whether a tile becomes sandy (low moisture) or
+   * grassy (high moisture).
+   */
   moisture,
+  /**
+   * A value between `0` and `1` that determines whether low-moisture tiles become sand or red
+   * desert.
+   */
   aux,
+  /**
+   * Provides a value (vaguely representing degrees Celsius, varying between `-20` and `50`) that is
+   * used (together with moisture and aux) as part of tree and decorative placement.
+   */
   temperature,
+  /**
+   * Tiles values less than zero become water. Cliffs are placed along certain contours according to
+   * [CliffPlacementSettings](prototype:CliffPlacementSettings).
+   */
   elevation,
+  /**
+   * Determines whether (when `>0.5`) or not (when `<0.5`) a cliff will be placed at an otherwise
+   * suitable (according to [CliffPlacementSettings](prototype:CliffPlacementSettings)) location.
+   */
   cliffiness,
+  /**
+   * Is referenced by both `enemy-base-frequency` and `enemy-base-radius`. If this is overridden,
+   * enemy base frequency and size will both be affected and do something reasonable. By default, this
+   * expression returns a value proportional to distance from any starting point, clamped at about `7`.
+   */
   `enemy-base-intensity`,
+  /**
+   * Represents average number of enemy bases per tile for a region, by default in terms of
+   * `enemy-base-intensity`.
+   */
   `enemy-base-frequency`,
+  /**
+   * Represents the radius of an enemy base, if one were to be placed on the given tile, by default
+   * proportional to a constant plus `enemy-base-intensity`.
+   */
   `enemy-base-radius`,
 }
 
@@ -14003,11 +13994,36 @@ public open class BeltTraverseTipTrigger : JsonReader(), TipTrigger {
  */
 @Serializable
 public enum class BlendMode {
+  /**
+   * The result color is determined with the following formula: `Result = Active_RGB +
+   * Background_RGB * ( 1 - Active_Alpha )`. Note that this is alpha blending with an assumption that
+   * `Active_RGB` is already pre-multiplied with `Active_Alpha`.
+   */
   normal,
+  /**
+   * The result color is determined with the following formula: `Result = Active_RGB +
+   * Background_RGB`
+   */
   additive,
+  /**
+   * The result color is determined with the following formula: `Result = Active_RGB * ( 1 -
+   * Background_RGB ) + Background_RGB`
+   */
   `additive-soft`,
+  /**
+   * The result color is determined with the following formula: `Result = Active_RGB *
+   * Background_RGB`
+   */
   multiplicative,
+  /**
+   * The result color is determined with the following formula: `Result = Active_RGB *
+   * Background_RGB * Active_Alpha + Background_RGB * ( 1 - Active_Alpha )`
+   */
   `multiplicative-with-alpha`,
+  /**
+   * The result color is determined with the following formula: `Result = Active_RGBA or
+   * Background_RGBA`
+   */
   overwrite,
 }
 
@@ -14307,8 +14323,6 @@ public open class CameraEffectTriggerEffectItem : TriggerEffectItem() {
 @Serializable(CameraStyleSpecification.Serializer::class)
 @SerialName("camera_style")
 public open class CameraStyleSpecification : EmptyWidgetStyleSpecification(), StyleSpecification {
-  override val type: UnknownStringLiteral by fromJson()
-
   public object Serializer :
       JsonReaderSerializer<CameraStyleSpecification>(CameraStyleSpecification::class)
 }
@@ -14979,9 +14993,13 @@ public open class ConnectableEntityGraphics : JsonReader() {
 
 /**
  * A constant boolean noise expression, such as a literal boolean. When using a constant number, it
- * evaluates to true for numbers bigger than zero, anything else evaluates to false.
+ * evaluates to true for numbers bigger than zero, anything else evaluates to false.Includes the
+ * following types:
+ *  - NoiseLiteralBoolean
+ *  - ConstantNoiseNumber
  */
-public typealias ConstantNoiseBoolean = UnknownUnion
+@Serializable
+public sealed interface ConstantNoiseBoolean
 
 /**
  * A constant numeric noise expression, such as a literal number, the result of addition of
@@ -14994,7 +15012,14 @@ public typealias ConstantNoiseNumber = NoiseNumber
  */
 @Serializable
 public enum class ConsumingType {
+  /**
+   * The associated script event will fire when satisfied and pass through to normal game events.
+   */
   none,
+  /**
+   * The associated script event will fire when satisfied and block game events that conflict with
+   * the key sequence. Actions that are processed regardless of game paused state cannot be blocked.
+   */
   `game-only`,
 }
 
@@ -15111,8 +15136,6 @@ public open class CreateEntityTriggerEffectItem : TriggerEffectItem() {
 @Serializable(CreateExplosionTriggerEffectItem.Serializer::class)
 @SerialName("create-explosion")
 public open class CreateExplosionTriggerEffectItem : CreateEntityTriggerEffectItem() {
-  override val type: UnknownStringLiteral by fromJson()
-
   public val max_movement_distance: Float? by fromJson()
 
   public val max_movement_distance_deviation: Float? by fromJson()
@@ -15128,8 +15151,6 @@ public open class CreateExplosionTriggerEffectItem : CreateEntityTriggerEffectIt
 @Serializable(CreateFireTriggerEffectItem.Serializer::class)
 @SerialName("create-fire")
 public open class CreateFireTriggerEffectItem : CreateEntityTriggerEffectItem() {
-  override val type: UnknownStringLiteral by fromJson()
-
   public val initial_ground_flame_count: UByte? by fromJson()
 
   public object Serializer :
@@ -15188,8 +15209,6 @@ public open class CreateParticleTriggerEffectItem : TriggerEffectItem() {
 @Serializable(CreateSmokeTriggerEffectItem.Serializer::class)
 @SerialName("create-smoke")
 public open class CreateSmokeTriggerEffectItem : CreateEntityTriggerEffectItem() {
-  override val type: UnknownStringLiteral by fromJson()
-
   public val initial_height: Float? by fromJson()
 
   public val speed: Vector? by fromJson()
@@ -15300,13 +15319,38 @@ public open class CursorBoxSpecification : JsonReader() {
  */
 @Serializable
 public enum class CursorBoxType {
+  /**
+   * The normal entity selection box. Yellow by default.
+   */
   entity,
+  /**
+   * The selection box used to specify electric poles an entity is connected to. Light blue by
+   * default.
+   */
   electricity,
+  /**
+   * The selection box used when doing entity copy-paste. Green by default.
+   */
   copy,
+  /**
+   * The selection box used when specifying colliding entities. Red by default.
+   */
   `not-allowed`,
+  /**
+   * Light blue by default.
+   */
   pair,
+  /**
+   * Light blue by default.
+   */
   logistics,
+  /**
+   * White by default.
+   */
   `train-visualization`,
+  /**
+   * Green by default.
+   */
   `blueprint-snap-rectangle`,
 }
 
@@ -15603,8 +15647,6 @@ public open class DistanceFromNearestPointArguments : JsonReader() {
 @Serializable(DoubleSliderStyleSpecification.Serializer::class)
 @SerialName("double_slider_style")
 public open class DoubleSliderStyleSpecification : SliderStyleSpecification(), StyleSpecification {
-  override val type: UnknownStringLiteral by fromJson()
-
   public object Serializer :
       JsonReaderSerializer<DoubleSliderStyleSpecification>(DoubleSliderStyleSpecification::class)
 }
@@ -15668,10 +15710,22 @@ public open class Effect : JsonReader() {
  * the machine cannot be affected by modules or beacons.
  */
 @Serializable
-public enum class EffectTypeLimitation {
+public enum class EffectTypeLimitationStrings {
+  /**
+   * Modules that increase or decrease the machine's speed.
+   */
   speed,
+  /**
+   * Modules that make the machine produce bonus items.
+   */
   productivity,
+  /**
+   * Modules that increase or decrease the machine's energy consumption.
+   */
   consumption,
+  /**
+   * Modules that make the machine produce more or less pollution.
+   */
   pollution,
 }
 
@@ -15681,7 +15735,7 @@ public enum class EffectTypeLimitation {
  * surrounding beacons are restricted to the listed effects. If `allowed_effects` is an empty array,
  * the machine cannot be affected by modules or beacons.
  */
-public typealias EffectTypeLimitation = ItemOrList<EffectTypeLimitation>
+public typealias EffectTypeLimitation = ItemOrList<EffectTypeLimitationStrings>
 
 @Serializable(EffectValue.Serializer::class)
 public open class EffectValue : JsonReader() {
@@ -15740,12 +15794,32 @@ public open class ElectricEnergySource : BaseEnergySource(), EnergySource, EVEne
  */
 @Serializable
 public enum class ElectricUsagePriority {
+  /**
+   * Used for the most important machines, for example laser turrets.
+   */
   `primary-input`,
   `primary-output`,
+  /**
+   * Used for all other machines.
+   */
   `secondary-input`,
+  /**
+   * Used in steam generators.
+   */
   `secondary-output`,
+  /**
+   * As input/output used for accumulators, to collect the overproduction or provide energy when
+   * neither primary/secondary output can't.
+   */
   tertiary,
+  /**
+   * Can only be used by [SolarPanelPrototype](prototype:SolarPanelPrototype), will be ignored
+   * otherwise.
+   */
   solar,
+  /**
+   * Can only be used by [LampPrototype](prototype:LampPrototype), will be ignored otherwise.
+   */
   lamp,
 }
 
@@ -15753,7 +15827,7 @@ public enum class ElectricUsagePriority {
  * If this is loaded as a single ElementImageSetLayer, it gets used as `base`.
  */
 @Serializable(ElementImageSetValues.Serializer::class)
-public open class ElementImageSetValues : JsonReader() {
+public open class ElementImageSetValues : JsonReader(), ElementImageSet {
   public val base: ElementImageSetLayer? by fromJson()
 
   public val shadow: ElementImageSetLayer? by fromJson()
@@ -15765,9 +15839,18 @@ public open class ElementImageSetValues : JsonReader() {
 }
 
 /**
- * If this is loaded as a single ElementImageSetLayer, it gets used as `base`.
+ * If this is loaded as a single ElementImageSetLayer, it gets used as `base`.Includes the following
+ * types:
+ *  - ElementImageSetValues
+ *  - ElementImageSetLayerValues
+ *  - Sprite
  */
-public typealias ElementImageSet = UnknownUnion
+@Serializable(ElementImageSet.Serializer::class)
+public sealed interface ElementImageSet {
+  public object Serializer :
+      FirstMatchingSubclassSerializer<ElementImageSet>(ElementImageSet::class,
+      ElementImageSetValues::class, ElementImageSetLayerValues::class, Sprite::class)
+}
 
 @Serializable
 public enum class ElementImageSetLayerDrawType {
@@ -15785,7 +15868,7 @@ public enum class ElementImageSetLayerType {
  * If this is loaded as a Sprite, it gets used as `center`.
  */
 @Serializable(ElementImageSetLayerValues.Serializer::class)
-public open class ElementImageSetLayerValues : JsonReader(), ElementImageSetLayer {
+public open class ElementImageSetLayerValues : JsonReader(), ElementImageSetLayer, ElementImageSet {
   /**
    * Defines whether the border should be drawn inside the widget, which affects the padding and
    * content size of the widget, or outside of the widget which doesn't affect size. The outer draw
@@ -16137,32 +16220,129 @@ public typealias EntityID = String
  * entities that may block expansion.
  */
 @Serializable
-public enum class EntityPrototypeFlags {
+public enum class EntityPrototypeFlagsStrings {
+  /**
+   * Can't be rotated before or after placing.
+   */
   `not-rotatable`,
+  /**
+   * Determines the default force when placing entities in the map editor and using the *AUTO*
+   * option for the force.
+   */
   `placeable-neutral`,
+  /**
+   * Determines the default force when placing entities in the map editor and using the *AUTO*
+   * option for the force.
+   */
   `placeable-player`,
+  /**
+   * Determines the default force when placing entities in the map editor and using the *AUTO*
+   * option for the force.
+   */
   `placeable-enemy`,
+  /**
+   * Refers to the fact that most entities are placed on an invisible 'grid' within the world,
+   * entities with this flag do not have to line up with this grid (like trees and land-mines).
+   */
   `placeable-off-grid`,
+  /**
+   * Makes it possible for the biter AI to target the entity as a distraction in distraction mode
+   * [by_anything](runtime:defines.distraction.by_anything). Makes it possible to blueprint,
+   * deconstruct, and repair the entity (can be turned off again using the specific flags). Enables
+   * smoke to be created automatically when building the entity. If the entity does not have
+   * [EntityPrototype::map_color](prototype:EntityPrototype::map_color) set, this flag makes the entity
+   * appear on the map/minimap with the default color specified in the
+   * [UtilityConstants](prototype:UtilityConstants).
+   */
   `player-creation`,
+  /**
+   * Uses 45 degree angle increments when selecting direction.
+   */
   `building-direction-8-way`,
+  /**
+   * Used to automatically detect the proper direction, if possible. Used by base with the pump,
+   * train stop, and train signal.
+   */
   `filter-directions`,
+  /**
+   * Fast replace will not apply when building while moving.
+   */
   `fast-replaceable-no-build-while-moving`,
+  /**
+   * This is used to specify that the entity breathes air, and so is affected by poison (currently
+   * [poison capsules](https://wiki.factorio.com/Poison_capsule) are the only source).
+   */
   `breaths-air`,
+  /**
+   * Used to specify that the entity can not be 'healed' by repair-packs (or construction robots
+   * with repair packs)
+   */
   `not-repairable`,
+  /**
+   * The entity does not get drawn on the map.
+   */
   `not-on-map`,
+  /**
+   * The entity can not be deconstructed.
+   */
   `not-deconstructable`,
+  /**
+   * The entity can not be used in blueprints.
+   */
   `not-blueprintable`,
+  /**
+   * Hides the entity from the bonus GUI (button above the map) and from the made in property of
+   * recipe tooltips.
+   */
   hidden,
+  /**
+   * Hides the alt-info of an entity in alt-mode, for example the recipe icon.
+   */
   `hide-alt-info`,
+  /**
+   * Do not fast replace over other entity types when building while moving.
+   */
   `fast-replaceable-no-cross-type-while-moving`,
   `no-gap-fill-while-building`,
+  /**
+   * Do not apply fire stickers to the entity.
+   */
   `not-flammable`,
+  /**
+   * Prevents inserters and loaders from taking items from this entity.
+   */
   `no-automated-item-removal`,
+  /**
+   * Prevents inserters and loaders from inserting items into this entity.
+   */
   `no-automated-item-insertion`,
+  /**
+   * This flag does nothing when set in the data stage because it gets overridden by
+   * [EntityPrototype::allow_copy_paste](prototype:EntityPrototype::allow_copy_paste). Thus, it must be
+   * set on the entity via that property.
+   */
   `no-copy-paste`,
+  /**
+   * Disallows selection of the entity even when a selection box is specified for other reasons. For
+   * example, selection boxes are used to determine the size of outlines to be shown when highlighting
+   * entities inside electric pole ranges. This flag does nothing when set in the data stage because it
+   * gets overridden by
+   * [EntityPrototype::selectable_in_game](prototype:EntityPrototype::selectable_in_game). Thus, it
+   * must be set on the entity via that property.
+   */
   `not-selectable-in-game`,
+  /**
+   * The entity can't be selected by the [upgrade
+   * planner](https://wiki.factorio.com/Upgrade_planner).
+   */
   `not-upgradable`,
+  /**
+   * The entity is not shown in the kill statistics.
+   */
   `not-in-kill-statistics`,
+  /**
+   * The entity is not shown in the made in property of recipe tooltips.
+   */
   `not-in-made-in`,
 }
 
@@ -16178,7 +16358,7 @@ public enum class EntityPrototypeFlags {
  * - Enemy expansion considers entities that are both buildings and player-creations as "enemy"
  * entities that may block expansion.
  */
-public typealias EntityPrototypeFlags = List<EntityPrototypeFlags>
+public typealias EntityPrototypeFlags = List<EntityPrototypeFlagsStrings>
 
 /**
  * How far (in tiles) entities should be rendered outside the visible area of the screen.
@@ -16654,7 +16834,7 @@ public typealias FluidID = String
  */
 @Serializable(FluidIngredientPrototype.Serializer::class)
 @SerialName("fluid")
-public open class FluidIngredientPrototype : JsonReader() {
+public open class FluidIngredientPrototype : JsonReader(), IngredientPrototype {
   public val type: UnknownStringLiteral by fromJson()
 
   /**
@@ -16713,7 +16893,7 @@ public open class FluidIngredientPrototype : JsonReader() {
  */
 @Serializable(FluidProductPrototype.Serializer::class)
 @SerialName("fluid")
-public open class FluidProductPrototype : JsonReader() {
+public open class FluidProductPrototype : JsonReader(), ProductPrototype {
   public val type: UnknownStringLiteral by fromJson()
 
   /**
@@ -17318,9 +17498,13 @@ public open class ImageStyleSpecification : BaseStyleSpecification(), StyleSpeci
 
 /**
  * Defaults to loading ingredients as items. This allows
- * [ItemIngredientPrototype](prototype:ItemIngredientPrototype) to load in a shorthand array format.
+ * [ItemIngredientPrototype](prototype:ItemIngredientPrototype) to load in a shorthand array
+ * format.Includes the following types:
+ *  - ItemIngredientPrototype
+ *  - FluidIngredientPrototype
  */
-public typealias IngredientPrototype = UnknownUnion
+@Serializable(IngredientPrototypeSerializer::class)
+public sealed interface IngredientPrototype
 
 @Serializable(InsertItemTriggerEffectItem.Serializer::class)
 @SerialName("insert-item")
@@ -17405,7 +17589,8 @@ public typealias ItemID = String
  * item name and the second is the amount.
  */
 @Serializable(ItemIngredientPrototypeSerializer::class)
-public open class ItemIngredientPrototype : JsonReader() {
+@SerialName("item")
+public open class ItemIngredientPrototype : JsonReader(), IngredientPrototype {
   public val type: UnknownStringLiteral? by fromJson()
 
   public val name: ItemID by fromJson()
@@ -17431,7 +17616,8 @@ public open class ItemIngredientPrototype : JsonReader() {
  * name and the second is the amount.
  */
 @Serializable(ItemProductPrototypeSerializer::class)
-public open class ItemProductPrototype : JsonReader() {
+@SerialName("item")
+public open class ItemProductPrototype : JsonReader(), ProductPrototype {
   public val type: UnknownStringLiteral? by fromJson()
 
   /**
@@ -17491,24 +17677,68 @@ public open class ItemProductPrototype : JsonReader() {
  * An array containing the following values.
  */
 @Serializable
-public enum class ItemPrototypeFlags {
+public enum class ItemPrototypeFlagsStrings {
+  /**
+   * Whether the logistics areas of roboports should be drawn when holding this item. Used for
+   * example by the [deconstruction planner](https://wiki.factorio.com/Deconstruction_planner).
+   */
   `draw-logistic-overlay`,
+  /**
+   * Item will not appear in lists of all items such as those for logistics requests, filters, etc.
+   */
   hidden,
+  /**
+   * Always show the item in selection lists (item filter, logistic request etc.) even when locked
+   * recipe for that item is present.
+   */
   `always-show`,
+  /**
+   * Item will not appear in the bonus gui.
+   */
   `hide-from-bonus-gui`,
+  /**
+   * Item will not appear in the tooltips shown when hovering over a burner inventory with the fuel
+   * category the item is in.
+   */
   `hide-from-fuel-tooltip`,
+  /**
+   * The item can never be stacked. Additionally, the item does not show an item count when in the
+   * cursor. This also prevents the item from stacking in assembling machine input slots, which
+   * otherwise can exceed the item stack size if required by the recipe.
+   */
   `not-stackable`,
+  /**
+   * Must be set on [ItemWithInventoryPrototype](prototype:ItemWithInventoryPrototype) when the item
+   * should act as an extension to the inventory that it is placed in. Does nothing for other item
+   * types.
+   */
   `can-extend-inventory`,
+  /**
+   * Item will be preferred by construction bots when building the entity specified by the item's
+   * [place_result](prototype:ItemPrototype::place_result).
+   */
   `primary-place-result`,
+  /**
+   * Only works for [SelectionToolPrototype](prototype:SelectionToolPrototype) and derived classes.
+   * Corresponds to the runtime [on_mod_item_opened](runtime:on_mod_item_opened) event.
+   */
   `mod-openable`,
+  /**
+   * Item is deleted when removed from the cursor by pressing `Q` ("clear cursor"). Used for example
+   * by the copy/paste tools.
+   */
   `only-in-cursor`,
+  /**
+   * Item is able to be spawned by a [ShortcutPrototype](prototype:ShortcutPrototype) or
+   * [CustomInputPrototype](prototype:CustomInputPrototype).
+   */
   spawnable,
 }
 
 /**
  * An array containing the following values.
  */
-public typealias ItemPrototypeFlags = List<ItemPrototypeFlags>
+public typealias ItemPrototypeFlags = List<ItemPrototypeFlagsStrings>
 
 public typealias ItemStackIndex = UShort
 
@@ -18436,8 +18666,6 @@ public open class MinableProperties : JsonReader() {
 @Serializable(MinimapStyleSpecification.Serializer::class)
 @SerialName("minimap_style")
 public open class MinimapStyleSpecification : EmptyWidgetStyleSpecification(), StyleSpecification {
-  override val type: UnknownStringLiteral by fromJson()
-
   public object Serializer :
       JsonReaderSerializer<MinimapStyleSpecification>(MinimapStyleSpecification::class)
 }
@@ -18672,7 +18900,7 @@ public sealed interface NoiseArray
  */
 @Serializable(NoiseArrayConstruction.Serializer::class)
 @SerialName("array-construction")
-public open class NoiseArrayConstruction : JsonReader(), NoiseArray {
+public open class NoiseArrayConstruction : JsonReader(), NoiseArray, NoiseExpression {
   public val type: UnknownStringLiteral by fromJson()
 
   public val value_expressions: List<NoiseExpression> by fromJson()
@@ -18701,9 +18929,20 @@ public open class NoiseArrayConstruction : JsonReader(), NoiseArray {
  * noise expressions.
  *
  * The most frequently used noise functions are loaded via
- * [NoiseFunctionApplication](prototype:NoiseFunctionApplication).
+ * [NoiseFunctionApplication](prototype:NoiseFunctionApplication).Includes the following types:
+ *  - NoiseVariable
+ *  - NoiseFunctionApplication
+ *  - NoiseLiteralBoolean
+ *  - NoiseLiteralNumber
+ *  - NoiseLiteralString
+ *  - NoiseLiteralObject
+ *  - NoiseLiteralExpression
+ *  - NoiseArrayConstruction
+ *  - NoiseProcedureDelimiter
+ *  - NoiseIfElseChain
  */
-public typealias NoiseExpression = UnknownUnion
+@Serializable
+public sealed interface NoiseExpression
 
 /**
  * Takes a single argument and returns its absolute value. Ie. if the argument is negative, it is
@@ -18711,7 +18950,7 @@ public typealias NoiseExpression = UnknownUnion
  */
 @Serializable(NoiseFunctionAbsoluteValue.Serializer::class)
 @SerialName("absolute-value")
-public open class NoiseFunctionAbsoluteValue : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionAbsoluteValue : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18727,7 +18966,7 @@ public open class NoiseFunctionAbsoluteValue : JsonReader(), NoiseFunctionApplic
  */
 @Serializable(NoiseFunctionAdd.Serializer::class)
 @SerialName("add")
-public open class NoiseFunctionAdd : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionAdd : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18786,14 +19025,14 @@ public open class NoiseFunctionAdd : JsonReader(), NoiseFunctionApplication {
  */
 @Serializable
 @JsonClassDiscriminator("function_name")
-public sealed interface NoiseFunctionApplication
+public sealed interface NoiseFunctionApplication : NoiseNumber, NoiseExpression
 
 /**
  * Returns the arc tangent of y/x using the signs of arguments to determine the correct quadrant.
  */
 @Serializable(NoiseFunctionAtan2.Serializer::class)
 @SerialName("atan2")
-public open class NoiseFunctionAtan2 : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionAtan2 : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18808,7 +19047,8 @@ public open class NoiseFunctionAtan2 : JsonReader(), NoiseFunctionApplication {
 
 @Serializable(NoiseFunctionAutoplaceProbability.Serializer::class)
 @SerialName("autoplace-probability")
-public open class NoiseFunctionAutoplaceProbability : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionAutoplaceProbability : JsonReader(), NoiseFunctionApplication,
+    NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18821,7 +19061,8 @@ public open class NoiseFunctionAutoplaceProbability : JsonReader(), NoiseFunctio
 
 @Serializable(NoiseFunctionAutoplaceRichness.Serializer::class)
 @SerialName("autoplace-richness")
-public open class NoiseFunctionAutoplaceRichness : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionAutoplaceRichness : JsonReader(), NoiseFunctionApplication,
+    NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18837,7 +19078,7 @@ public open class NoiseFunctionAutoplaceRichness : JsonReader(), NoiseFunctionAp
  */
 @Serializable(NoiseFunctionBitwiseAnd.Serializer::class)
 @SerialName("bitwise-and")
-public open class NoiseFunctionBitwiseAnd : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionBitwiseAnd : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18853,7 +19094,7 @@ public open class NoiseFunctionBitwiseAnd : JsonReader(), NoiseFunctionApplicati
  */
 @Serializable(NoiseFunctionBitwiseNot.Serializer::class)
 @SerialName("bitwise-not")
-public open class NoiseFunctionBitwiseNot : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionBitwiseNot : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18869,7 +19110,7 @@ public open class NoiseFunctionBitwiseNot : JsonReader(), NoiseFunctionApplicati
  */
 @Serializable(NoiseFunctionBitwiseOr.Serializer::class)
 @SerialName("bitwise-or")
-public open class NoiseFunctionBitwiseOr : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionBitwiseOr : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18885,7 +19126,7 @@ public open class NoiseFunctionBitwiseOr : JsonReader(), NoiseFunctionApplicatio
  */
 @Serializable(NoiseFunctionBitwiseXor.Serializer::class)
 @SerialName("bitwise-xor")
-public open class NoiseFunctionBitwiseXor : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionBitwiseXor : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18901,7 +19142,7 @@ public open class NoiseFunctionBitwiseXor : JsonReader(), NoiseFunctionApplicati
  */
 @Serializable(NoiseFunctionCeil.Serializer::class)
 @SerialName("ceil")
-public open class NoiseFunctionCeil : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionCeil : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18917,7 +19158,7 @@ public open class NoiseFunctionCeil : JsonReader(), NoiseFunctionApplication {
  */
 @Serializable(NoiseFunctionClamp.Serializer::class)
 @SerialName("clamp")
-public open class NoiseFunctionClamp : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionClamp : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18934,7 +19175,8 @@ public open class NoiseFunctionClamp : JsonReader(), NoiseFunctionApplication {
  */
 @Serializable(NoiseFunctionCompileTimeLog.Serializer::class)
 @SerialName("compile-time-log")
-public open class NoiseFunctionCompileTimeLog : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionCompileTimeLog : JsonReader(), NoiseFunctionApplication, NoiseNumber
+    {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18950,7 +19192,7 @@ public open class NoiseFunctionCompileTimeLog : JsonReader(), NoiseFunctionAppli
  */
 @Serializable(NoiseFunctionCos.Serializer::class)
 @SerialName("cos")
-public open class NoiseFunctionCos : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionCos : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18967,7 +19209,8 @@ public open class NoiseFunctionCos : JsonReader(), NoiseFunctionApplication {
  */
 @Serializable(NoiseFunctionDistanceFromNearestPoint.Serializer::class)
 @SerialName("distance-from-nearest-point")
-public open class NoiseFunctionDistanceFromNearestPoint : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionDistanceFromNearestPoint : JsonReader(), NoiseFunctionApplication,
+    NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18983,7 +19226,7 @@ public open class NoiseFunctionDistanceFromNearestPoint : JsonReader(), NoiseFun
  */
 @Serializable(NoiseFunctionDivide.Serializer::class)
 @SerialName("divide")
-public open class NoiseFunctionDivide : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionDivide : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -18999,7 +19242,7 @@ public open class NoiseFunctionDivide : JsonReader(), NoiseFunctionApplication {
  */
 @Serializable(NoiseFunctionEquals.Serializer::class)
 @SerialName("equals")
-public open class NoiseFunctionEquals : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionEquals : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19014,7 +19257,7 @@ public open class NoiseFunctionEquals : JsonReader(), NoiseFunctionApplication {
  */
 @Serializable(NoiseFunctionExponentiate.Serializer::class)
 @SerialName("exponentiate")
-public open class NoiseFunctionExponentiate : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionExponentiate : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19031,7 +19274,8 @@ public open class NoiseFunctionExponentiate : JsonReader(), NoiseFunctionApplica
  */
 @Serializable(NoiseFunctionFactorioBasisNoise.Serializer::class)
 @SerialName("factorio-basis-noise")
-public open class NoiseFunctionFactorioBasisNoise : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionFactorioBasisNoise : JsonReader(), NoiseFunctionApplication,
+    NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19044,7 +19288,8 @@ public open class NoiseFunctionFactorioBasisNoise : JsonReader(), NoiseFunctionA
 
 @Serializable(NoiseFunctionFactorioMultioctaveNoise.Serializer::class)
 @SerialName("factorio-multioctave-noise")
-public open class NoiseFunctionFactorioMultioctaveNoise : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionFactorioMultioctaveNoise : JsonReader(), NoiseFunctionApplication,
+    NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19058,7 +19303,7 @@ public open class NoiseFunctionFactorioMultioctaveNoise : JsonReader(), NoiseFun
 @Serializable(NoiseFunctionFactorioQuickMultioctaveNoise.Serializer::class)
 @SerialName("factorio-quick-multioctave-noise")
 public open class NoiseFunctionFactorioQuickMultioctaveNoise : JsonReader(),
-    NoiseFunctionApplication {
+    NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19074,7 +19319,7 @@ public open class NoiseFunctionFactorioQuickMultioctaveNoise : JsonReader(),
  */
 @Serializable(NoiseFunctionFloor.Serializer::class)
 @SerialName("floor")
-public open class NoiseFunctionFloor : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionFloor : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19090,7 +19335,7 @@ public open class NoiseFunctionFloor : JsonReader(), NoiseFunctionApplication {
  */
 @Serializable(NoiseFunctionLessOrEqual.Serializer::class)
 @SerialName("less-or-equal")
-public open class NoiseFunctionLessOrEqual : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionLessOrEqual : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19107,7 +19352,7 @@ public open class NoiseFunctionLessOrEqual : JsonReader(), NoiseFunctionApplicat
  */
 @Serializable(NoiseFunctionLessThan.Serializer::class)
 @SerialName("less-than")
-public open class NoiseFunctionLessThan : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionLessThan : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19120,7 +19365,7 @@ public open class NoiseFunctionLessThan : JsonReader(), NoiseFunctionApplication
 
 @Serializable(NoiseFunctionLog2.Serializer::class)
 @SerialName("log2")
-public open class NoiseFunctionLog2 : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionLog2 : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19136,7 +19381,7 @@ public open class NoiseFunctionLog2 : JsonReader(), NoiseFunctionApplication {
  */
 @Serializable(NoiseFunctionModulo.Serializer::class)
 @SerialName("modulo")
-public open class NoiseFunctionModulo : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionModulo : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19151,7 +19396,7 @@ public open class NoiseFunctionModulo : JsonReader(), NoiseFunctionApplication {
  */
 @Serializable(NoiseFunctionMultiply.Serializer::class)
 @SerialName("multiply")
-public open class NoiseFunctionMultiply : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionMultiply : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19164,7 +19409,8 @@ public open class NoiseFunctionMultiply : JsonReader(), NoiseFunctionApplication
 
 @Serializable(NoiseFunctionNoiseLayerNameToID.Serializer::class)
 @SerialName("noise-layer-name-to-id")
-public open class NoiseFunctionNoiseLayerNameToID : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionNoiseLayerNameToID : JsonReader(), NoiseFunctionApplication,
+    NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19198,7 +19444,7 @@ public open class NoiseFunctionOffsetPoints : JsonReader(), NoiseFunctionApplica
  */
 @Serializable(NoiseFunctionRandomPenalty.Serializer::class)
 @SerialName("random-penalty")
-public open class NoiseFunctionRandomPenalty : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionRandomPenalty : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19215,7 +19461,7 @@ public open class NoiseFunctionRandomPenalty : JsonReader(), NoiseFunctionApplic
  */
 @Serializable(NoiseFunctionRidge.Serializer::class)
 @SerialName("ridge")
-public open class NoiseFunctionRidge : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionRidge : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19234,7 +19480,7 @@ public open class NoiseFunctionRidge : JsonReader(), NoiseFunctionApplication {
  */
 @Serializable(NoiseFunctionSin.Serializer::class)
 @SerialName("sin")
-public open class NoiseFunctionSin : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionSin : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19267,7 +19513,7 @@ public open class NoiseFunctionSin : JsonReader(), NoiseFunctionApplication {
  */
 @Serializable(NoiseFunctionSpotNoise.Serializer::class)
 @SerialName("spot-noise")
-public open class NoiseFunctionSpotNoise : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionSpotNoise : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19283,7 +19529,7 @@ public open class NoiseFunctionSpotNoise : JsonReader(), NoiseFunctionApplicatio
  */
 @Serializable(NoiseFunctionSubtract.Serializer::class)
 @SerialName("subtract")
-public open class NoiseFunctionSubtract : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionSubtract : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19300,7 +19546,7 @@ public open class NoiseFunctionSubtract : JsonReader(), NoiseFunctionApplication
  */
 @Serializable(NoiseFunctionTerrace.Serializer::class)
 @SerialName("terrace")
-public open class NoiseFunctionTerrace : JsonReader(), NoiseFunctionApplication {
+public open class NoiseFunctionTerrace : JsonReader(), NoiseFunctionApplication, NoiseNumber {
   public val type: UnknownStringLiteral by fromJson()
 
   public val function_name: UnknownStringLiteral by fromJson()
@@ -19331,7 +19577,7 @@ public open class NoiseFunctionTerrace : JsonReader(), NoiseFunctionApplication 
  */
 @Serializable(NoiseIfElseChain.Serializer::class)
 @SerialName("if-else-chain")
-public open class NoiseIfElseChain : JsonReader() {
+public open class NoiseIfElseChain : JsonReader(), NoiseNumber, NoiseExpression {
   public val type: UnknownStringLiteral by fromJson()
 
   public val arguments: List<NoiseExpression> by fromJson()
@@ -19350,7 +19596,7 @@ public typealias NoiseLayerID = String
  */
 @Serializable(NoiseLiteralBoolean.Serializer::class)
 @SerialName("literal-boolean")
-public open class NoiseLiteralBoolean : JsonReader() {
+public open class NoiseLiteralBoolean : JsonReader(), ConstantNoiseBoolean, NoiseExpression {
   public val type: UnknownStringLiteral by fromJson()
 
   public val literal_value: Boolean by fromJson()
@@ -19364,7 +19610,7 @@ public open class NoiseLiteralBoolean : JsonReader() {
  */
 @Serializable(NoiseLiteralExpression.Serializer::class)
 @SerialName("literal-expression")
-public open class NoiseLiteralExpression : JsonReader() {
+public open class NoiseLiteralExpression : JsonReader(), NoiseExpression {
   public val type: UnknownStringLiteral by fromJson()
 
   public val literal_value: NoiseExpression by fromJson()
@@ -19380,7 +19626,7 @@ public open class NoiseLiteralExpression : JsonReader() {
  */
 @Serializable(NoiseLiteralNumber.Serializer::class)
 @SerialName("literal-number")
-public open class NoiseLiteralNumber : JsonReader() {
+public open class NoiseLiteralNumber : JsonReader(), NoiseNumber, NoiseExpression {
   public val type: UnknownStringLiteral by fromJson()
 
   public val literal_value: Float by fromJson()
@@ -19396,7 +19642,7 @@ public open class NoiseLiteralNumber : JsonReader() {
  */
 @Serializable(NoiseLiteralObject.Serializer::class)
 @SerialName("literal-object")
-public open class NoiseLiteralObject : JsonReader() {
+public open class NoiseLiteralObject : JsonReader(), NoiseExpression {
   public val type: UnknownStringLiteral by fromJson()
 
   public val literal_value: AutoplaceSpecification by fromJson()
@@ -19411,7 +19657,7 @@ public open class NoiseLiteralObject : JsonReader() {
  */
 @Serializable(NoiseLiteralString.Serializer::class)
 @SerialName("literal-string")
-public open class NoiseLiteralString : JsonReader() {
+public open class NoiseLiteralString : JsonReader(), NoiseExpression {
   public val type: UnknownStringLiteral by fromJson()
 
   public val literal_value: String by fromJson()
@@ -19429,9 +19675,48 @@ public open class NoiseLiteralString : JsonReader() {
  * [NoiseLiteralObject](prototype:NoiseLiteralObject),
  * [NoiseLiteralExpression](prototype:NoiseLiteralExpression),
  * [NoiseArrayConstruction](prototype:NoiseArrayConstruction), and
- * [NoiseFunctionOffsetPoints](prototype:NoiseFunctionOffsetPoints).
+ * [NoiseFunctionOffsetPoints](prototype:NoiseFunctionOffsetPoints).Includes the following types:
+ *  - NoiseVariable
+ *  - NoiseFunctionApplication
+ *  - NoiseLiteralNumber
+ *  - NoiseProcedureDelimiter
+ *  - NoiseIfElseChain
+ *  - NoiseFunctionAdd
+ *  - NoiseFunctionSubtract
+ *  - NoiseFunctionMultiply
+ *  - NoiseFunctionDivide
+ *  - NoiseFunctionExponentiate
+ *  - NoiseFunctionFactorioQuickMultioctaveNoise
+ *  - NoiseFunctionFactorioMultioctaveNoise
+ *  - NoiseFunctionDistanceFromNearestPoint
+ *  - NoiseFunctionFactorioBasisNoise
+ *  - NoiseFunctionAbsoluteValue
+ *  - NoiseFunctionClamp
+ *  - NoiseFunctionRidge
+ *  - NoiseFunctionTerrace
+ *  - NoiseFunctionSpotNoise
+ *  - NoiseFunctionRandomPenalty
+ *  - NoiseFunctionLog2
+ *  - NoiseFunctionModulo
+ *  - NoiseFunctionFloor
+ *  - NoiseFunctionCeil
+ *  - NoiseFunctionBitwiseAnd
+ *  - NoiseFunctionBitwiseOr
+ *  - NoiseFunctionBitwiseXor
+ *  - NoiseFunctionBitwiseNot
+ *  - NoiseFunctionSin
+ *  - NoiseFunctionAtan2
+ *  - NoiseFunctionCos
+ *  - NoiseFunctionLessThan
+ *  - NoiseFunctionLessOrEqual
+ *  - NoiseFunctionEquals
+ *  - NoiseFunctionCompileTimeLog
+ *  - NoiseFunctionNoiseLayerNameToID
+ *  - NoiseFunctionAutoplaceProbability
+ *  - NoiseFunctionAutoplaceRichness
  */
-public typealias NoiseNumber = UnknownUnion
+@Serializable
+public sealed interface NoiseNumber
 
 /**
  * Evaluates and returns the value of its expression property, which is itself an expression.
@@ -19445,7 +19730,7 @@ public typealias NoiseNumber = UnknownUnion
  */
 @Serializable(NoiseProcedureDelimiter.Serializer::class)
 @SerialName("procedure-delimiter")
-public open class NoiseProcedureDelimiter : JsonReader() {
+public open class NoiseProcedureDelimiter : JsonReader(), NoiseNumber, NoiseExpression {
   public val type: UnknownStringLiteral by fromJson()
 
   public val expression: NoiseExpression by fromJson()
@@ -19462,7 +19747,7 @@ public open class NoiseProcedureDelimiter : JsonReader() {
  */
 @Serializable(NoiseVariable.Serializer::class)
 @SerialName("variable")
-public open class NoiseVariable : JsonReader(), NoiseArray {
+public open class NoiseVariable : JsonReader(), NoiseNumber, NoiseArray, NoiseExpression {
   public val type: UnknownStringLiteral by fromJson()
 
   /**
@@ -19975,7 +20260,14 @@ public open class PlaceEquipmentTipTrigger : JsonReader(), TipTrigger {
  */
 @Serializable
 public enum class PlayFor {
+  /**
+   * Play the vibration only if it was caused by the player. For example when shooting a gun,
+   * vibration will play when the character shoots but not when a turret shoots.
+   */
   character_actions,
+  /**
+   * Always play the vibration. Useful for example for explosions.
+   */
   everything,
 }
 
@@ -20079,9 +20371,12 @@ public open class PollutionSettings : JsonReader() {
 }
 
 /**
- * Defaults to loading products as items.
+ * Defaults to loading products as items.Includes the following types:
+ *  - ItemProductPrototype
+ *  - FluidProductPrototype
  */
-public typealias ProductPrototype = UnknownUnion
+@Serializable(ProductPrototypeSerializer::class)
+public sealed interface ProductPrototype
 
 @Serializable
 public enum class ProductionType {
@@ -20845,8 +21140,12 @@ public open class RotatedAnimation4WayValues : JsonReader(), RotatedAnimation4Wa
  *  - RotatedAnimation4WayValues
  *  - RotatedAnimation
  */
-@Serializable
-public sealed interface RotatedAnimation4Way
+@Serializable(RotatedAnimation4Way.Serializer::class)
+public sealed interface RotatedAnimation4Way {
+  public object Serializer :
+      FirstMatchingSubclassSerializer<RotatedAnimation4Way>(RotatedAnimation4Way::class,
+      RotatedAnimation4WayValues::class, RotatedAnimation::class)
+}
 
 public typealias RotatedAnimationVariations = ItemOrList<RotatedAnimation>
 
@@ -21047,37 +21346,111 @@ public open class ScrollPaneStyleSpecification : BaseStyleSpecification(), Style
  * An array containing the following values.
  */
 @Serializable
-public enum class SelectionModeFlags {
+public enum class SelectionModeFlagsStrings {
+  /**
+   * Selects entities and tiles as if selecting them for a blueprint.
+   */
   blueprint,
+  /**
+   * Selects entities and tiles as if selecting them for deconstruction.
+   */
   deconstruct,
+  /**
+   * Selects entities and tiles as if selecting them for deconstruction cancellation.
+   */
   `cancel-deconstruct`,
+  /**
+   * Selects items on the ground.
+   */
   items,
+  /**
+   * Selects trees.
+   */
   trees,
+  /**
+   * Selects entities which are considered [a building](runtime:LuaEntityPrototype::is_building),
+   * plus landmines.
+   */
   `buildable-type`,
+  /**
+   * Selects no entities or tiles, but is useful to select an area.
+   */
   nothing,
+  /**
+   * Selects entities and tiles that can be built by an item.
+   */
   `items-to-place`,
+  /**
+   * Selects all entities.
+   */
   `any-entity`,
+  /**
+   * Selects all tiles.
+   */
   `any-tile`,
+  /**
+   * Selects entities with the same force as the selecting player.
+   */
   `same-force`,
+  /**
+   * Selects entities with a different force as the selecting player.
+   */
   `not-same-force`,
+  /**
+   * Selects entities from a friendly force.
+   */
   friend,
+  /**
+   * Selects entities from an enemy force.
+   */
   enemy,
+  /**
+   * Selects entities as if selecting them for upgrading.
+   */
   upgrade,
+  /**
+   * Selects entities as if selecting them for upgrade cancellation.
+   */
   `cancel-upgrade`,
+  /**
+   * Selects entities as if selecting them for downgrading.
+   */
   downgrade,
+  /**
+   * Selects entities that are an [EntityWithHealthPrototype](prototype:EntityWithHealthPrototype).
+   */
   `entity-with-health`,
+  /**
+   * Deprecated. Replaced by "is-military-target".
+   */
   `entity-with-force`,
+  /**
+   * Selects entities which are
+   * [EntityWithOwnerPrototype::is_military_target](prototype:EntityWithOwnerPrototype::is_military_target).
+   */
   `is-military-target`,
+  /**
+   * Selects entities that are an [EntityWithOwnerPrototype](prototype:EntityWithOwnerPrototype).
+   */
   `entity-with-owner`,
+  /**
+   * Selects entities that are not a [RollingStockPrototype](prototype:RollingStockPrototype).
+   */
   `avoid-rolling-stock`,
+  /**
+   * Selects entities that are an [EntityGhostPrototype](prototype:EntityGhostPrototype).
+   */
   `entity-ghost`,
+  /**
+   * Selects entities that are a [TileGhostPrototype](prototype:TileGhostPrototype).
+   */
   `tile-ghost`,
 }
 
 /**
  * An array containing the following values.
  */
-public typealias SelectionModeFlags = ItemOrList<SelectionModeFlags>
+public typealias SelectionModeFlags = ItemOrList<SelectionModeFlagsStrings>
 
 @Serializable(SequenceTipTrigger.Serializer::class)
 @SerialName("sequence")
@@ -21824,7 +22197,7 @@ public open class SpotNoiseArguments : JsonReader() {
  * file and dimensions/position in the game, they all share the same memory.
  */
 @Serializable(Sprite.Serializer::class)
-public open class Sprite : SpriteParameters(), ElementImageSetLayer, Sprite4Way {
+public open class Sprite : SpriteParameters(), ElementImageSetLayer, ElementImageSet, Sprite4Way {
   /**
    * If this property is present, all Sprite definitions have to be placed as entries in the array,
    * and they will all be loaded from there. `layers` may not be an empty table. Each definition in the
@@ -21918,8 +22291,11 @@ public open class Sprite4WayValues : JsonReader(), Sprite4Way {
  *  - Sprite4WayValues
  *  - Sprite
  */
-@Serializable
-public sealed interface Sprite4Way
+@Serializable(Sprite4Way.Serializer::class)
+public sealed interface Sprite4Way {
+  public object Serializer : FirstMatchingSubclassSerializer<Sprite4Way>(Sprite4Way::class,
+      Sprite4WayValues::class, Sprite::class)
+}
 
 /**
  * A map of sprites for all 8 directions of the entity.
@@ -21980,7 +22356,10 @@ public open class Sprite8Way : JsonReader() {
  * An array containing the following values.
  */
 @Serializable
-public enum class SpriteFlags {
+public enum class SpriteFlagsStrings {
+  /**
+   * The sprite won't be automatically cropped.
+   */
   `no-crop`,
   `not-compressed`,
   `always-compressed`,
@@ -21990,15 +22369,51 @@ public enum class SpriteFlags {
   `linear-mip-level`,
   `alpha-mask`,
   `no-scale`,
+  /**
+   * This flag will internally set these flags: `"group=none"`
+   */
   mask,
+  /**
+   * This flag will internally set these flags: `"no-crop"`, `"no-scale"`, `"mipmap"`,
+   * `"linear-minification"`, `"linear-magnification"`, `"linear-mip-level"`, `"not-compressed"`,
+   * `"group=icon"`
+   */
   icon,
+  /**
+   * This flag will internally set these flags: `"no-crop"`, `"no-scale"`, `"mipmap"`,
+   * `"linear-minification"`, `"linear-magnification"`, `"linear-mip-level"`, `"not-compressed"`,
+   * `"group=gui"`
+   */
   gui,
+  /**
+   * This flag will internally set these flags: `"no-crop"`, `"no-scale"`, `"mipmap"`,
+   * `"linear-minification"`, `"linear-magnification"`, `"not-compressed"`, `"group=icon"`
+   */
   `gui-icon`,
+  /**
+   * This flag will internally set these flags: `"mipmap"`, `"linear-mip-level"`,
+   * `"linear-minification"`, `"linear-magnification"`, `"group=none"`
+   */
   light,
+  /**
+   * This flag will internally set these flags: `"mipmap"`, `"linear-mip-level"`,
+   * `"linear-minification"`, `"no-crop"`, `"group=terrain"`
+   */
   terrain,
+  /**
+   * This flag will internally set these flags: `"mipmap"`, `"linear-mip-level"`,
+   * `"linear-minification"`, `"no-crop"`, `"terrain-effect-map"` (internal group flag)
+   */
   `terrain-effect-map`,
   shadow,
+  /**
+   * This flag will internally set these flags: `"mipmap"`, `"linear-minification"`,
+   * `"linear-magnification"`, `"group=smoke"`
+   */
   smoke,
+  /**
+   * This flag will internally set these flags: `"group=decal"`
+   */
   decal,
   `low-object`,
   `trilinear-filtering`,
@@ -22011,13 +22426,16 @@ public enum class SpriteFlags {
   `group=gui`,
   `group=icon`,
   `group=icon-background`,
+  /**
+   * Deprecated flag that does nothing but is kept to prevent "unknown sprite flag" errors.
+   */
   compressed,
 }
 
 /**
  * An array containing the following values.
  */
-public typealias SpriteFlags = List<SpriteFlags>
+public typealias SpriteFlags = List<SpriteFlagsStrings>
 
 @Serializable(SpriteNWaySheet.Serializer::class)
 public open class SpriteNWaySheet : SpriteParameters() {
@@ -22370,9 +22788,25 @@ public open class StreamTriggerDelivery : TriggerDeliveryItem(), TriggerDelivery
  */
 @Serializable
 public enum class StretchRule {
+  /**
+   * Stretching/squashing is enabled.
+   */
   on,
+  /**
+   * Stretching/squashing is disabled even when the container contains stretchable/squashable
+   * elements.
+   */
   off,
+  /**
+   * Stretching/squashing depends on the contents of the layout, for example a flow with stretchable
+   * element gets stretchable.
+   */
   auto,
+  /**
+   * Used only for stretchable (not squashable) properties on scroll panes, labels, check boxes and
+   * radio buttons. The element this is set on expands its size to maximum and is stretched at the same
+   * time. This means the element takes up its maximum size even before its contents require it.
+   */
   stretch_and_expand,
 }
 
@@ -22701,8 +23135,6 @@ public typealias TechnologyID = String
 @SerialName("technology_slot_style")
 public open class TechnologySlotStyleSpecification : ButtonStyleSpecification(), StyleSpecification
     {
-  override val type: UnknownStringLiteral by fromJson()
-
   public val highlighted_graphical_set: ElementImageSet? by fromJson()
 
   public val default_background_shadow: ElementImageSet? by fromJson()
@@ -23196,13 +23628,36 @@ public open class TimeElapsedTipTrigger : JsonReader(), TipTrigger {
  */
 @Serializable
 public enum class TipStatus {
+  /**
+   * The tip is hidden.
+   */
   locked,
+  /**
+   * Same as `"locked"`.
+   */
   optional,
+  /**
+   * The [trigger](prototype:TipsAndTricksItem::trigger) for the tip was already met, but the tip is
+   * still hidden because of dependencies.
+   */
   `dependencies-not-met`,
+  /**
+   * Not suggested by trigger yet, but visible in the window. This is also the state that tips are
+   * left in when the /unlock-tips command is used in-game.
+   */
   unlocked,
+  /**
+   * The dependencies and triggers are met, the game suggests the tip.
+   */
   suggested,
   `not-to-be-suggested`,
+  /**
+   * The tip is considered completed, shows the check mark in the GUI.
+   */
   `completed-without-tutorial`,
+  /**
+   * The tip is considered completed, shows the check mark in the GUI.
+   */
   completed,
 }
 

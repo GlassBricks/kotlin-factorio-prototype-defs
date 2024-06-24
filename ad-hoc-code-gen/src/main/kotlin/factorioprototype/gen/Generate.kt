@@ -18,17 +18,9 @@ private val manuallySerialized = setOf(
     "ItemProductPrototype",
     "ProductPrototype",
     "StreamAttackParametersGunCenterShift",
-    "TilePrototypeBuildSound"
 )
 
-private val useFirstMatchingSubclassSerializer = setOf(
-    "Animation4Way",
-    "AutoplaceSpecification",
-    "ElementImageSetLayer",
-    "ElementImageSet"
-)
-
-private val ignoreInnerType = setOf(
+private val flattenStructType = setOf(
     "ItemIngredientPrototype",
     "ItemProductPrototype",
 )
@@ -193,10 +185,6 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     }
 
     data class ConceptValues(override val inner: Concept) : TypeOrValues {
-        init {
-            require(inner.type != StructType && inner.properties != null)
-        }
-
         override val name: String get() = inner.name + "Values"
     }
 
@@ -209,12 +197,12 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private sealed interface GeneratedUnion {
         val name: String
         val className: ClassName get() = ClassName(packageName, name)
-        val options: Set<TypeOrValues>
+        val members: Set<TypeOrValues>
     }
 
     private data class ConceptUnion(
         val concept: Concept,
-        override val options: Set<TypeOrValues>
+        override val members: Set<TypeOrValues>
     ) : GeneratedUnion {
         init {
             require(concept.type.innerType() is UnionType)
@@ -225,23 +213,29 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private data class InnerUnion(
         override val name: String,
-        override val options: Set<TypeOrValues>
-    ) : GeneratedUnion
+        override val members: Set<TypeOrValues>
+    ) : GeneratedUnion {
+        var generated = false
+    }
 
     private val conceptUnions = mutableMapOf<Concept, ConceptUnion>()
 
     private val _unionSupertypes = mutableMapOf<TypeOrValues, MutableSet<GeneratedUnion>>()
     private fun registerUnion(union: GeneratedUnion) {
-        for (type in union.options) {
+        for (type in union.members) {
             _unionSupertypes.getOrPut(type, ::mutableSetOf).add(union)
         }
     }
 
-    private val discriminatorValue = mutableMapOf<Concept, String>()
+    private val conceptDiscriminatorValue = mutableMapOf<Concept, String>()
+    private fun getDiscriminatorValue(value: ProtoOrConcept): String? = when (value) {
+        is Concept -> conceptDiscriminatorValue[value]
+        is Prototype -> value.typename
+    }
+
     private val conceptCanBeUnionMember = mutableSetOf<Concept>()
     private fun canBeUnionMember(value: ProtoOrConcept): Boolean =
-        value is Prototype ||
-                value is Concept && value in conceptCanBeUnionMember
+        value is Prototype || value is Concept && value in conceptCanBeUnionMember
 
     private fun getDiscriminatorPropName(concept: Concept): String {
         if (concept.name.startsWith("NoiseFunction")) {
@@ -255,30 +249,28 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         if (innerType !is UnionType) return null
 
         return buildSet {
-            fun maybeInlineSupertypes(referencedValue: ProtoOrConcept): Boolean {
+            fun maybeInlineMembers(referencedValue: ProtoOrConcept): Boolean {
                 if (referencedValue !is Concept) return false
                 val conceptUnion = conceptUnions[referencedValue] ?: return false
-                if (conceptUnion.options.all { inner ->
-                        inner is ConceptValues || inner is MainType &&
-                                discriminatorValue[inner.inner] == null
+                if (conceptUnion.members.all { member ->
+                        member is ConceptValues ||
+                                member is MainType &&
+                                getDiscriminatorValue(member.inner) == null
                     }) {
-                    addAll(conceptUnion.options)
+                    addAll(conceptUnion.members)
+                    return true
                 }
                 return false
             }
-            for (option in innerType.options) {
-                val inner = option.innerType()
+            for (member in innerType.options) {
+                val inner = member.innerType()
                 if (inner is StructType && sourceConcept != null) {
                     add(ConceptValues(sourceConcept))
                 } else if (inner is BasicType) {
                     val referencedValue = byName[inner.value] ?: return null
-                    if (!(referencedValue is Prototype
-                                || referencedValue is Concept &&
-                                referencedValue.type is StructType || referencedValue in discriminatorValue)
-                    ) {
+                    if (!canBeUnionMember(referencedValue))
                         return null
-                    }
-                    if (!maybeInlineSupertypes(referencedValue))
+                    if (!maybeInlineMembers(referencedValue))
                         add(MainType(referencedValue))
                 } else {
                     return null
@@ -290,31 +282,32 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private fun findUnionTypes() {
         for (concept in typePartialOrder) {
             if (concept !is Concept) continue
-            when (val innerType = concept.type.innerType()) {
-                is StructType -> {
+            val innerType = concept.type.innerType()
+            when  {
+                innerType is StructType || concept.name in flattenStructType -> {
                     conceptCanBeUnionMember.add(concept)
                     val properties = concept.properties ?: continue
                     val discriminatorField = getDiscriminatorPropName(concept)
                     val discriminatorValue = properties.find { it.name == discriminatorField }?.type?.innerType()
                     if (discriminatorValue is LiteralType && discriminatorValue.value.isString) {
-                        this.discriminatorValue[concept] = discriminatorValue.value.content
+                        this.conceptDiscriminatorValue[concept] = discriminatorValue.value.content
                     }
                 }
 
-                is BasicType -> {
+                innerType is BasicType -> {
                     val referenced = byName[innerType.value] ?: continue
                     if (canBeUnionMember(referenced)) {
                         conceptCanBeUnionMember.add(concept)
                     }
                 }
 
-                is UnionType -> {
-                    conceptCanBeUnionMember.add(concept)
+                innerType is UnionType -> {
                     val unionMembers = tryGetUnionMembers(
                         concept,
                         innerType
                     ) ?: continue
-                    for(member in unionMembers) {
+                    conceptCanBeUnionMember.add(concept)
+                    for (member in unionMembers) {
                         require(canBeUnionMember(member.inner)) {
                             "Union member $member cannot be a union member of $concept"
                         }
@@ -326,7 +319,6 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
                 else -> {}
             }
-
         }
     }
 
@@ -371,7 +363,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         }
     }
 
-    private fun TypeSpec.Builder.commonSetup(value: TypeOrValues) {
+    private fun TypeSpec.Builder.setupClass(value: TypeOrValues) {
         if (value.inner.abstract) {
             addModifiers(KModifier.SEALED)
         } else {
@@ -388,11 +380,24 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         }
         addDescription(value.inner.description)
         if (!value.inner.abstract) {
-            addJsonReaderSerializer(this@commonSetup.build().name!!)
+            addJsonReaderSerializer(this@setupClass.build().name!!)
+        }
+        val discriminatorValue = getDiscriminatorValue(value.inner)
+        if (discriminatorValue != null) {
+            addAnnotation(
+                AnnotationSpec.builder(SerialName::class)
+                    .addMember("%S", discriminatorValue)
+                    .build()
+            )
+        }
+
+        for (property in value.inner.properties!!.sortedBy { it.order }) {
+            if (overrides[value.inner]?.get(property.name) == OverrideType.Ignore) continue
+            addProperty(mapProperty(value, property))
         }
     }
 
-    private fun TypeSpec.Builder.manuallySerialize(className: ClassName) {
+    private fun TypeSpec.Builder.addManualSerializerAnnotation(className: ClassName) {
         addAnnotation(
             AnnotationSpec.builder(Serializable::class)
                 .addMember("%TSerializer::class", className)
@@ -402,7 +407,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private fun TypeSpec.Builder.addJsonReaderSerializer(className: String) {
         if (className in manuallySerialized) {
-            manuallySerialize(ClassName(packageName, className))
+            addManualSerializerAnnotation(ClassName(packageName, className))
             return
         }
         addSubclassSerializer(className, "JsonReaderSerializer")
@@ -428,78 +433,33 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         }.build())
     }
 
-    private fun generatePrototype(prototype: Prototype) {
-        require(prototype.visibility == null)
-        val type = MainType(prototype)
-        val result = TypeSpec.classBuilder(prototype.name).apply {
-            commonSetup(type)
-            if (prototype.typename != null) {
-                addAnnotation(
-                    AnnotationSpec.builder(SerialName::class)
-                        .addMember("%S", prototype.typename)
-                        .build()
-                )
-            }
-            for (property in prototype.properties.sortedBy { it.order }) {
-                if (overrides[prototype]?.get(property.name) == OverrideType.Ignore) continue
-                addProperty(mapProperty(type, property))
-            }
-        }.build()
+    private fun generateClass(
+        type: TypeOrValues,
+    ) {
+        val result = TypeSpec.classBuilder(type.className).apply { setupClass(type) }.build()
         file.addType(result)
+    }
+
+    private fun generatePrototype(prototype: Prototype) {
+        generateClass(MainType(prototype))
     }
 
     private fun generateConcept(concept: Concept) {
         if (concept.name in builtins || concept.name in toIgnore) return
-        val isSimpleStructType = concept.type is StructType || concept.name in ignoreInnerType
+        val isSimpleStructType = concept.type is StructType || concept.name in flattenStructType
         if (concept.properties != null) {
-            file.addType(generateStructConcept(concept, isSimpleStructType))
+            val type = if (isSimpleStructType) MainType(concept) else ConceptValues(concept)
+            generateClass(type)
         }
         if (!isSimpleStructType) {
-            val valuesType = mapTypeDefinition(concept.type, MainType(concept), null)
-            if (valuesType.declaration == null) {
-                val result = TypeAliasSpec.builder(concept.name, valuesType.assertNoDec()).apply {
+            val mainType = mapTypeDefinition(concept.type, MainType(concept), null, isRoot = true)
+            if (mainType.declaration == null) {
+                val result = TypeAliasSpec.builder(concept.name, mainType.assertNoDec()).apply {
                     addDescription(concept.description)
                 }.build()
                 file.addTypeAlias(result)
             }
         }
-    }
-
-    private val innerStringUnions = mutableMapOf<Set<String>, ClassName>()
-    private val noSourcePrefix = setOf(
-        "filter_mode",
-        "gui_mode",
-        "logistic_mode",
-        "research_queue_setting"
-    )
-
-    private fun makeInnerStringUnion(
-        source: TypeOrValues,
-        property: Property,
-        typeDefinition: UnionType,
-        values: Set<String>
-    ): ClassName = innerStringUnions.getOrPut(values) {
-        val noPrefix = noSourcePrefix.any { property.name.endsWith(it) }
-        val name = if (noPrefix) property.name.toCamelCase()
-        else source.inner.name + property.name.toCamelCase()
-        val className = ClassName(packageName, name)
-        val typeDescriptions = typeDefinition.options.associate {
-            it as LiteralType
-            it.value.content to it.description
-        }
-        val enumType = TypeSpec.enumBuilder(className).apply {
-            for (value in values) {
-                addEnumConstant(
-                    value,
-                    TypeSpec.anonymousClassBuilder().apply {
-                        addDescription(typeDescriptions[value])
-                    }.build()
-                )
-            }
-            addAnnotation(Serializable::class)
-        }.build()
-        file.addType(enumType)
-        className
     }
 
     private tailrec fun getReferencedType(type: TypeDefinition): String? {
@@ -533,6 +493,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         typeDefinition: TypeDefinition,
         source: TypeOrValues,
         property: Property?,
+        isRoot: Boolean = false
     ): TypeNameWithDecl {
         return when (typeDefinition) {
             is BasicType -> {
@@ -545,7 +506,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 .withNoDec()
 
             is DictType -> Map::class.asClassName().parameterizedBy(
-                mapTypeDefinition(typeDefinition.key, source, property).assertNoDec(),
+                mapTypeDefinition(typeDefinition.key, source, property).typeName,
                 mapTypeDefinition(typeDefinition.value, source, property).assertNoDec()
             ).withNoDec()
 
@@ -579,7 +540,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
             is TypeType -> mapTypeDefinition(typeDefinition.value, source, property)
             is UnionType -> {
-                tryMakeStringUnion(source, property, typeDefinition)
+                tryMakeStringUnion(source, property, typeDefinition, isRoot)
                     ?: tryMakeItemOrList(source, property, typeDefinition)
                     ?: tryGenerateUnion(source, property)
                     ?: ClassName(packageName, "UnknownUnion").withNoDec()
@@ -595,17 +556,17 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         if (typeDefinition.options.size != 2) return null
         val first = typeDefinition.options[0]
         val second = typeDefinition.options[1]
-        if (second is ArrayType && second.value == first) {
-            return ClassName(packageName, "ItemOrList").parameterizedBy(
-                mapTypeDefinition(first, source, property).typeName // allow declaration here
-            ).withNoDec()
+        val innerName = if (second is ArrayType && second.value == first) {
+            "ItemOrList"
+        } else if (second is TupleType && second.values.all { it == first }) {
+            "ItemOrTuple${second.values.size}"
+        } else {
+            return null
         }
-        if (second is TupleType && second.values.all { it == first }) {
-            return ClassName(packageName, "ItemOrTuple${second.values.size}").parameterizedBy(
-                mapTypeDefinition(first, source, property).assertNoDec()
-            ).withNoDec()
-        }
-        return null
+
+        return ClassName(packageName, innerName).parameterizedBy(
+            mapTypeDefinition(first, source, property).typeName // allow declaration here
+        ).withNoDec()
     }
 
 
@@ -623,35 +584,41 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         return null
     }
 
+    private fun shouldUseFirstMatchingSubclassSerializer(union: GeneratedUnion): Boolean {
+        return union.members.all {
+            it.isClass() && getDiscriminatorValue(it.inner) == null
+        }
+    }
+
     private val noiseFunctionApplication = byName["NoiseFunctionApplication"] as Concept
-    private fun generateUnion(type: GeneratedUnion): TypeNameWithDecl {
-        val concept = if (type is ConceptUnion) type.concept else null
-        val intf = TypeSpec.interfaceBuilder(type.className).apply {
+    private fun generateUnion(union: GeneratedUnion): TypeNameWithDecl {
+        if (union is InnerUnion) {
+            if (union.generated) {
+                return TypeNameWithDecl(union.className, null)
+            }
+            union.generated = true
+        }
+        val concept = if (union is ConceptUnion) union.concept else null
+        val intf = TypeSpec.interfaceBuilder(union.className).apply {
             addModifiers(KModifier.SEALED)
 
             addDescription(concept?.description)
             addKdoc(buildCodeBlock {
                 add("Includes the following types:\n")
-                for (option in type.options) {
-                    add(" - %L\n", option.name)
+                for (member in union.members) {
+                    add(" - %L\n", member.name)
                 }
             })
-            when (type.name) {
-                in manuallySerialized -> manuallySerialize(type.className)
-                in useFirstMatchingSubclassSerializer -> {
-                    for (option in type.options) {
-                        require(option.isClass()) { "Expected all union options to be classes, but $option is not" }
-                    }
-                    addSubclassSerializer(type.name, "FirstMatchingSubclassSerializer") {
-                        for (option in type.options) {
-                            addSuperclassConstructorParameter("%T::class", option.className)
-                        }
+            if (union.name in manuallySerialized) {
+                addManualSerializerAnnotation(union.className)
+            } else if (shouldUseFirstMatchingSubclassSerializer(union)) {
+                addSubclassSerializer(union.name, "FirstMatchingSubclassSerializer") {
+                    for (member in union.members) {
+                        addSuperclassConstructorParameter("%T::class", member.className)
                     }
                 }
-
-                else -> {
-                    addAnnotation(Serializable::class)
-                }
+            } else {
+                addAnnotation(Serializable::class)
             }
 
             if (concept == noiseFunctionApplication) {
@@ -666,7 +633,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 val superTypes = _unionSupertypes[MainType(concept)]
                 if (superTypes != null) {
                     for (superType in superTypes) {
-                        if (superType != type) {
+                        if (superType != union) {
                             addSuperinterface(superType.className)
                         }
                     }
@@ -674,40 +641,72 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             }
         }.build()
         file.addType(intf)
-        return TypeNameWithDecl(type.className, intf)
+        return TypeNameWithDecl(union.className, intf)
     }
 
     private fun tryMakeStringUnion(
         source: TypeOrValues,
         property: Property?,
-        typeDefinition: UnionType
+        typeDefinition: UnionType,
+        isRoot: Boolean
     ): TypeNameWithDecl? =
         if (typeDefinition.options.all { it is LiteralType && it.value.isString }) {
-            makeStringUnion(source, property, typeDefinition)
+            makeStringUnion(source, property, typeDefinition, isRoot)
         } else null
+
+    private val innerStringUnions = mutableMapOf<Set<String>, ClassName>()
+    private val noSourcePrefix = setOf(
+        "filter_mode",
+        "gui_mode",
+        "logistic_mode",
+        "research_queue_setting"
+    )
 
     private fun makeStringUnion(
         source: TypeOrValues,
         property: Property?,
-        typeDefinition: UnionType
+        typeDefinition: UnionType,
+        isRoot: Boolean
     ): TypeNameWithDecl {
-        if (property == null) {
-            val className = source.className
-            val enumType = TypeSpec.enumBuilder(className).apply {
-                for (option in typeDefinition.options) {
-                    val value = (option as LiteralType).value.content
-                    addEnumConstant(value)
-                }
-                addAnnotation(Serializable::class)
-                addDescription(source.inner.description)
-            }.build()
-            this.file.addType(enumType)
-            return TypeNameWithDecl(className, enumType)
-        } else {
-            val values = typeDefinition.options.map { (it as LiteralType).value.content }.toSet()
-            val className = makeInnerStringUnion(source, property, typeDefinition, values)
-            return TypeNameWithDecl(className, null)
+        val values = typeDefinition.options.map { (it as LiteralType).value.content }.toSet()
+        val typeDescriptions = typeDefinition.options.associate {
+            it as LiteralType
+            it.value.content to it.description
         }
+        val className: ClassName
+        if (property == null) {
+            className = if (!isRoot) {
+                ClassName(packageName, source.name + "Strings")
+            } else {
+                source.className
+            }
+        } else {
+            if (values in innerStringUnions) return TypeNameWithDecl(innerStringUnions[values]!!, null)
+
+            val noPrefix = noSourcePrefix.any { property.name.endsWith(it) }
+            val name = if (noPrefix) property.name.toCamelCase()
+            else source.inner.name + property.name.toCamelCase()
+            className = ClassName(packageName, name)
+        }
+        val enumType = TypeSpec.enumBuilder(className).apply {
+            for (value in values) {
+                addEnumConstant(
+                    value,
+                    TypeSpec.anonymousClassBuilder().apply {
+                        addDescription(typeDescriptions[value])
+                    }.build()
+                )
+            }
+            addAnnotation(Serializable::class)
+            if (property == null) {
+                addDescription(source.inner.description)
+            }
+        }.build()
+        file.addType(enumType)
+        if (property != null) {
+            innerStringUnions.getOrPut(values) { className }
+        }
+        return TypeNameWithDecl(className, enumType)
     }
 
 
@@ -736,23 +735,6 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 delegate("fromJson(%S)", altName)
             } else {
                 delegate("fromJson()")
-            }
-        }.build()
-    }
-
-    private fun generateStructConcept(concept: Concept, isSimpleStructType: Boolean): TypeSpec {
-        val type = if (isSimpleStructType) MainType(concept) else ConceptValues(concept)
-        return TypeSpec.classBuilder(type.className).apply {
-            commonSetup(type)
-            if (discriminatorValue[concept] != null) {
-                addAnnotation(
-                    AnnotationSpec.builder(SerialName::class)
-                        .addMember("%S", discriminatorValue[concept]!!)
-                        .build()
-                )
-            }
-            for (property in concept.properties!!.sortedBy { it.order }) {
-                addProperty(mapProperty(type, property))
             }
         }.build()
     }

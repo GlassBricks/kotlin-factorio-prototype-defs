@@ -118,11 +118,15 @@ fun tryManuallyDeserializing(
 ): Any? {
     val descriptor = serializer.descriptor.nonNullOriginal
     return when {
-        descriptor.kind == StructureKind.LIST && el is JsonObject && (el.isEmpty() || "1" in el) -> {
+        descriptor.kind == StructureKind.LIST && el is JsonObject && (el.isEmpty() || "1" in el || "2" in el) -> {
             val list = buildList {
                 var i = 1
                 while (true) {
-                    add(el[i.toString()] ?: break)
+                    val element = el[i.toString()]
+                    if (element != null) add(element)
+                    else {
+                        if (i != 1) break
+                    }
                     i++
                 }
             }
@@ -219,8 +223,8 @@ open class FirstMatchingSubclassSerializer<T : Any>(
     }
 
     init {
-        subclasses.forEach {
-            require(klass.isSubclassOf(JsonReader::class))
+        for (subclass in subclasses) {
+            require(subclass.isSubclassOf(JsonReader::class))
         }
     }
 

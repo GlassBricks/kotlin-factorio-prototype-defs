@@ -28,6 +28,7 @@ typealias Tuple4<T> = List<T>
 
 @Serializable(with = ItemOrListSerializer::class)
 class ItemOrList<T>(private val value: List<T>) : List<T> by value {
+    constructor(value: T) : this(listOf(value))
     override fun toString(): String = value.toString()
     override fun equals(other: Any?): Boolean = value == other
     override fun hashCode(): Int = value.hashCode()
@@ -49,7 +50,7 @@ class ItemOrListSerializer<T>(private val itemSerializer: KSerializer<T>) : KSer
         decoder as JsonDecoder
         return when (val element = decoder.decodeJsonElement()) {
             is JsonArray -> ItemOrList(decoder.json.decodeFromJsonElement(listSerializer, element))
-            else -> ItemOrList(listOf(decoder.json.decodeFromJsonElement(itemSerializer, element)))
+            else -> ItemOrList(decoder.json.decodeFromJsonElement(itemSerializer, element))
         }
     }
 }

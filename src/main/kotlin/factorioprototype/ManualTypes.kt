@@ -6,17 +6,13 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonDecoder
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.double
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 
 @Serializable(with = VectorSerializer::class)
 data class Vector(
     val x: Double,
     val y: Double,
-) : StreamAttackParametersGunCenterShift
+)
 
 object VectorSerializer : KSerializer<Vector> {
     override val descriptor = buildClassSerialDescriptor("Vector") {
