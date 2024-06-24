@@ -3,10 +3,12 @@
 
 package factorioprototype
 
+import kotlin.jvm.JvmInline
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
+import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * Entity with energy source with specialised animation for charging/discharging. Used for the
@@ -3065,6 +3067,39 @@ public open class EntityParticlePrototype : EntityPrototype() {
 }
 
 /**
+ *
+ *
+ * Includes the following types:
+ *  - [automatic]
+ *  - [true]
+ *  - [false]
+ */
+@Serializable(EntityPrototypeRemoveDecoratives.Serializer::class)
+public sealed interface EntityPrototypeRemoveDecoratives {
+  public object Serializer :
+      FirstMatchingSerializer<EntityPrototypeRemoveDecoratives>(EntityPrototypeRemoveDecoratives::class,
+      automatic::class, `true`::class, `false`::class)
+
+  @Serializable(automatic.Serializer::class)
+  public data object automatic : LiteralValue(JsonPrimitive("automatic")),
+      EntityPrototypeRemoveDecoratives {
+    public object Serializer : LiteralValueSerializer<automatic>(automatic::class)
+  }
+
+  @Serializable(`true`.Serializer::class)
+  public data object `true` : LiteralValue(JsonPrimitive("true"), JsonPrimitive(true)),
+      EntityPrototypeRemoveDecoratives {
+    public object Serializer : LiteralValueSerializer<`true`>(`true`::class)
+  }
+
+  @Serializable(`false`.Serializer::class)
+  public data object `false` : LiteralValue(JsonPrimitive("false"), JsonPrimitive(false)),
+      EntityPrototypeRemoveDecoratives {
+    public object Serializer : LiteralValueSerializer<`false`>(`false`::class)
+  }
+}
+
+/**
  * Abstract base of all entities in the game. Entity is nearly everything that can be on the map
  * (except tiles).
  *
@@ -3205,7 +3240,7 @@ public sealed class EntityPrototype : PrototypeBase() {
    * Using boolean values for this property is deprecated, however they have the same meaning as the
    * corresponding strings.
    */
-  public val remove_decoratives: UnknownUnion? by fromJson()
+  public val remove_decoratives: EntityPrototypeRemoveDecoratives? by fromJson()
 
   /**
    * Amount of emissions created (positive number) or cleaned (negative number) every second by the
@@ -7195,6 +7230,25 @@ public open class RecipeCategory : PrototypeBase() {
 }
 
 /**
+ *
+ *
+ * Includes the following types:
+ *  - [RecipeData]
+ *  - [false]
+ */
+@Serializable(RecipePrototypeExpensive.Serializer::class)
+public sealed interface RecipePrototypeExpensive {
+  public object Serializer :
+      FirstMatchingSerializer<RecipePrototypeExpensive>(RecipePrototypeExpensive::class,
+      RecipeData::class, `false`::class)
+
+  @Serializable(`false`.Serializer::class)
+  public data object `false` : LiteralValue(JsonPrimitive(false)), RecipePrototypeExpensive {
+    public object Serializer : LiteralValueSerializer<`false`>(`false`::class)
+  }
+}
+
+/**
  * A recipe. It can be a crafting recipe, a smelting recipe, or a custom type of recipe, see
  * [RecipeCategory](prototype:RecipeCategory).
  *
@@ -7268,7 +7322,7 @@ public open class RecipePrototype : PrototypeBase() {
    *
    * If this property is not defined while `expensive` is, it will mirror its data.
    */
-  public val normal: UnknownUnion? by fromJson()
+  public val normal: RecipePrototypeExpensive? by fromJson()
 
   /**
    * Can be set to `false` if the `normal` property is defined. This will disable this difficulty,
@@ -7277,7 +7331,7 @@ public open class RecipePrototype : PrototypeBase() {
    *
    * If this property is not defined while `normal` is, it will mirror its data.
    */
-  public val expensive: UnknownUnion? by fromJson()
+  public val expensive: RecipePrototypeExpensive? by fromJson()
 
   /**
    * A table containing ingredient names and counts. Can also contain information about fluid
@@ -9504,6 +9558,51 @@ public open class StraightRailPrototype : RailPrototype() {
 }
 
 /**
+ *
+ *
+ * Includes the following types:
+ *  - [TechnologyData]
+ *  - [false]
+ */
+@Serializable(TechnologyPrototypeExpensive.Serializer::class)
+public sealed interface TechnologyPrototypeExpensive {
+  public object Serializer :
+      FirstMatchingSerializer<TechnologyPrototypeExpensive>(TechnologyPrototypeExpensive::class,
+      TechnologyData::class, `false`::class)
+
+  @Serializable(`false`.Serializer::class)
+  public data object `false` : LiteralValue(JsonPrimitive(false)), TechnologyPrototypeExpensive {
+    public object Serializer : LiteralValueSerializer<`false`>(`false`::class)
+  }
+}
+
+/**
+ *
+ *
+ * Includes the following types:
+ *  - [UInt]
+ *  - [infinite]
+ */
+@Serializable(TechnologyPrototypeMaxLevel.Serializer::class)
+public sealed interface TechnologyPrototypeMaxLevel {
+  public object Serializer :
+      FirstMatchingSerializer<TechnologyPrototypeMaxLevel>(TechnologyPrototypeMaxLevel::class,
+      UInt::class, infinite::class)
+
+  @JvmInline
+  @Serializable
+  public value class UInt(
+    public val `value`: kotlin.UInt,
+  ) : TechnologyPrototypeMaxLevel
+
+  @Serializable(infinite.Serializer::class)
+  public data object infinite : LiteralValue(JsonPrimitive("infinite")), TechnologyPrototypeMaxLevel
+      {
+    public object Serializer : LiteralValueSerializer<infinite>(infinite::class)
+  }
+}
+
+/**
  * A [technology](https://wiki.factorio.com/Technologies).
  *
  * This prototype has two different formats that can be specified. If both `normal` and `expensive`
@@ -9552,7 +9651,7 @@ public open class TechnologyPrototype : PrototypeBase() {
    *
    * If this property is not defined while `expensive` is, it will mirror its data.
    */
-  public val normal: UnknownUnion? by fromJson()
+  public val normal: TechnologyPrototypeExpensive? by fromJson()
 
   /**
    * Can be set to `false` if the `normal` property is defined. This will disable this difficulty,
@@ -9561,7 +9660,7 @@ public open class TechnologyPrototype : PrototypeBase() {
    *
    * If this property is not defined while `normal` is, it will mirror its data.
    */
-  public val expensive: UnknownUnion? by fromJson()
+  public val expensive: TechnologyPrototypeExpensive? by fromJson()
 
   /**
    * When set to true, and the technology contains several levels, only the relevant one is
@@ -9613,7 +9712,7 @@ public open class TechnologyPrototype : PrototypeBase() {
    *
    * Only loaded if neither `normal` nor `expensive` are defined.
    */
-  public val max_level: UnknownUnion? by fromJson()
+  public val max_level: TechnologyPrototypeMaxLevel? by fromJson()
 
   /**
    * List of technologies needed to be researched before this one can be researched.
@@ -12657,7 +12756,7 @@ public open class Animation4WayValues : JsonReader(), Animation4Way {
  */
 @Serializable(Animation4Way.Serializer::class)
 public sealed interface Animation4Way {
-  public object Serializer : FirstMatchingSubclassSerializer<Animation4Way>(Animation4Way::class,
+  public object Serializer : FirstMatchingSerializer<Animation4Way>(Animation4Way::class,
       Animation4WayValues::class, Animation::class)
 }
 
@@ -13245,6 +13344,43 @@ public open class AutoplaceSettings : JsonReader() {
 }
 
 /**
+ *
+ *
+ * Includes the following types:
+ *  - [enemy]
+ *  - [player]
+ *  - [neutral]
+ *  - [String]
+ */
+@Serializable(AutoplaceSpecificationForce.Serializer::class)
+public sealed interface AutoplaceSpecificationForce {
+  public object Serializer :
+      FirstMatchingSerializer<AutoplaceSpecificationForce>(AutoplaceSpecificationForce::class,
+      enemy::class, player::class, neutral::class, String::class)
+
+  @Serializable(enemy.Serializer::class)
+  public data object enemy : LiteralValue(JsonPrimitive("enemy")), AutoplaceSpecificationForce {
+    public object Serializer : LiteralValueSerializer<enemy>(enemy::class)
+  }
+
+  @Serializable(player.Serializer::class)
+  public data object player : LiteralValue(JsonPrimitive("player")), AutoplaceSpecificationForce {
+    public object Serializer : LiteralValueSerializer<player>(player::class)
+  }
+
+  @Serializable(neutral.Serializer::class)
+  public data object neutral : LiteralValue(JsonPrimitive("neutral")), AutoplaceSpecificationForce {
+    public object Serializer : LiteralValueSerializer<neutral>(neutral::class)
+  }
+
+  @JvmInline
+  @Serializable
+  public value class String(
+    public val `value`: kotlin.String,
+  ) : AutoplaceSpecificationForce
+}
+
+/**
  * Autoplace specification is used to determine which entities are placed when generating map.
  * Currently it is used for enemy bases, tiles, resources and other entities (trees, fishes, etc.).
  *
@@ -13281,7 +13417,7 @@ public open class AutoplaceSpecificationValues : JsonReader(), AutoplaceSpecific
    * Force of the placed entity. Can be a custom force name. Only relevant for
    * [EntityWithOwnerPrototype](prototype:EntityWithOwnerPrototype).
    */
-  public val force: UnknownUnion? by fromJson()
+  public val force: AutoplaceSpecificationForce? by fromJson()
 
   /**
    * Order for placing the entity (has no effect when placing tiles). Entities whose order compares
@@ -13409,7 +13545,7 @@ public open class AutoplaceSpecificationValues : JsonReader(), AutoplaceSpecific
 @Serializable(AutoplaceSpecification.Serializer::class)
 public sealed interface AutoplaceSpecification {
   public object Serializer :
-      FirstMatchingSubclassSerializer<AutoplaceSpecification>(AutoplaceSpecification::class,
+      FirstMatchingSerializer<AutoplaceSpecification>(AutoplaceSpecification::class,
       AutoplaceSpecificationValues::class, AutoplacePeak::class)
 }
 
@@ -14705,7 +14841,8 @@ public open class CircuitConnectorLayer : JsonReader() {
 }
 
 @Serializable(CircuitConnectorSecondaryDrawOrder.Serializer::class)
-public open class CircuitConnectorSecondaryDrawOrder : JsonReader() {
+public open class CircuitConnectorSecondaryDrawOrder : JsonReader(),
+    MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder {
   public val north: Byte? by fromJson()
 
   public val east: Byte? by fromJson()
@@ -15627,8 +15764,62 @@ public open class DirectTriggerItem : TriggerItem() {
 
 /**
  * Usually specified by using [defines.direction](runtime:defines.direction).
+ *
+ * Includes the following types:
+ *  - [0]
+ *  - [1]
+ *  - [2]
+ *  - [3]
+ *  - [4]
+ *  - [5]
+ *  - [6]
+ *  - [7]
  */
-public typealias Direction = UnknownUnion
+@Serializable(Direction.Serializer::class)
+public sealed interface Direction {
+  public object Serializer : FirstMatchingSerializer<Direction>(Direction::class, `0`::class,
+      `1`::class, `2`::class, `3`::class, `4`::class, `5`::class, `6`::class, `7`::class)
+
+  @Serializable(`0`.Serializer::class)
+  public data object `0` : LiteralValue(JsonPrimitive(0)), Direction {
+    public object Serializer : LiteralValueSerializer<`0`>(`0`::class)
+  }
+
+  @Serializable(`1`.Serializer::class)
+  public data object `1` : LiteralValue(JsonPrimitive(1)), Direction {
+    public object Serializer : LiteralValueSerializer<`1`>(`1`::class)
+  }
+
+  @Serializable(`2`.Serializer::class)
+  public data object `2` : LiteralValue(JsonPrimitive(2)), Direction {
+    public object Serializer : LiteralValueSerializer<`2`>(`2`::class)
+  }
+
+  @Serializable(`3`.Serializer::class)
+  public data object `3` : LiteralValue(JsonPrimitive(3)), Direction {
+    public object Serializer : LiteralValueSerializer<`3`>(`3`::class)
+  }
+
+  @Serializable(`4`.Serializer::class)
+  public data object `4` : LiteralValue(JsonPrimitive(4)), Direction {
+    public object Serializer : LiteralValueSerializer<`4`>(`4`::class)
+  }
+
+  @Serializable(`5`.Serializer::class)
+  public data object `5` : LiteralValue(JsonPrimitive(5)), Direction {
+    public object Serializer : LiteralValueSerializer<`5`>(`5`::class)
+  }
+
+  @Serializable(`6`.Serializer::class)
+  public data object `6` : LiteralValue(JsonPrimitive(6)), Direction {
+    public object Serializer : LiteralValueSerializer<`6`>(`6`::class)
+  }
+
+  @Serializable(`7`.Serializer::class)
+  public data object `7` : LiteralValue(JsonPrimitive(7)), Direction {
+    public object Serializer : LiteralValueSerializer<`7`>(`7`::class)
+  }
+}
 
 @Serializable(DirectionShift.Serializer::class)
 public open class DirectionShift : JsonReader() {
@@ -15861,8 +16052,7 @@ public open class ElementImageSetValues : JsonReader(), ElementImageSet {
  */
 @Serializable(ElementImageSet.Serializer::class)
 public sealed interface ElementImageSet {
-  public object Serializer :
-      FirstMatchingSubclassSerializer<ElementImageSet>(ElementImageSet::class,
+  public object Serializer : FirstMatchingSerializer<ElementImageSet>(ElementImageSet::class,
       ElementImageSetValues::class, ElementImageSetLayerValues::class, Sprite::class)
 }
 
@@ -16092,7 +16282,7 @@ public open class ElementImageSetLayerValues : JsonReader(), ElementImageSetLaye
 @Serializable(ElementImageSetLayer.Serializer::class)
 public sealed interface ElementImageSetLayer {
   public object Serializer :
-      FirstMatchingSubclassSerializer<ElementImageSetLayer>(ElementImageSetLayer::class,
+      FirstMatchingSerializer<ElementImageSetLayer>(ElementImageSetLayer::class,
       ElementImageSetLayerValues::class, Sprite::class)
 }
 
@@ -18548,8 +18738,119 @@ public open class MapGenSettings : JsonReader() {
  * Each of the values in a triplet (such as "low", "small", and "poor") are synonymous. In-game the
  * values can be set from `0.166` to `6` via the GUI (respective to the percentages), while `0` is used
  * to disable the autoplace control.
+ *
+ * Includes the following types:
+ *  - [Float]
+ *  - [none]
+ *  - [very-low]
+ *  - [very-small]
+ *  - [very-poor]
+ *  - [low]
+ *  - [small]
+ *  - [poor]
+ *  - [normal]
+ *  - [medium]
+ *  - [regular]
+ *  - [high]
+ *  - [big]
+ *  - [good]
+ *  - [very-high]
+ *  - [very-big]
+ *  - [very-good]
  */
-public typealias MapGenSize = UnknownUnion
+@Serializable(MapGenSize.Serializer::class)
+public sealed interface MapGenSize {
+  public object Serializer : FirstMatchingSerializer<MapGenSize>(MapGenSize::class, Float::class,
+      none::class, `very-low`::class, `very-small`::class, `very-poor`::class, low::class,
+      small::class, poor::class, normal::class, medium::class, regular::class, high::class,
+      big::class, good::class, `very-high`::class, `very-big`::class, `very-good`::class)
+
+  @JvmInline
+  @Serializable
+  public value class Float(
+    public val `value`: kotlin.Float,
+  ) : MapGenSize
+
+  @Serializable(none.Serializer::class)
+  public data object none : LiteralValue(JsonPrimitive("none")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<none>(none::class)
+  }
+
+  @Serializable(`very-low`.Serializer::class)
+  public data object `very-low` : LiteralValue(JsonPrimitive("very-low")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<`very-low`>(`very-low`::class)
+  }
+
+  @Serializable(`very-small`.Serializer::class)
+  public data object `very-small` : LiteralValue(JsonPrimitive("very-small")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<`very-small`>(`very-small`::class)
+  }
+
+  @Serializable(`very-poor`.Serializer::class)
+  public data object `very-poor` : LiteralValue(JsonPrimitive("very-poor")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<`very-poor`>(`very-poor`::class)
+  }
+
+  @Serializable(low.Serializer::class)
+  public data object low : LiteralValue(JsonPrimitive("low")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<low>(low::class)
+  }
+
+  @Serializable(small.Serializer::class)
+  public data object small : LiteralValue(JsonPrimitive("small")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<small>(small::class)
+  }
+
+  @Serializable(poor.Serializer::class)
+  public data object poor : LiteralValue(JsonPrimitive("poor")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<poor>(poor::class)
+  }
+
+  @Serializable(normal.Serializer::class)
+  public data object normal : LiteralValue(JsonPrimitive("normal")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<normal>(normal::class)
+  }
+
+  @Serializable(medium.Serializer::class)
+  public data object medium : LiteralValue(JsonPrimitive("medium")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<medium>(medium::class)
+  }
+
+  @Serializable(regular.Serializer::class)
+  public data object regular : LiteralValue(JsonPrimitive("regular")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<regular>(regular::class)
+  }
+
+  @Serializable(high.Serializer::class)
+  public data object high : LiteralValue(JsonPrimitive("high")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<high>(high::class)
+  }
+
+  @Serializable(big.Serializer::class)
+  public data object big : LiteralValue(JsonPrimitive("big")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<big>(big::class)
+  }
+
+  @Serializable(good.Serializer::class)
+  public data object good : LiteralValue(JsonPrimitive("good")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<good>(good::class)
+  }
+
+  @Serializable(`very-high`.Serializer::class)
+  public data object `very-high` : LiteralValue(JsonPrimitive("very-high")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<`very-high`>(`very-high`::class)
+  }
+
+  @Serializable(`very-big`.Serializer::class)
+  public data object `very-big` : LiteralValue(JsonPrimitive("very-big")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<`very-big`>(`very-big`::class)
+  }
+
+  @Serializable(`very-good`.Serializer::class)
+  public data object `very-good` : LiteralValue(JsonPrimitive("very-good")), MapGenSize {
+    public object Serializer : LiteralValueSerializer<`very-good`>(`very-good`::class)
+  }
+}
 
 /**
  * Coordinates of a tile in a map. Positive x goes towards east, positive y goes towards south, and
@@ -18690,6 +18991,26 @@ public open class MinimapStyleSpecification : EmptyWidgetStyleSpecification(), S
 }
 
 /**
+ *
+ *
+ * Includes the following types:
+ *  - [Byte]
+ *  - [CircuitConnectorSecondaryDrawOrder]
+ */
+@Serializable(MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder.Serializer::class)
+public sealed interface MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder {
+  public object Serializer :
+      FirstMatchingSerializer<MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder>(MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder::class,
+      Byte::class, CircuitConnectorSecondaryDrawOrder::class)
+
+  @JvmInline
+  @Serializable
+  public value class Byte(
+    public val `value`: kotlin.Byte,
+  ) : MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder
+}
+
+/**
  * Used by [MiningDrillPrototype](prototype:MiningDrillPrototype).
  */
 @Serializable(MiningDrillGraphicsSet.Serializer::class)
@@ -18747,7 +19068,8 @@ public open class MiningDrillGraphicsSet : JsonReader() {
   /**
    * Secondary draw order(s) for all directions of the circuit connectors.
    */
-  public val circuit_connector_secondary_draw_order: UnknownUnion? by fromJson()
+  public val circuit_connector_secondary_draw_order:
+      MiningDrillGraphicsSetCircuitConnectorSecondaryDrawOrder? by fromJson()
 
   public object Serializer :
       JsonReaderSerializer<MiningDrillGraphicsSet>(MiningDrillGraphicsSet::class)
@@ -19799,8 +20121,147 @@ public open class NoiseVariable : JsonReader(), NoiseNumber, NoiseArray, NoiseEx
 
 /**
  * A set of constants largely determined by [MapGenSettings](prototype:MapGenSettings).
+ *
+ * Includes the following types:
+ *  - [String]
+ *  - [map_seed]
+ *  - [map_width]
+ *  - [map_height]
+ *  - [water_level]
+ *  - [finite_water_level]
+ *  - [wlc_elevation_minimum]
+ *  - [wlc_elevation_offset]
+ *  - [cliff_elevation_offset]
+ *  - [cliff_elevation_interval]
+ *  - [control-setting_cliffs_richness_multiplier]
+ *  - [terrace_elevation_offset]
+ *  - [terrace_elevation_interval]
+ *  - [starting_area_radius]
+ *  - [starting_positions]
+ *  - [starting_lake_positions]
+ *  - [peaceful_mode]
  */
-public typealias NoiseVariableConstants = UnknownUnion
+@Serializable(NoiseVariableConstants.Serializer::class)
+public sealed interface NoiseVariableConstants {
+  public object Serializer :
+      FirstMatchingSerializer<NoiseVariableConstants>(NoiseVariableConstants::class, String::class,
+      map_seed::class, map_width::class, map_height::class, water_level::class,
+      finite_water_level::class, wlc_elevation_minimum::class, wlc_elevation_offset::class,
+      cliff_elevation_offset::class, cliff_elevation_interval::class,
+      `control-setting_cliffs_richness_multiplier`::class, terrace_elevation_offset::class,
+      terrace_elevation_interval::class, starting_area_radius::class, starting_positions::class,
+      starting_lake_positions::class, peaceful_mode::class)
+
+  @JvmInline
+  @Serializable
+  public value class String(
+    public val `value`: kotlin.String,
+  ) : NoiseVariableConstants
+
+  @Serializable(map_seed.Serializer::class)
+  public data object map_seed : LiteralValue(JsonPrimitive("map_seed")), NoiseVariableConstants {
+    public object Serializer : LiteralValueSerializer<map_seed>(map_seed::class)
+  }
+
+  @Serializable(map_width.Serializer::class)
+  public data object map_width : LiteralValue(JsonPrimitive("map_width")), NoiseVariableConstants {
+    public object Serializer : LiteralValueSerializer<map_width>(map_width::class)
+  }
+
+  @Serializable(map_height.Serializer::class)
+  public data object map_height : LiteralValue(JsonPrimitive("map_height")), NoiseVariableConstants
+      {
+    public object Serializer : LiteralValueSerializer<map_height>(map_height::class)
+  }
+
+  @Serializable(water_level.Serializer::class)
+  public data object water_level : LiteralValue(JsonPrimitive("water_level")),
+      NoiseVariableConstants {
+    public object Serializer : LiteralValueSerializer<water_level>(water_level::class)
+  }
+
+  @Serializable(finite_water_level.Serializer::class)
+  public data object finite_water_level : LiteralValue(JsonPrimitive("finite_water_level")),
+      NoiseVariableConstants {
+    public object Serializer : LiteralValueSerializer<finite_water_level>(finite_water_level::class)
+  }
+
+  @Serializable(wlc_elevation_minimum.Serializer::class)
+  public data object wlc_elevation_minimum : LiteralValue(JsonPrimitive("wlc_elevation_minimum")),
+      NoiseVariableConstants {
+    public object Serializer :
+        LiteralValueSerializer<wlc_elevation_minimum>(wlc_elevation_minimum::class)
+  }
+
+  @Serializable(wlc_elevation_offset.Serializer::class)
+  public data object wlc_elevation_offset : LiteralValue(JsonPrimitive("wlc_elevation_offset")),
+      NoiseVariableConstants {
+    public object Serializer :
+        LiteralValueSerializer<wlc_elevation_offset>(wlc_elevation_offset::class)
+  }
+
+  @Serializable(cliff_elevation_offset.Serializer::class)
+  public data object cliff_elevation_offset : LiteralValue(JsonPrimitive("cliff_elevation_offset")),
+      NoiseVariableConstants {
+    public object Serializer :
+        LiteralValueSerializer<cliff_elevation_offset>(cliff_elevation_offset::class)
+  }
+
+  @Serializable(cliff_elevation_interval.Serializer::class)
+  public data object cliff_elevation_interval :
+      LiteralValue(JsonPrimitive("cliff_elevation_interval")), NoiseVariableConstants {
+    public object Serializer :
+        LiteralValueSerializer<cliff_elevation_interval>(cliff_elevation_interval::class)
+  }
+
+  @Serializable(`control-setting_cliffs_richness_multiplier`.Serializer::class)
+  public data object `control-setting_cliffs_richness_multiplier` :
+      LiteralValue(JsonPrimitive("control-setting:cliffs:richness:multiplier")),
+      NoiseVariableConstants {
+    public object Serializer :
+        LiteralValueSerializer<`control-setting_cliffs_richness_multiplier`>(`control-setting_cliffs_richness_multiplier`::class)
+  }
+
+  @Serializable(terrace_elevation_offset.Serializer::class)
+  public data object terrace_elevation_offset :
+      LiteralValue(JsonPrimitive("terrace_elevation_offset")), NoiseVariableConstants {
+    public object Serializer :
+        LiteralValueSerializer<terrace_elevation_offset>(terrace_elevation_offset::class)
+  }
+
+  @Serializable(terrace_elevation_interval.Serializer::class)
+  public data object terrace_elevation_interval :
+      LiteralValue(JsonPrimitive("terrace_elevation_interval")), NoiseVariableConstants {
+    public object Serializer :
+        LiteralValueSerializer<terrace_elevation_interval>(terrace_elevation_interval::class)
+  }
+
+  @Serializable(starting_area_radius.Serializer::class)
+  public data object starting_area_radius : LiteralValue(JsonPrimitive("starting_area_radius")),
+      NoiseVariableConstants {
+    public object Serializer :
+        LiteralValueSerializer<starting_area_radius>(starting_area_radius::class)
+  }
+
+  @Serializable(starting_positions.Serializer::class)
+  public data object starting_positions : LiteralValue(JsonPrimitive("starting_positions")),
+      NoiseVariableConstants {
+    public object Serializer : LiteralValueSerializer<starting_positions>(starting_positions::class)
+  }
+
+  @Serializable(starting_lake_positions.Serializer::class)
+  public data object starting_lake_positions :
+      LiteralValue(JsonPrimitive("starting_lake_positions")), NoiseVariableConstants {
+    public object Serializer :
+        LiteralValueSerializer<starting_lake_positions>(starting_lake_positions::class)
+  }
+
+  @Serializable(peaceful_mode.Serializer::class)
+  public data object peaceful_mode : LiteralValue(JsonPrimitive("peaceful_mode")),
+      NoiseVariableConstants {
+    public object Serializer : LiteralValueSerializer<peaceful_mode>(peaceful_mode::class)
+  }
+}
 
 @Serializable(NothingModifier.Serializer::class)
 @SerialName("nothing")
@@ -20783,7 +21244,7 @@ public typealias RecipeCategoryID = String
  * recipe without difficulty, these same properties are defined on the prototype itself.
  */
 @Serializable(RecipeData.Serializer::class)
-public open class RecipeData : JsonReader() {
+public open class RecipeData : JsonReader(), RecipePrototypeExpensive {
   /**
    * A table containing ingredient names and counts. Can also contain information about fluid
    * temperature and catalyst amounts. The catalyst amounts are automatically calculated from the
@@ -21175,7 +21636,7 @@ public open class RotatedAnimation4WayValues : JsonReader(), RotatedAnimation4Wa
 @Serializable(RotatedAnimation4Way.Serializer::class)
 public sealed interface RotatedAnimation4Way {
   public object Serializer :
-      FirstMatchingSubclassSerializer<RotatedAnimation4Way>(RotatedAnimation4Way::class,
+      FirstMatchingSerializer<RotatedAnimation4Way>(RotatedAnimation4Way::class,
       RotatedAnimation4WayValues::class, RotatedAnimation::class)
 }
 
@@ -22327,7 +22788,7 @@ public open class Sprite4WayValues : JsonReader(), Sprite4Way {
  */
 @Serializable(Sprite4Way.Serializer::class)
 public sealed interface Sprite4Way {
-  public object Serializer : FirstMatchingSubclassSerializer<Sprite4Way>(Sprite4Way::class,
+  public object Serializer : FirstMatchingSerializer<Sprite4Way>(Sprite4Way::class,
       Sprite4WayValues::class, Sprite::class)
 }
 
@@ -23111,7 +23572,7 @@ public open class TableStyleSpecification : BaseStyleSpecification(), StyleSpeci
  * For a technology without difficulty, these same properties are defined on the prototype itself.
  */
 @Serializable(TechnologyData.Serializer::class)
-public open class TechnologyData : JsonReader() {
+public open class TechnologyData : JsonReader(), TechnologyPrototypeExpensive {
   /**
    * When set to true, and the technology contains several levels, only the relevant one is
    * displayed in the technology screen.
@@ -23147,7 +23608,7 @@ public open class TechnologyData : JsonReader() {
    * Defaults to the same level as the technology, which is `0` for non-upgrades, and the level of
    * the upgrade for upgrades.
    */
-  public val max_level: UnknownUnion? by fromJson()
+  public val max_level: TechnologyPrototypeMaxLevel? by fromJson()
 
   /**
    * List of technologies needed to be researched before this one can be researched.

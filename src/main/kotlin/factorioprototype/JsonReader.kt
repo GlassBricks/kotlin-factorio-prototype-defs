@@ -12,6 +12,7 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.typeOf
 
 
@@ -50,7 +51,7 @@ abstract class JsonReader {
                     if (!eagerInit) {
                         throw SerializationException(msg)
                     } else {
-                        println(msg)
+//                        println(msg)
                     }
                 }
                 return@run null
@@ -107,8 +108,20 @@ private val floatDescriptors = arrayOf(
     Double.serializer().descriptor
 )
 
-
-val a = UByte.serializer().descriptor
+private val primitiveTypes = setOf(
+    Byte::class,
+    Short::class,
+    Int::class,
+    Long::class,
+    UByte::class,
+    UShort::class,
+    UInt::class,
+    ULong::class,
+    Float::class,
+    Double::class,
+    String::class,
+    Boolean::class
+)
 
 @OptIn(ExperimentalSerializationApi::class)
 fun tryManuallyDeserializing(
@@ -210,52 +223,157 @@ open class JsonReaderSerializer<T : JsonReader>(private val klass: KClass<T>) : 
     override fun serialize(encoder: Encoder, value: T) = throw NotImplementedError()
 }
 
+abstract class LiteralValue(vararg val values: JsonPrimitive)
+
+@OptIn(InternalSerializationApi::class)
+open class LiteralValueSerializer<T : LiteralValue>(clazz: KClass<T>) : KSerializer<T> {
+    val value = clazz.objectInstance!!
+
+    @OptIn(ExperimentalSerializationApi::class)
+    override val descriptor: SerialDescriptor = buildSerialDescriptor("LiteralValue", SerialKind.CONTEXTUAL)
+    override fun deserialize(decoder: Decoder): T {
+        decoder as JsonDecoder
+        val element = decoder.decodeJsonElement()
+        if (element !is JsonPrimitive) {
+            throw SerializationException("Expected a primitive value")
+        }
+        if (element !in value.values) {
+            throw SerializationException("Expected one of ${value.values.joinToString()} but got $element")
+        }
+        return value
+    }
+
+    override fun serialize(encoder: Encoder, value: T) {
+        encoder as JsonEncoder
+        encoder.encodeJsonElement(value.values.first())
+    }
+}
+
+
 @OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
-open class FirstMatchingSubclassSerializer<T : Any>(
+open class FirstMatchingSerializer<T : Any>(
     klass: KClass<T>,
     vararg subclasses: KClass<out T>
 ) : KSerializer<T> {
-    private class ClassMatcher<T : JsonReader>(
+
+    private sealed interface SubTypeMatcher {
+        val serializer: KSerializer<*>
+        fun matches(element: JsonElement): Boolean
+    }
+
+    private data class ClassMatcher<T : JsonReader>(
         val keys: List<String>,
-        val serializer: JsonReaderSerializer<T>,
-    ) {
-        fun matches(element: JsonObject): Boolean = keys.any { it in element }
+        override val serializer: JsonReaderSerializer<T>,
+    ) : SubTypeMatcher {
+        override fun matches(element: JsonElement): Boolean =
+            element is JsonObject &&
+                    keys.any { it in element }
+    }
+
+    private data class StringMatcher(
+        override val serializer: KSerializer<*>
+    ) : SubTypeMatcher {
+        override fun matches(element: JsonElement): Boolean =
+            element is JsonPrimitive && element.isString
+    }
+
+    private data class NumericMatcher(
+        val klass: KClass<*>,
+        override val serializer: KSerializer<*>,
+    ) : SubTypeMatcher {
+        override fun matches(element: JsonElement): Boolean =
+            element is JsonPrimitive &&
+                    !element.isString &&
+                    element.doubleOrNull != null
+    }
+
+    private data class BooleanMatcher(
+        override val serializer: KSerializer<*>
+    ) : SubTypeMatcher {
+        override fun matches(element: JsonElement): Boolean =
+            element is JsonPrimitive && !element.isString && element.booleanOrNull != null
+    }
+
+    private data class LiteralMatcher(
+        val from: LiteralValue,
+        override val serializer: KSerializer<*>
+    ) : SubTypeMatcher {
+        override fun matches(element: JsonElement): Boolean =
+            element is JsonPrimitive && element in from.values
     }
 
     init {
+
+        fun isJsonReader(klass: KClass<*>): Boolean {
+            return klass.isSubclassOf(JsonReader::class)
+        }
+
+        fun isInnerInlinePrimitive(thisClass: KClass<*>): Boolean {
+            return thisClass in klass.nestedClasses
+                    && thisClass.isValue
+                    && thisClass.primaryConstructor!!
+                .parameters.first().type.classifier.let { it is KClass<*> && it in primitiveTypes }
+        }
+
+        fun isLiteralValue(klass: KClass<*>): Boolean {
+            return klass.objectInstance is LiteralValue
+        }
+
         for (subclass in subclasses) {
-            require(subclass.isSubclassOf(JsonReader::class))
+            require(
+                isJsonReader(subclass)
+                        || isInnerInlinePrimitive(subclass)
+                        || isLiteralValue(subclass)
+            ) {
+                "Subclass $subclass is not a JsonReader, inner inline primitive, or LiteralValue"
+            }
         }
     }
 
     private val classMatchers = run {
-        val serializers = subclasses.map {
-            @Suppress("UNCHECKED_CAST")
-            JsonReaderSerializer(it as KClass<out JsonReader>)
-        }
+        val classSerializers = subclasses
+            .filter { it.isSubclassOf(JsonReader::class) }
+            .associateWith {
+                @Suppress("UNCHECKED_CAST")
+                JsonReaderSerializer(it as KClass<out JsonReader>)
+            }
         // for each class, find keys that are _unique_ to that class (not shared with any other class)
-        val keyCounts = mutableMapOf<String, Int>()
-        for (serializer in serializers) {
+        val classKeyCount = mutableMapOf<String, Int>()
+        for ((_, serializer) in classSerializers) {
             val descriptor = serializer.descriptor
             for (i in 0 until descriptor.elementsCount) {
                 val name = descriptor.getElementName(i)
-                keyCounts[name] = (keyCounts[name] ?: 0) + 1
+                classKeyCount[name] = (classKeyCount[name] ?: 0) + 1
             }
         }
-        serializers.map {
-            val descriptor = it.descriptor
-            for (i in 0..<descriptor.elementsCount) {
-                val elDescriptor = descriptor.getElementDescriptor(i)
-                if (!elDescriptor.isNullable) {
-                    return@map ClassMatcher(listOf(descriptor.getElementName(i)), it)
+        subclasses.map { klass ->
+            if (klass in classSerializers) {
+                val serializer = classSerializers[klass]!!
+                val descriptor = serializer.descriptor
+                for (i in 0..<descriptor.elementsCount) {
+                    val elDescriptor = descriptor.getElementDescriptor(i)
+                    if (!elDescriptor.isNullable) {
+                        return@map ClassMatcher(listOf(descriptor.getElementName(i)), serializer)
+                    }
                 }
+                val allElements = descriptor.elementNames
+                    .filter { classKeyCount[it] == 1 }
+                if (allElements.isEmpty()) {
+                    throw SerializationException("No unique keys found for class ${serializer.descriptor.serialName}")
+                }
+                ClassMatcher(allElements, serializer)
+            } else if (klass.isValue) {
+                val serializer = klass.serializer()
+                when (val type = klass.primaryConstructor!!.parameters.first().type.classifier as KClass<*>) {
+                    String::class -> StringMatcher(serializer)
+                    Boolean::class -> BooleanMatcher(serializer)
+                    else -> NumericMatcher(type, serializer)
+                }
+            } else {
+                // class is literal
+                val values = klass.objectInstance as LiteralValue
+                LiteralMatcher(values, klass.serializer())
             }
-            val allElements = descriptor.elementNames
-                .filter { keyCounts[it] == 1 }
-            if (allElements.isEmpty()) {
-                throw SerializationException("No unique keys found for class ${it.descriptor.serialName}")
-            }
-            ClassMatcher(allElements, it)
         }
     }
 
@@ -270,7 +388,7 @@ open class FirstMatchingSubclassSerializer<T : Any>(
 
     override fun deserialize(decoder: Decoder): T {
         require(decoder is JsonDecoder)
-        val element = decoder.decodeJsonElement().jsonObject
+        val element = decoder.decodeJsonElement()
         val matcher = classMatchers.firstOrNull { it.matches(element) }
             ?: throw SerializationException("No matching subclass found for $element")
         @Suppress("UNCHECKED_CAST")

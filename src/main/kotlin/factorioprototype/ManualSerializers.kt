@@ -83,8 +83,8 @@ open class ItemSerializer<T : JsonReader>(
 }
 
 open class ItemFluidSerializer<T>(
-    val itemKlass: KClass<out JsonReader>,
-    val fluidKlass: KClass<out JsonReader>,
+    private val itemKlass: KClass<out JsonReader>,
+    private val fluidKlass: KClass<out JsonReader>,
     val name: String
 ) : KSerializer<T> {
     override val descriptor = buildClassSerialDescriptor(name)
