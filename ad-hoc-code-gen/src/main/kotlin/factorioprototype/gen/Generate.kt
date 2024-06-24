@@ -21,6 +21,8 @@ private val flattenStructType = setOf(
     "ItemProductPrototype",
 )
 
+private val overrideType = mapOf("MapPosition" to BasicType("Vector"))
+
 @OptIn(ExperimentalSerializationApi::class)
 class DeclarationsGenerator(private val docs: ApiDocs) {
     init {
@@ -374,7 +376,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         fun tryGetNameByLetterPrefix(options: Set<UnionMember>): String? {
             if (!options.all { it is ProtoOrConceptGen }) return null
             val optionNames = options.map { (it as ProtoOrConceptGen).name }
-            val baseName = optionNames.reduce(String::commonSuffixWith).let { 
+            val baseName = optionNames.reduce(String::commonSuffixWith).let {
                 it.substring(it.indexOfFirst { c -> c.isUpperCase() })
             }
             if (baseName.isEmpty()) return null
@@ -495,13 +497,14 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private fun generateConcept(concept: Concept) {
         if (concept.name in predefined || concept.name in toIgnore) return
-        val isSimpleStructType = concept.type is StructType || concept.name in flattenStructType
-        if (concept.properties != null) {
-            val type = if (isSimpleStructType) MainType(concept) else ConceptValues(concept)
-            generateClass(type)
+        val type = overrideType[concept.name] ?: concept.type
+        val isSimpleStructType = type is StructType || concept.name in flattenStructType
+        if (concept.properties != null && concept.name !in overrideType) {
+            val genType = if (isSimpleStructType) MainType(concept) else ConceptValues(concept)
+            generateClass(genType)
         }
         if (!isSimpleStructType) {
-            val mainType = mapTypeDefinition(concept.type, MainType(concept), null, isRoot = true)
+            val mainType = mapTypeDefinition(type, MainType(concept), null, isRoot = true)
             if (mainType.declaration == null) {
                 val result = TypeAliasSpec.builder(concept.name, mainType.assertNoDec()).apply {
                     addDescription(concept.description)
@@ -575,10 +578,10 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
             is TypeType -> mapTypeDefinition(typeDefinition.value, source, property)
             is UnionType -> {
-                tryGenerateUnion(source, property)
-                    ?: tryMakeEnum(source, property, typeDefinition, isRoot)
-                    ?: tryMakeItemOrList(source, property, typeDefinition)
+                tryMakeEnum(source, property, typeDefinition, isRoot)
                     ?: tryMakeAllOneTypeUnion(typeDefinition)
+                    ?: tryGenerateUnion(source, property)
+                    ?: tryMakeItemOrList(source, property, typeDefinition)
                     ?: ClassName(packageName, "UnknownUnion").withNoDec()
             }
         }
@@ -774,7 +777,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     ): TypeNameWithDecl? {
         if (canBeEnum(typeDefinition)) {
             return makeEnum(source, property, typeDefinition, isRoot)
-        } 
+        }
         return null
     }
 
@@ -844,9 +847,12 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     }
 
     private fun tryMakeAllOneTypeUnion(typeDefinition: UnionType): TypeNameWithDecl? {
-        val options = typeDefinition.options.map { it.innerType() }
+        val options = typeDefinition.options.map { it.followTypeAliases() }
         if (options.all { it.isInt() }) {
             return Byte::class.asClassName().withNoDec()
+        }
+        if (options.all { it is BasicType && it.value == "string" }) {
+            return String::class.asClassName().withNoDec()
         }
         return null
     }

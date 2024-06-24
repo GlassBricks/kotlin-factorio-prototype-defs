@@ -13542,7 +13542,7 @@ public open class AutoplaceSettings : JsonReader() {
    * priority over the FrequencySizeRichness set in the [autoplace
    * control](prototype:AutoplaceSpecification::control).
    */
-  public val settings: Map<UnknownUnion, FrequencySizeRichness>? by fromJson()
+  public val settings: Map<String, FrequencySizeRichness>? by fromJson()
 
   public object Serializer : JsonReaderSerializer<AutoplaceSettings>(AutoplaceSettings::class)
 }
@@ -16054,62 +16054,8 @@ public open class DirectTriggerItem : TriggerItem() {
 
 /**
  * Usually specified by using [defines.direction](runtime:defines.direction).
- *
- * Includes the following types:
- *  - [Direction.0]
- *  - [Direction.1]
- *  - [Direction.2]
- *  - [Direction.3]
- *  - [Direction.4]
- *  - [Direction.5]
- *  - [Direction.6]
- *  - [Direction.7]
  */
-@Serializable(Direction.Serializer::class)
-public sealed interface Direction {
-  public object Serializer : FirstMatchingSerializer<Direction>(Direction::class, `0`::class,
-      `1`::class, `2`::class, `3`::class, `4`::class, `5`::class, `6`::class, `7`::class)
-
-  @Serializable(`0`.Serializer::class)
-  public data object `0` : LiteralValue(JsonPrimitive(0)), Direction {
-    public object Serializer : LiteralValueSerializer<`0`>(`0`::class)
-  }
-
-  @Serializable(`1`.Serializer::class)
-  public data object `1` : LiteralValue(JsonPrimitive(1)), Direction {
-    public object Serializer : LiteralValueSerializer<`1`>(`1`::class)
-  }
-
-  @Serializable(`2`.Serializer::class)
-  public data object `2` : LiteralValue(JsonPrimitive(2)), Direction {
-    public object Serializer : LiteralValueSerializer<`2`>(`2`::class)
-  }
-
-  @Serializable(`3`.Serializer::class)
-  public data object `3` : LiteralValue(JsonPrimitive(3)), Direction {
-    public object Serializer : LiteralValueSerializer<`3`>(`3`::class)
-  }
-
-  @Serializable(`4`.Serializer::class)
-  public data object `4` : LiteralValue(JsonPrimitive(4)), Direction {
-    public object Serializer : LiteralValueSerializer<`4`>(`4`::class)
-  }
-
-  @Serializable(`5`.Serializer::class)
-  public data object `5` : LiteralValue(JsonPrimitive(5)), Direction {
-    public object Serializer : LiteralValueSerializer<`5`>(`5`::class)
-  }
-
-  @Serializable(`6`.Serializer::class)
-  public data object `6` : LiteralValue(JsonPrimitive(6)), Direction {
-    public object Serializer : LiteralValueSerializer<`6`>(`6`::class)
-  }
-
-  @Serializable(`7`.Serializer::class)
-  public data object `7` : LiteralValue(JsonPrimitive(7)), Direction {
-    public object Serializer : LiteralValueSerializer<`7`>(`7`::class)
-  }
-}
+public typealias Direction = Byte
 
 @Serializable(DirectionShift.Serializer::class)
 public open class DirectionShift : JsonReader() {
@@ -19230,23 +19176,7 @@ public sealed interface MapGenSize {
  * The coordinates are saved as a fixed-size 32 bit integer, with 8 bits reserved for decimal
  * precision, meaning the smallest value step is `1/2^8 = 0.00390625` tiles.
  */
-@Serializable(MapPositionValues.Serializer::class)
-public open class MapPositionValues : JsonReader() {
-  public val x: Double by fromJson()
-
-  public val y: Double by fromJson()
-
-  public object Serializer : JsonReaderSerializer<MapPositionValues>(MapPositionValues::class)
-}
-
-/**
- * Coordinates of a tile in a map. Positive x goes towards east, positive y goes towards south, and
- * x is the first dimension in the array format.
- *
- * The coordinates are saved as a fixed-size 32 bit integer, with 8 bits reserved for decimal
- * precision, meaning the smallest value step is `1/2^8 = 0.00390625` tiles.
- */
-public typealias MapPosition = UnknownUnion
+public typealias MapPosition = Vector
 
 public typealias MaterialAmountType = Double
 
@@ -22557,39 +22487,6 @@ public enum class SignalColorMappingType {
   fluid,
 }
 
-/**
- *
- *
- * Includes the following types:
- *  - [SignalColorMappingName.VirtualSignalID]
- *  - [SignalColorMappingName.ItemID]
- *  - [SignalColorMappingName.FluidID]
- */
-@Serializable(SignalColorMappingName.Serializer::class)
-public sealed interface SignalColorMappingName {
-  public object Serializer :
-      FirstMatchingSerializer<SignalColorMappingName>(SignalColorMappingName::class,
-      VirtualSignalID::class, ItemID::class, FluidID::class)
-
-  @JvmInline
-  @Serializable
-  public value class VirtualSignalID(
-    public val `value`: factorioprototype.VirtualSignalID,
-  ) : SignalColorMappingName
-
-  @JvmInline
-  @Serializable
-  public value class ItemID(
-    public val `value`: factorioprototype.ItemID,
-  ) : SignalColorMappingName
-
-  @JvmInline
-  @Serializable
-  public value class FluidID(
-    public val `value`: factorioprototype.FluidID,
-  ) : SignalColorMappingName
-}
-
 @Serializable(SignalColorMapping.Serializer::class)
 public open class SignalColorMapping : JsonReader() {
   public val type: SignalColorMappingType by fromJson()
@@ -22597,7 +22494,7 @@ public open class SignalColorMapping : JsonReader() {
   /**
    * Name of the signal that shows this color.
    */
-  public val name: SignalColorMappingName by fromJson()
+  public val name: String by fromJson()
 
   public val color: Color by fromJson()
 
@@ -22611,7 +22508,7 @@ public open class SignalIDConnector : JsonReader() {
   /**
    * Name of the signal that shows this color.
    */
-  public val name: SignalColorMappingName by fromJson()
+  public val name: String by fromJson()
 
   public object Serializer : JsonReaderSerializer<SignalIDConnector>(SignalIDConnector::class)
 }
