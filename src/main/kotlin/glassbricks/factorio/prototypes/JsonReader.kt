@@ -87,7 +87,11 @@ public abstract class JsonReader {
         }
     }
 
-    override fun toString(): String = "${this::class.simpleName}()"
+    override fun toString(): String {
+        val simpleName = this::class.simpleName ?: super.toString()
+        if ("name" in values) return "$simpleName(\"${get<String>("name")}\")"
+        return simpleName
+    }
 }
 
 
@@ -225,6 +229,7 @@ public open class JsonReaderSerializer<T : JsonReader>(private val klass: KClass
         instance.init(decoder.json, element)
         return instance
     }
+
     internal fun getFromJson(json: Json, element: JsonObject): T {
         val instance = klass.java.getConstructor().newInstance()
         instance.init(json, element)
