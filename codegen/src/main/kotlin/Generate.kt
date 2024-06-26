@@ -863,7 +863,11 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         val superTypes: Set<Union>?
         if (property == null) {
             className = if (!isRoot) {
-                ClassName(packageName, source.name + "Strings")
+                val sourceName = source.name
+                if (sourceName.endsWith("s"))
+                    ClassName(packageName, sourceName.dropLast(1))
+                else
+                    ClassName(packageName, sourceName + "Strings")
             } else {
                 source.className
             }

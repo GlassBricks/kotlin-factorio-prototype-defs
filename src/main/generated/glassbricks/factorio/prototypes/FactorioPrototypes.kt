@@ -16473,7 +16473,7 @@ public typealias EntityID = String
  * entities that may block expansion.
  */
 @Serializable
-public enum class EntityPrototypeFlagsStrings {
+public enum class EntityPrototypeFlag {
   /**
    * Can't be rotated before or after placing.
    */
@@ -16611,7 +16611,7 @@ public enum class EntityPrototypeFlagsStrings {
  * - Enemy expansion considers entities that are both buildings and player-creations as "enemy"
  * entities that may block expansion.
  */
-public typealias EntityPrototypeFlags = List<EntityPrototypeFlagsStrings>
+public typealias EntityPrototypeFlags = List<EntityPrototypeFlag>
 
 /**
  * How far (in tiles) entities should be rendered outside the visible area of the screen.
@@ -17946,7 +17946,7 @@ public open class ItemProductPrototype : JsonReader(), ProductPrototype {
  * An array containing the following values.
  */
 @Serializable
-public enum class ItemPrototypeFlagsStrings {
+public enum class ItemPrototypeFlag {
   /**
    * Whether the logistics areas of roboports should be drawn when holding this item. Used for
    * example by the [deconstruction planner](https://wiki.factorio.com/Deconstruction_planner).
@@ -18007,7 +18007,7 @@ public enum class ItemPrototypeFlagsStrings {
 /**
  * An array containing the following values.
  */
-public typealias ItemPrototypeFlags = List<ItemPrototypeFlagsStrings>
+public typealias ItemPrototypeFlags = List<ItemPrototypeFlag>
 
 public typealias ItemStackIndex = UShort
 
@@ -22042,7 +22042,7 @@ public open class ScrollPaneStyleSpecification : BaseStyleSpecification(), Style
  * An array containing the following values.
  */
 @Serializable
-public enum class SelectionModeFlagsStrings {
+public enum class SelectionModeFlag {
   /**
    * Selects entities and tiles as if selecting them for a blueprint.
    */
@@ -22146,7 +22146,7 @@ public enum class SelectionModeFlagsStrings {
 /**
  * An array containing the following values.
  */
-public typealias SelectionModeFlags = ItemOrList<SelectionModeFlagsStrings>
+public typealias SelectionModeFlags = ItemOrList<SelectionModeFlag>
 
 @Serializable(SequenceTipTrigger.Serializer::class)
 @SerialName("sequence")
@@ -23058,7 +23058,7 @@ public open class Sprite8Way : JsonReader() {
  * An array containing the following values.
  */
 @Serializable
-public enum class SpriteFlagsStrings {
+public enum class SpriteFlag {
   /**
    * The sprite won't be automatically cropped.
    */
@@ -23137,7 +23137,7 @@ public enum class SpriteFlagsStrings {
 /**
  * An array containing the following values.
  */
-public typealias SpriteFlags = List<SpriteFlagsStrings>
+public typealias SpriteFlags = List<SpriteFlag>
 
 @Serializable(SpriteNWaySheet.Serializer::class)
 public open class SpriteNWaySheet : SpriteParameters() {

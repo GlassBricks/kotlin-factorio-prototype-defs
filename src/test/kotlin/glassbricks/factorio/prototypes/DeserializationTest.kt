@@ -1,6 +1,7 @@
 package glassbricks.factorio.prototypes
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import java.io.File
 import kotlin.test.Test
 import kotlin.time.measureTime
 
@@ -77,7 +78,7 @@ class DeserializationTest {
         val dataRaw = javaClass.getResource("/data-raw-dump.json")!!
         eagerInit = true
         val time = measureTime {
-            loadFactorioPrototypeDataFromStream(dataRaw.openStream())
+            loadFactorioPrototypesFromStream(dataRaw.openStream())
         }
         println(time)
     }

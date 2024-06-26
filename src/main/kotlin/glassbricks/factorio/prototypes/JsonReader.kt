@@ -38,6 +38,8 @@ public abstract class JsonReader {
     }
 
     public operator fun contains(key: String): Boolean = key in values
+    
+    public val keys: Set<String> get() = values.keys
 
     private fun readValue(
         name: String,
