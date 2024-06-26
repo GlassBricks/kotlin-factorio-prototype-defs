@@ -13,17 +13,14 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.typeOf
 
 
 internal var eagerInit = false
 
 public abstract class JsonReader {
-    private lateinit var json: Json
     private lateinit var jsonObj: JsonObject
 
     private val values = mutableMapOf<String, Any?>()
-
 
     internal class Uninitialized(
         val altName: String?,
@@ -33,63 +30,58 @@ public abstract class JsonReader {
     @Suppress("UNCHECKED_CAST")
     internal fun getDeclaredKeys(): Map<String, Uninitialized> = values as Map<String, Uninitialized>
 
-    @Suppress("UNCHECKED_CAST")
-    protected fun <T> get(name: String, type: KType, altName: String? = null): T {
-        if (name in values) {
-            val value = values[name]
-            if (value !is Uninitialized) {
-                return value as T
-            }
-        }
-        val value = run {
-            val serializer = serializer(type) as KSerializer<T>
-            val el = jsonObj[name] ?: altName?.let { jsonObj[it] }
-            if (el == null) {
-                if (!type.isMarkedNullable) {
-                    val msg = "Missing required field: ${this::class.simpleName}.$name"
-                    if (!eagerInit) {
-                        throw SerializationException(msg)
-                    } else {
-//                        println(msg)
-                    }
-                }
-                return@run null
-            }
-
-            tryManuallyDeserializing(json, name, el, serializer)?.let { return@run it }
-
-            return@run json.decodeFromJsonElement(serializer, el)
-        } as T
-        values[name] = value
-        return value
+    public operator fun get(name: String): Any? {
+        require(name in values) { "Unknown field: $name" }
+        val value = values[name]
+        if (value !is Uninitialized) return value
+        return readValue(name, value.type, value.altName).also { values[name] = it }
     }
 
+    public operator fun contains(key: String): Boolean = key in values
 
-    protected inline fun <reified T> get(name: String): T = get(name, typeOf<T>()) as T
+    private fun readValue(
+        name: String,
+        type: KType,
+        altName: String?
+    ): Any? {
+        val serializer = serializer(type)
+        val el = jsonObj[name] ?: altName?.let { jsonObj[it] }
+        if (el == null) {
+            if (!type.isMarkedNullable) {
+                val msg = "Missing required field: ${this::class.simpleName}.$name"
+                if (!eagerInit) {
+                    throw SerializationException(msg)
+                } else {
+                    //                        println(msg)
+                }
+            }
+            return null
+        }
 
+        tryManuallyDeserializing(factorioPrototypeJson, name, el, serializer)?.let { return it }
+
+        return factorioPrototypeJson.decodeFromJsonElement(serializer, el)
+    }
+
+    @Suppress("UNCHECKED_CAST")
     protected fun <T> fromJson(altName: String? = null): PropertyDelegateProvider<Any, ReadOnlyProperty<Any, T>> =
         PropertyDelegateProvider { _, property ->
             val type = property.returnType
             val name = property.name
             values[name] = Uninitialized(altName, type)
-            ReadOnlyProperty { _, _ -> get(name, type) }
+            ReadOnlyProperty { _, _ -> get(name) as T }
         }
 
-    internal fun init(json: Json, jsonObj: JsonObject, eager: Boolean = eagerInit) {
-        this.json = json
+    internal fun init(jsonObj: JsonObject, eager: Boolean = eagerInit) {
         this.jsonObj = jsonObj
         if (eager) {
-            for ((name, value) in values) {
-                if (value is Uninitialized) {
-                    get<Any>(name, value.type, value.altName)
-                }
-            }
+            values.keys.forEach { get(it) }
         }
     }
 
     override fun toString(): String {
         val simpleName = this::class.simpleName ?: super.toString()
-        if ("name" in values) return "$simpleName(\"${get<String>("name")}\")"
+        if ("name" in values) return "$simpleName(\"${get("name")}\")"
         return simpleName
     }
 }
@@ -226,13 +218,13 @@ public open class JsonReaderSerializer<T : JsonReader>(private val klass: KClass
     override fun deserialize(decoder: Decoder): T {
         val element = (decoder as JsonDecoder).decodeJsonElement().jsonObject
         val instance = klass.java.getConstructor().newInstance()
-        instance.init(decoder.json, element)
+        instance.init(element)
         return instance
     }
 
-    internal fun getFromJson(json: Json, element: JsonObject): T {
+    internal fun getFromJson(element: JsonObject): T {
         val instance = klass.java.getConstructor().newInstance()
-        instance.init(json, element)
+        instance.init(element)
         return instance
     }
 

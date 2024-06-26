@@ -21,14 +21,14 @@ class DeserializationTest {
         val sound = """
             {"variations": {"filename": "foo", "volume": 1.0}}
         """.trimIndent()
-        val soundObject = json.decodeFromString(Sound.serializer(), sound)
+        val soundObject = factorioPrototypeJson.decodeFromString(Sound.serializer(), sound)
         assert(soundObject is SoundValues)
     }
 
     @Test
     fun canDeserializeLocalisedString() {
         val deserializer = LocalisedString.serializer()
-        val localisedString = json.decodeFromString(
+        val localisedString = factorioPrototypeJson.decodeFromString(
             deserializer, """ ["", "Hello, world!"] """
         )
         assert(localisedString is LocalisedString.Array)
@@ -36,7 +36,7 @@ class DeserializationTest {
 
     @Test
     fun testDeserializePolymorphic() {
-        val attackParameters = json.decodeFromString(
+        val attackParameters = factorioPrototypeJson.decodeFromString(
             AttackParameters.serializer(), """
             {
                 "type": "beam",
@@ -51,7 +51,7 @@ class DeserializationTest {
 
     @Test
     fun testDeserializeNoiseFunction() {
-        val noiseFunction = json.decodeFromString(
+        val noiseFunction = factorioPrototypeJson.decodeFromString(
             NoiseExpression.serializer(), """
             {
                 "type": "function-application",
@@ -72,7 +72,7 @@ class DeserializationTest {
         val sound = """
             {"variations": {"filename": "foo", "volume": 1.0}}
         """.trimIndent()
-        val soundObject = json.decodeFromString(Sound.serializer(), sound)
+        val soundObject = factorioPrototypeJson.decodeFromString(Sound.serializer(), sound)
         assert(soundObject is SoundValues)
         val dataRaw = javaClass.getResource("/data-raw-dump.json")!!
         eagerInit = true

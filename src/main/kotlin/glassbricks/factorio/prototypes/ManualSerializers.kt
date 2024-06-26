@@ -151,7 +151,7 @@ internal open class ShorthandSerializer<T : JsonReader>(
             is JsonObject -> element
             else -> throw SerializationException("Unexpected element: $element")
         }
-        return jsonReaderSerializer.getFromJson(decoder.json, obj)
+        return jsonReaderSerializer.getFromJson(obj)
     }
 
 }
@@ -177,7 +177,7 @@ internal object NoiseFunctionApplicationDeserializer : DeserializationStrategy<N
     override fun deserialize(decoder: Decoder): NoiseFunctionApplication {
         require(decoder is JsonDecoder)
         val element = decoder.decodeJsonElement()
-        return json.decodeFromJsonElement(NoiseFunctionApplication.serializer(), element)
+        return factorioPrototypeJson.decodeFromJsonElement(NoiseFunctionApplication.serializer(), element)
     }
 }
 
@@ -194,7 +194,7 @@ public val factorioPrototypeSerializersModule: SerializersModule = SerializersMo
     polymorphicDefaultDeserializer(EHFVEnergySource::class) { if (it == null) ElectricEnergySource.serializer() else null }
 }
 
-public val json: Json = Json {
+public val factorioPrototypeJson: Json = Json {
     serializersModule = factorioPrototypeSerializersModule
     allowSpecialFloatingPointValues = true
 }
