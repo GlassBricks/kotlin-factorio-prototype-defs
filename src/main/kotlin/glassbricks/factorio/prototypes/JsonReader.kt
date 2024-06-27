@@ -80,6 +80,9 @@ public abstract class JsonReader {
             values.keys.forEach { get(it) }
         }
     }
+    protected fun fakeInit(jsonObj: JsonObject, eager: Boolean = false) {
+        this.jsonObj = jsonObj
+    }
 
     override fun toString(): String {
         val simpleName = this::class.simpleName ?: super.toString()

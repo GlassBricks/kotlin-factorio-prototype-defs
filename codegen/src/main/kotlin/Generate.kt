@@ -468,7 +468,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private fun TypeSpec.Builder.setupClass(value: ProtoOrConceptGen) {
         if (value.inner.abstract) {
-            addModifiers(KModifier.SEALED)
+            addModifiers(KModifier.ABSTRACT)
         } else {
             addModifiers(KModifier.OPEN)
         }

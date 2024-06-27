@@ -1827,7 +1827,7 @@ public open class CombatRobotPrototype : FlyingRobotPrototype() {
 /**
  * Abstract base type for decider and arithmetic combinators.
  */
-public sealed class CombinatorPrototype : EntityWithOwnerPrototype() {
+public abstract class CombinatorPrototype : EntityWithOwnerPrototype() {
   public val energy_source: EVEnergySource by fromJson()
 
   public val active_energy_usage: Energy by fromJson()
@@ -2175,7 +2175,7 @@ public open class CorpsePrototype : EntityPrototype() {
  * fluid box, a heat energy source, a fluid energy source, or a non-square collision box. Crafting
  * machines with non-square collision boxes can only be rotated before placement, not after.
  */
-public sealed class CraftingMachinePrototype : EntityWithOwnerPrototype() {
+public abstract class CraftingMachinePrototype : EntityWithOwnerPrototype() {
   /**
    * Sets how much energy this machine uses while crafting. Energy usage has to be positive.
    */
@@ -3100,7 +3100,7 @@ public sealed interface EntityPrototypeRemoveDecoratives {
  *
  * For in game script access to entity, take a look at [LuaEntity](runtime:LuaEntity).
  */
-public sealed class EntityPrototype : PrototypeBase() {
+public abstract class EntityPrototype : PrototypeBase() {
   /**
    * This will be used in the electric network statistics, editor building selection, and the bonus
    * gui. Can't be an empty array.
@@ -3394,7 +3394,7 @@ public sealed class EntityPrototype : PrototypeBase() {
 /**
  * Abstract base of all entities with health in the game.
  */
-public sealed class EntityWithHealthPrototype : EntityPrototype() {
+public abstract class EntityWithHealthPrototype : EntityPrototype() {
   /**
    * The unit health can never go over the maximum. Default health of units on creation is set to
    * max. Must be greater than 0.
@@ -3470,7 +3470,7 @@ public sealed class EntityWithHealthPrototype : EntityPrototype() {
  * [LuaEntity::unit_number](runtime:LuaEntity::unit_number) during runtime. Can be high priority
  * [military targets](https://wiki.factorio.com/Military_units_and_structures).
  */
-public sealed class EntityWithOwnerPrototype : EntityWithHealthPrototype() {
+public abstract class EntityWithOwnerPrototype : EntityWithHealthPrototype() {
   /**
    * Whether this prototype should be a high priority target for enemy forces. See [Military units
    * and structures](https://wiki.factorio.com/Military_units_and_structures).
@@ -3525,7 +3525,7 @@ public open class EquipmentGridPrototype : PrototypeBase() {
  * Abstract base of all equipment modules. Equipment modules can be inserted into [equipment
  * grids](prototype:EquipmentGridPrototype).
  */
-public sealed class EquipmentPrototype : PrototypeBase() {
+public abstract class EquipmentPrototype : PrototypeBase() {
   /**
    * The graphics to use when this equipment is shown inside an equipment grid.
    */
@@ -4116,7 +4116,7 @@ public open class FluidWagonPrototype : RollingStockPrototype() {
 /**
  * Abstract base for construction/logistics and combat robots.
  */
-public sealed class FlyingRobotPrototype : EntityWithOwnerPrototype() {
+public abstract class FlyingRobotPrototype : EntityWithOwnerPrototype() {
   /**
    * The flying speed of the robot, in tiles/tick.
    */
@@ -5600,7 +5600,7 @@ public sealed interface EHFVEnergySource
 /**
  * Continuously loads and unloads machines, as an alternative to inserters.
  */
-public sealed class LoaderPrototype : TransportBeltConnectablePrototype() {
+public abstract class LoaderPrototype : TransportBeltConnectablePrototype() {
   public val structure: LoaderStructure by fromJson()
 
   /**
@@ -6788,7 +6788,7 @@ public open class ProjectilePrototype : EntityPrototype() {
  * The abstract base for prototypes. PrototypeBase defines the common features of prototypes, such
  * as localization and order.
  */
-public sealed class PrototypeBase : JsonReader(), AnyPrototype {
+public abstract class PrototypeBase : JsonReader(), AnyPrototype {
   /**
    * Specifies the kind of prototype this is.
    *
@@ -6989,7 +6989,7 @@ public open class RailPlannerPrototype : ItemPrototype() {
 /**
  * The abstract base of both rail prototypes.
  */
-public sealed class RailPrototype : EntityWithOwnerPrototype() {
+public abstract class RailPrototype : EntityWithOwnerPrototype() {
   public val pictures: RailPictureSet by fromJson()
 
   /**
@@ -7050,7 +7050,7 @@ public open class RailRemnantsPrototype : CorpsePrototype() {
 /**
  * The abstract base entity for both rail signals.
  */
-public sealed class RailSignalBasePrototype : EntityWithOwnerPrototype() {
+public abstract class RailSignalBasePrototype : EntityWithOwnerPrototype() {
   public val animation: RotatedAnimation by fromJson()
 
   public val rail_piece: Animation? by fromJson()
@@ -7982,7 +7982,7 @@ public open class RoboportPrototype : EntityWithOwnerPrototype() {
 /**
  * The common properties of logistic and construction robots represented by an abstract prototype.
  */
-public sealed class RobotWithLogisticInterfacePrototype : FlyingRobotPrototype() {
+public abstract class RobotWithLogisticInterfacePrototype : FlyingRobotPrototype() {
   public val max_payload_size: ItemCountType by fromJson()
 
   public val cargo_centered: Vector by fromJson()
@@ -8316,7 +8316,7 @@ public open class RocketSiloRocketShadowPrototype : EntityPrototype() {
 /**
  * The abstract base of all rolling stock.
  */
-public sealed class RollingStockPrototype : VehiclePrototype() {
+public abstract class RollingStockPrototype : VehiclePrototype() {
   /**
    * Maximum speed of the rolling stock in tiles/tick.
    *
@@ -8752,7 +8752,7 @@ public open class SimpleSmokePrototype : SmokePrototype() {
 /**
  * Abstract entity that has an animation.
  */
-public sealed class SmokePrototype : EntityPrototype() {
+public abstract class SmokePrototype : EntityPrototype() {
   public val animation: Animation by fromJson()
 
   public val cyclic: Boolean? by fromJson()
@@ -10131,7 +10131,7 @@ public open class TrainStopPrototype : EntityWithOwnerPrototype() {
 /**
  * Abstract class that anything that is a belt or can connect to belts uses.
  */
-public sealed class TransportBeltConnectablePrototype : EntityWithOwnerPrototype() {
+public abstract class TransportBeltConnectablePrototype : EntityWithOwnerPrototype() {
   /**
    * The speed of the belt: `speed × 480 = x Items/second`.
    *
@@ -12294,7 +12294,7 @@ public sealed interface VehiclePrototypeBrakingPower {
 /**
  * Abstract base of all vehicles.
  */
-public sealed class VehiclePrototype : EntityWithOwnerPrototype() {
+public abstract class VehiclePrototype : EntityWithOwnerPrototype() {
   /**
    * Must be positive. Weight of the entity used for physics calculation when car hits something.
    */
@@ -12817,7 +12817,7 @@ public open class AnimationElement : JsonReader() {
  */
 public typealias AnimationFrameSequence = List<UShort>
 
-public sealed class AnimationParameters : SpriteParameters() {
+public abstract class AnimationParameters : SpriteParameters() {
   /**
    * The width and height of one frame. If this is a tuple, the first member of the tuple is the
    * width and the second is the height. Otherwise the size is both width and height. Width and height
@@ -13604,7 +13604,7 @@ public enum class BaseAttackParametersActivationType {
 /**
  * The abstract base of all [AttackParameters](prototype:AttackParameters).
  */
-public sealed class BaseAttackParameters : JsonReader() {
+public abstract class BaseAttackParameters : JsonReader() {
   /**
    * Before an entity can attack, the distance (in tiles) between the entity and target must be less
    * than or equal to this.
@@ -13732,7 +13732,7 @@ public sealed class BaseAttackParameters : JsonReader() {
  * The abstract base of all [EnergySources](prototype:EnergySource). Specifies the way an entity
  * gets its energy.
  */
-public sealed class BaseEnergySource : JsonReader() {
+public abstract class BaseEnergySource : JsonReader() {
   /**
    * The pollution an entity emits per minute at full energy consumption. This is exactly the value
    * that is shown in the entity tooltip.
@@ -13754,7 +13754,7 @@ public sealed class BaseEnergySource : JsonReader() {
 /**
  * The abstract base of all [Modifiers](prototype:Modifier).
  */
-public sealed class BaseModifier : JsonReader() {
+public abstract class BaseModifier : JsonReader() {
   /**
    * Can't be an empty array.
    */
@@ -13860,7 +13860,7 @@ public enum class BaseStyleSpecificationEffect {
 /**
  * The abstract base of all [StyleSpecifications](prototype:StyleSpecification).
  */
-public sealed class BaseStyleSpecification : JsonReader() {
+public abstract class BaseStyleSpecification : JsonReader() {
   /**
    * Name of a [StyleSpecification](prototype:StyleSpecification). This style inherits all property
    * values from its parent.
@@ -14295,7 +14295,7 @@ public open class BonusGuiOrdering : JsonReader() {
   public object Serializer : JsonReaderSerializer<BonusGuiOrdering>(BonusGuiOrdering::class)
 }
 
-public sealed class BoolModifier : BaseModifier() {
+public abstract class BoolModifier : BaseModifier() {
   /**
    * The value this modifier will have upon researching.
    */
@@ -21983,7 +21983,7 @@ public open class ScriptTriggerEffectItem : TriggerEffectItem(), TriggerEffectVa
       JsonReaderSerializer<ScriptTriggerEffectItem>(ScriptTriggerEffectItem::class)
 }
 
-public sealed class ScrollBarStyleSpecification : BaseStyleSpecification() {
+public abstract class ScrollBarStyleSpecification : BaseStyleSpecification() {
   public val background_graphical_set: ElementImageSet? by fromJson()
 
   public val thumb_button_style: ButtonStyleSpecification? by fromJson()
@@ -22227,7 +22227,7 @@ public open class SetTileTriggerEffectItem : TriggerEffectItem(), TriggerEffectV
  * A struct that provides access to the user-set values of startup [mod
  * settings](https://wiki.factorio.com/Tutorial:Mod_settings).
  */
-public sealed class Settings : JsonReader() {
+public abstract class Settings : JsonReader() {
   /**
    * All startup mod settings, indexed by the name of the setting.
    */
@@ -22302,7 +22302,7 @@ public open class SignalIDConnector : JsonReader() {
   public object Serializer : JsonReaderSerializer<SignalIDConnector>(SignalIDConnector::class)
 }
 
-public sealed class SimpleModifier : BaseModifier() {
+public abstract class SimpleModifier : BaseModifier() {
   /**
    * Modification value, which will be added to the variable it modifies.
    */
@@ -23160,7 +23160,7 @@ public open class SpriteNWaySheet : SpriteParameters() {
   public object Serializer : JsonReaderSerializer<SpriteNWaySheet>(SpriteNWaySheet::class)
 }
 
-public sealed class SpriteParameters : JsonReader() {
+public abstract class SpriteParameters : JsonReader() {
   /**
    * The path to the sprite file to use.
    */
@@ -23612,7 +23612,7 @@ public open class Stripe : JsonReader() {
 @Serializable
 public sealed interface StyleSpecification
 
-public sealed class StyleWithClickableGraphicalSetSpecification : BaseStyleSpecification() {
+public abstract class StyleWithClickableGraphicalSetSpecification : BaseStyleSpecification() {
   public val default_graphical_set: ElementImageSet? by fromJson()
 
   public val hovered_graphical_set: ElementImageSet? by fromJson()
@@ -24214,7 +24214,7 @@ public open class TileTransitionSprite : JsonReader() {
 /**
  * Used for [TilePrototype](prototype:TilePrototype) graphics.
  */
-public sealed class TileTransitions : JsonReader() {
+public abstract class TileTransitions : JsonReader() {
   /**
    * This or `side_mask` needs to be specified if `empty_transitions` is not true.
    */
@@ -24706,7 +24706,7 @@ public sealed interface TriggerDelivery
 /**
  * The abstract base of all [TriggerDeliveries](prototype:TriggerDelivery).
  */
-public sealed class TriggerDeliveryItem : JsonReader() {
+public abstract class TriggerDeliveryItem : JsonReader() {
   /**
    * Provides the source of the TriggerDelivery as as both the source and target of the effect.
    */
@@ -24750,7 +24750,7 @@ public typealias TriggerEffect = ItemOrList<TriggerEffectValues>
 /**
  * The abstract base of all [TriggerEffects](prototype:TriggerEffect).
  */
-public sealed class TriggerEffectItem : JsonReader() {
+public abstract class TriggerEffectItem : JsonReader() {
   public val repeat_count: UShort? by fromJson()
 
   public val repeat_count_deviation: UShort? by fromJson()
@@ -24777,7 +24777,7 @@ public sealed class TriggerEffectItem : JsonReader() {
 /**
  * The abstract base of all [Triggers](prototype:Trigger).
  */
-public sealed class TriggerItem : JsonReader() {
+public abstract class TriggerItem : JsonReader() {
   /**
    * Only prototypes with these flags are affected by the trigger item.
    */
