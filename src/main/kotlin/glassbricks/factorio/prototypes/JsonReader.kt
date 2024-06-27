@@ -80,7 +80,7 @@ public abstract class JsonReader {
             values.keys.forEach { get(it) }
         }
     }
-    protected fun fakeInit(jsonObj: JsonObject, eager: Boolean = false) {
+    protected fun fakeInit(jsonObj: JsonObject) {
         this.jsonObj = jsonObj
     }
 
