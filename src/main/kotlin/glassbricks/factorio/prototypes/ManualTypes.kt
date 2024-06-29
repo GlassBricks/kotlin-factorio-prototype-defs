@@ -8,6 +8,8 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
+import kotlin.Double
+
 @Serializable(with = VectorSerializer::class)
 public data class Vector(
     val x: Double,
@@ -16,7 +18,7 @@ public data class Vector(
 
 internal object VectorSerializer : KSerializer<Vector> {
     override val descriptor = buildClassSerialDescriptor("Vector") {
-        element("x", Double.Companion.serializer().descriptor)
+        element("x", Double.serializer().descriptor)
         element("y", Double.serializer().descriptor)
     }
 
@@ -174,7 +176,6 @@ internal object ColorSerializer : KSerializer<Color> {
                 b = json[2].jsonPrimitive.double
                 a = json.getOrNull(3)?.jsonPrimitive?.double
             }
-
             else -> throw IllegalArgumentException("Unexpected type for Color: $json")
         }
         if (r > 1 || g > 1 || b > 1 || a != null && a > 1) {

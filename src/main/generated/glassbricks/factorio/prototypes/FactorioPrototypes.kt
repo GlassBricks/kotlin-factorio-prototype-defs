@@ -1,6 +1,11 @@
 // Automatically generated file, do not edit
 @file:OptIn(ExperimentalSerializationApi::class)
-@file:Suppress("PropertyName")
+@file:Suppress(
+  "PropertyName",
+  "EnumEntryName",
+  "ClassName",
+  "KDocUnresolvedReference",
+)
 
 package glassbricks.factorio.prototypes
 
@@ -10,6 +15,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
@@ -16931,7 +16937,7 @@ public class ImageStyleSpecification : BaseStyleSpecification(), StyleSpecificat
  *  - [ItemIngredientPrototype]
  *  - [FluidIngredientPrototype]
  */
-@Serializable(IngredientPrototypeSerializer::class)
+@Serializable
 public sealed interface IngredientPrototype
 
 @Serializable(InsertItemTriggerEffectItem.Serializer::class)
@@ -19668,7 +19674,7 @@ public data class PollutionSettings(
  *  - [ItemProductPrototype]
  *  - [FluidProductPrototype]
  */
-@Serializable(ProductPrototypeSerializer::class)
+@Serializable
 public sealed interface ProductPrototype
 
 @Serializable
@@ -20912,7 +20918,7 @@ public data class SoundValues(
    */
   public val audible_distance_modifier: Double? = null,
   public val game_controller_vibration_data: GameControllerVibrationData? = null,
-  public val variations: List<SoundDefinition>? = null,
+  public val variations: ItemOrList<SoundDefinition>? = null,
   /**
    * Supported sound file formats are `.ogg` (Vorbis) and `.wav`.
    *
@@ -23540,409 +23546,402 @@ public class ZoomToWorldUpgradePlannerEnabledModifier : BoolModifier(), Modifier
       JsonReaderSerializer<ZoomToWorldUpgradePlannerEnabledModifier>(ZoomToWorldUpgradePlannerEnabledModifier::class)
 }
 
-@Serializable(PrototypeData.Serializer::class)
-public class PrototypeData : JsonReader() {
-  public val accumulator: Map<String, AccumulatorPrototype>? by fromJson()
+public class PrototypeData(
+  json: JsonObject,
+) : PrototypeDataBase(json) {
+  public val accumulator: Map<String, AccumulatorPrototype> by this
 
-  public val achievement: Map<String, AchievementPrototype>? by fromJson()
+  public val achievement: Map<String, AchievementPrototype> by this
 
-  public val `active-defense-equipment`: Map<String, ActiveDefenseEquipmentPrototype>? by fromJson()
+  public val `active-defense-equipment`: Map<String, ActiveDefenseEquipmentPrototype> by this
 
-  public val `ambient-sound`: Map<String, AmbientSound>? by fromJson()
+  public val `ambient-sound`: Map<String, AmbientSound> by this
 
-  public val `ammo-category`: Map<String, AmmoCategory>? by fromJson()
+  public val `ammo-category`: Map<String, AmmoCategory> by this
 
-  public val ammo: Map<String, AmmoItemPrototype>? by fromJson()
+  public val ammo: Map<String, AmmoItemPrototype> by this
 
-  public val `ammo-turret`: Map<String, AmmoTurretPrototype>? by fromJson()
+  public val `ammo-turret`: Map<String, AmmoTurretPrototype> by this
 
-  public val animation: Map<String, AnimationPrototype>? by fromJson()
+  public val animation: Map<String, AnimationPrototype> by this
 
-  public val `arithmetic-combinator`: Map<String, ArithmeticCombinatorPrototype>? by fromJson()
+  public val `arithmetic-combinator`: Map<String, ArithmeticCombinatorPrototype> by this
 
-  public val armor: Map<String, ArmorPrototype>? by fromJson()
+  public val armor: Map<String, ArmorPrototype> by this
 
-  public val arrow: Map<String, ArrowPrototype>? by fromJson()
+  public val arrow: Map<String, ArrowPrototype> by this
 
-  public val `artillery-flare`: Map<String, ArtilleryFlarePrototype>? by fromJson()
+  public val `artillery-flare`: Map<String, ArtilleryFlarePrototype> by this
 
-  public val `artillery-projectile`: Map<String, ArtilleryProjectilePrototype>? by fromJson()
+  public val `artillery-projectile`: Map<String, ArtilleryProjectilePrototype> by this
 
-  public val `artillery-turret`: Map<String, ArtilleryTurretPrototype>? by fromJson()
+  public val `artillery-turret`: Map<String, ArtilleryTurretPrototype> by this
 
-  public val `artillery-wagon`: Map<String, ArtilleryWagonPrototype>? by fromJson()
+  public val `artillery-wagon`: Map<String, ArtilleryWagonPrototype> by this
 
-  public val `assembling-machine`: Map<String, AssemblingMachinePrototype>? by fromJson()
+  public val `assembling-machine`: Map<String, AssemblingMachinePrototype> by this
 
-  public val `autoplace-control`: Map<String, AutoplaceControl>? by fromJson()
+  public val `autoplace-control`: Map<String, AutoplaceControl> by this
 
-  public val `battery-equipment`: Map<String, BatteryEquipmentPrototype>? by fromJson()
+  public val `battery-equipment`: Map<String, BatteryEquipmentPrototype> by this
 
-  public val beacon: Map<String, BeaconPrototype>? by fromJson()
+  public val beacon: Map<String, BeaconPrototype> by this
 
-  public val beam: Map<String, BeamPrototype>? by fromJson()
+  public val beam: Map<String, BeamPrototype> by this
 
-  public val `belt-immunity-equipment`: Map<String, BeltImmunityEquipmentPrototype>? by fromJson()
+  public val `belt-immunity-equipment`: Map<String, BeltImmunityEquipmentPrototype> by this
 
-  public val `blueprint-book`: Map<String, BlueprintBookPrototype>? by fromJson()
+  public val `blueprint-book`: Map<String, BlueprintBookPrototype> by this
 
-  public val blueprint: Map<String, BlueprintItemPrototype>? by fromJson()
+  public val blueprint: Map<String, BlueprintItemPrototype> by this
 
-  public val boiler: Map<String, BoilerPrototype>? by fromJson()
+  public val boiler: Map<String, BoilerPrototype> by this
 
-  public val `build-entity-achievement`: Map<String, BuildEntityAchievementPrototype>? by fromJson()
+  public val `build-entity-achievement`: Map<String, BuildEntityAchievementPrototype> by this
 
-  public val `burner-generator`: Map<String, BurnerGeneratorPrototype>? by fromJson()
+  public val `burner-generator`: Map<String, BurnerGeneratorPrototype> by this
 
-  public val capsule: Map<String, CapsulePrototype>? by fromJson()
+  public val capsule: Map<String, CapsulePrototype> by this
 
-  public val car: Map<String, CarPrototype>? by fromJson()
+  public val car: Map<String, CarPrototype> by this
 
-  public val `cargo-wagon`: Map<String, CargoWagonPrototype>? by fromJson()
+  public val `cargo-wagon`: Map<String, CargoWagonPrototype> by this
 
-  public val `character-corpse`: Map<String, CharacterCorpsePrototype>? by fromJson()
+  public val `character-corpse`: Map<String, CharacterCorpsePrototype> by this
 
-  public val character: Map<String, CharacterPrototype>? by fromJson()
+  public val character: Map<String, CharacterPrototype> by this
 
-  public val cliff: Map<String, CliffPrototype>? by fromJson()
+  public val cliff: Map<String, CliffPrototype> by this
 
-  public val `combat-robot-count`: Map<String, CombatRobotCountAchievementPrototype>? by fromJson()
+  public val `combat-robot-count`: Map<String, CombatRobotCountAchievementPrototype> by this
 
-  public val `combat-robot`: Map<String, CombatRobotPrototype>? by fromJson()
+  public val `combat-robot`: Map<String, CombatRobotPrototype> by this
 
-  public val `constant-combinator`: Map<String, ConstantCombinatorPrototype>? by fromJson()
+  public val `constant-combinator`: Map<String, ConstantCombinatorPrototype> by this
 
   public val `construct-with-robots-achievement`:
-      Map<String, ConstructWithRobotsAchievementPrototype>? by fromJson()
+      Map<String, ConstructWithRobotsAchievementPrototype> by this
 
-  public val `construction-robot`: Map<String, ConstructionRobotPrototype>? by fromJson()
+  public val `construction-robot`: Map<String, ConstructionRobotPrototype> by this
 
-  public val container: Map<String, ContainerPrototype>? by fromJson()
+  public val container: Map<String, ContainerPrototype> by this
 
-  public val `copy-paste-tool`: Map<String, CopyPasteToolPrototype>? by fromJson()
+  public val `copy-paste-tool`: Map<String, CopyPasteToolPrototype> by this
 
-  public val corpse: Map<String, CorpsePrototype>? by fromJson()
+  public val corpse: Map<String, CorpsePrototype> by this
 
-  public val `curved-rail`: Map<String, CurvedRailPrototype>? by fromJson()
+  public val `curved-rail`: Map<String, CurvedRailPrototype> by this
 
-  public val `custom-input`: Map<String, CustomInputPrototype>? by fromJson()
+  public val `custom-input`: Map<String, CustomInputPrototype> by this
 
-  public val `damage-type`: Map<String, DamageType>? by fromJson()
+  public val `damage-type`: Map<String, DamageType> by this
 
-  public val `decider-combinator`: Map<String, DeciderCombinatorPrototype>? by fromJson()
+  public val `decider-combinator`: Map<String, DeciderCombinatorPrototype> by this
 
   public val `deconstruct-with-robots-achievement`:
-      Map<String, DeconstructWithRobotsAchievementPrototype>? by fromJson()
+      Map<String, DeconstructWithRobotsAchievementPrototype> by this
 
-  public val `deconstructible-tile-proxy`: Map<String, DeconstructibleTileProxyPrototype>? by
-      fromJson()
+  public val `deconstructible-tile-proxy`: Map<String, DeconstructibleTileProxyPrototype> by this
 
-  public val `deconstruction-item`: Map<String, DeconstructionItemPrototype>? by fromJson()
+  public val `deconstruction-item`: Map<String, DeconstructionItemPrototype> by this
 
-  public val `optimized-decorative`: Map<String, DecorativePrototype>? by fromJson()
+  public val `optimized-decorative`: Map<String, DecorativePrototype> by this
 
-  public val `deliver-by-robots-achievement`: Map<String, DeliverByRobotsAchievementPrototype>? by
-      fromJson()
+  public val `deliver-by-robots-achievement`: Map<String, DeliverByRobotsAchievementPrototype> by
+      this
 
-  public val `dont-build-entity-achievement`: Map<String, DontBuildEntityAchievementPrototype>? by
-      fromJson()
+  public val `dont-build-entity-achievement`: Map<String, DontBuildEntityAchievementPrototype> by
+      this
 
-  public val `dont-craft-manually-achievement`: Map<String, DontCraftManuallyAchievementPrototype>?
-      by fromJson()
+  public val `dont-craft-manually-achievement`: Map<String, DontCraftManuallyAchievementPrototype>
+      by this
 
   public val `dont-use-entity-in-energy-production-achievement`:
-      Map<String, DontUseEntityInEnergyProductionAchievementPrototype>? by fromJson()
+      Map<String, DontUseEntityInEnergyProductionAchievementPrototype> by this
 
-  public val `editor-controller`: Map<String, EditorControllerPrototype>? by fromJson()
+  public val `editor-controller`: Map<String, EditorControllerPrototype> by this
 
-  public val `electric-energy-interface`: Map<String, ElectricEnergyInterfacePrototype>? by
-      fromJson()
+  public val `electric-energy-interface`: Map<String, ElectricEnergyInterfacePrototype> by this
 
-  public val `electric-pole`: Map<String, ElectricPolePrototype>? by fromJson()
+  public val `electric-pole`: Map<String, ElectricPolePrototype> by this
 
-  public val `electric-turret`: Map<String, ElectricTurretPrototype>? by fromJson()
+  public val `electric-turret`: Map<String, ElectricTurretPrototype> by this
 
-  public val `unit-spawner`: Map<String, EnemySpawnerPrototype>? by fromJson()
+  public val `unit-spawner`: Map<String, EnemySpawnerPrototype> by this
 
-  public val `energy-shield-equipment`: Map<String, EnergyShieldEquipmentPrototype>? by fromJson()
+  public val `energy-shield-equipment`: Map<String, EnergyShieldEquipmentPrototype> by this
 
-  public val `entity-ghost`: Map<String, EntityGhostPrototype>? by fromJson()
+  public val `entity-ghost`: Map<String, EntityGhostPrototype> by this
 
-  public val particle: Map<String, EntityParticlePrototype>? by fromJson()
+  public val particle: Map<String, EntityParticlePrototype> by this
 
-  public val `equipment-category`: Map<String, EquipmentCategory>? by fromJson()
+  public val `equipment-category`: Map<String, EquipmentCategory> by this
 
-  public val `equipment-grid`: Map<String, EquipmentGridPrototype>? by fromJson()
+  public val `equipment-grid`: Map<String, EquipmentGridPrototype> by this
 
-  public val explosion: Map<String, ExplosionPrototype>? by fromJson()
+  public val explosion: Map<String, ExplosionPrototype> by this
 
-  public val `finish-the-game-achievement`: Map<String, FinishTheGameAchievementPrototype>? by
-      fromJson()
+  public val `finish-the-game-achievement`: Map<String, FinishTheGameAchievementPrototype> by this
 
-  public val fire: Map<String, FireFlamePrototype>? by fromJson()
+  public val fire: Map<String, FireFlamePrototype> by this
 
-  public val fish: Map<String, FishPrototype>? by fromJson()
+  public val fish: Map<String, FishPrototype> by this
 
-  public val `flame-thrower-explosion`: Map<String, FlameThrowerExplosionPrototype>? by fromJson()
+  public val `flame-thrower-explosion`: Map<String, FlameThrowerExplosionPrototype> by this
 
-  public val fluid: Map<String, FluidPrototype>? by fromJson()
+  public val fluid: Map<String, FluidPrototype> by this
 
-  public val stream: Map<String, FluidStreamPrototype>? by fromJson()
+  public val stream: Map<String, FluidStreamPrototype> by this
 
-  public val `fluid-turret`: Map<String, FluidTurretPrototype>? by fromJson()
+  public val `fluid-turret`: Map<String, FluidTurretPrototype> by this
 
-  public val `fluid-wagon`: Map<String, FluidWagonPrototype>? by fromJson()
+  public val `fluid-wagon`: Map<String, FluidWagonPrototype> by this
 
-  public val `flying-text`: Map<String, FlyingTextPrototype>? by fromJson()
+  public val `flying-text`: Map<String, FlyingTextPrototype> by this
 
-  public val font: Map<String, FontPrototype>? by fromJson()
+  public val font: Map<String, FontPrototype> by this
 
-  public val `fuel-category`: Map<String, FuelCategory>? by fromJson()
+  public val `fuel-category`: Map<String, FuelCategory> by this
 
-  public val furnace: Map<String, FurnacePrototype>? by fromJson()
+  public val furnace: Map<String, FurnacePrototype> by this
 
-  public val gate: Map<String, GatePrototype>? by fromJson()
+  public val gate: Map<String, GatePrototype> by this
 
-  public val `generator-equipment`: Map<String, GeneratorEquipmentPrototype>? by fromJson()
+  public val `generator-equipment`: Map<String, GeneratorEquipmentPrototype> by this
 
-  public val generator: Map<String, GeneratorPrototype>? by fromJson()
+  public val generator: Map<String, GeneratorPrototype> by this
 
-  public val `god-controller`: Map<String, GodControllerPrototype>? by fromJson()
+  public val `god-controller`: Map<String, GodControllerPrototype> by this
 
-  public val `group-attack-achievement`: Map<String, GroupAttackAchievementPrototype>? by fromJson()
+  public val `group-attack-achievement`: Map<String, GroupAttackAchievementPrototype> by this
 
-  public val `gui-style`: Map<String, GuiStyle>? by fromJson()
+  public val `gui-style`: Map<String, GuiStyle> by this
 
-  public val gun: Map<String, GunPrototype>? by fromJson()
+  public val gun: Map<String, GunPrototype> by this
 
-  public val `heat-interface`: Map<String, HeatInterfacePrototype>? by fromJson()
+  public val `heat-interface`: Map<String, HeatInterfacePrototype> by this
 
-  public val `heat-pipe`: Map<String, HeatPipePrototype>? by fromJson()
+  public val `heat-pipe`: Map<String, HeatPipePrototype> by this
 
-  public val `highlight-box`: Map<String, HighlightBoxEntityPrototype>? by fromJson()
+  public val `highlight-box`: Map<String, HighlightBoxEntityPrototype> by this
 
-  public val `infinity-container`: Map<String, InfinityContainerPrototype>? by fromJson()
+  public val `infinity-container`: Map<String, InfinityContainerPrototype> by this
 
-  public val `infinity-pipe`: Map<String, InfinityPipePrototype>? by fromJson()
+  public val `infinity-pipe`: Map<String, InfinityPipePrototype> by this
 
-  public val inserter: Map<String, InserterPrototype>? by fromJson()
+  public val inserter: Map<String, InserterPrototype> by this
 
-  public val `item-entity`: Map<String, ItemEntityPrototype>? by fromJson()
+  public val `item-entity`: Map<String, ItemEntityPrototype> by this
 
-  public val `item-group`: Map<String, ItemGroup>? by fromJson()
+  public val `item-group`: Map<String, ItemGroup> by this
 
-  public val item: Map<String, ItemPrototype>? by fromJson()
+  public val item: Map<String, ItemPrototype> by this
 
-  public val `item-request-proxy`: Map<String, ItemRequestProxyPrototype>? by fromJson()
+  public val `item-request-proxy`: Map<String, ItemRequestProxyPrototype> by this
 
-  public val `item-subgroup`: Map<String, ItemSubGroup>? by fromJson()
+  public val `item-subgroup`: Map<String, ItemSubGroup> by this
 
-  public val `item-with-entity-data`: Map<String, ItemWithEntityDataPrototype>? by fromJson()
+  public val `item-with-entity-data`: Map<String, ItemWithEntityDataPrototype> by this
 
-  public val `item-with-inventory`: Map<String, ItemWithInventoryPrototype>? by fromJson()
+  public val `item-with-inventory`: Map<String, ItemWithInventoryPrototype> by this
 
-  public val `item-with-label`: Map<String, ItemWithLabelPrototype>? by fromJson()
+  public val `item-with-label`: Map<String, ItemWithLabelPrototype> by this
 
-  public val `item-with-tags`: Map<String, ItemWithTagsPrototype>? by fromJson()
+  public val `item-with-tags`: Map<String, ItemWithTagsPrototype> by this
 
-  public val `kill-achievement`: Map<String, KillAchievementPrototype>? by fromJson()
+  public val `kill-achievement`: Map<String, KillAchievementPrototype> by this
 
-  public val lab: Map<String, LabPrototype>? by fromJson()
+  public val lab: Map<String, LabPrototype> by this
 
-  public val lamp: Map<String, LampPrototype>? by fromJson()
+  public val lamp: Map<String, LampPrototype> by this
 
-  public val `land-mine`: Map<String, LandMinePrototype>? by fromJson()
+  public val `land-mine`: Map<String, LandMinePrototype> by this
 
-  public val `leaf-particle`: Map<String, LeafParticlePrototype>? by fromJson()
+  public val `leaf-particle`: Map<String, LeafParticlePrototype> by this
 
-  public val `linked-belt`: Map<String, LinkedBeltPrototype>? by fromJson()
+  public val `linked-belt`: Map<String, LinkedBeltPrototype> by this
 
-  public val `linked-container`: Map<String, LinkedContainerPrototype>? by fromJson()
+  public val `linked-container`: Map<String, LinkedContainerPrototype> by this
 
-  public val `loader-1x1`: Map<String, Loader1x1Prototype>? by fromJson()
+  public val `loader-1x1`: Map<String, Loader1x1Prototype> by this
 
-  public val loader: Map<String, Loader1x2Prototype>? by fromJson()
+  public val loader: Map<String, Loader1x2Prototype> by this
 
-  public val locomotive: Map<String, LocomotivePrototype>? by fromJson()
+  public val locomotive: Map<String, LocomotivePrototype> by this
 
-  public val `logistic-container`: Map<String, LogisticContainerPrototype>? by fromJson()
+  public val `logistic-container`: Map<String, LogisticContainerPrototype> by this
 
-  public val `logistic-robot`: Map<String, LogisticRobotPrototype>? by fromJson()
+  public val `logistic-robot`: Map<String, LogisticRobotPrototype> by this
 
-  public val `map-gen-presets`: Map<String, MapGenPresets>? by fromJson()
+  public val `map-gen-presets`: Map<String, MapGenPresets> by this
 
-  public val `map-settings`: Map<String, MapSettings>? by fromJson()
+  public val `map-settings`: Map<String, MapSettings> by this
 
-  public val market: Map<String, MarketPrototype>? by fromJson()
+  public val market: Map<String, MarketPrototype> by this
 
-  public val `mining-drill`: Map<String, MiningDrillPrototype>? by fromJson()
+  public val `mining-drill`: Map<String, MiningDrillPrototype> by this
 
-  public val `mining-tool`: Map<String, MiningToolPrototype>? by fromJson()
+  public val `mining-tool`: Map<String, MiningToolPrototype> by this
 
-  public val `module-category`: Map<String, ModuleCategory>? by fromJson()
+  public val `module-category`: Map<String, ModuleCategory> by this
 
-  public val module: Map<String, ModulePrototype>? by fromJson()
+  public val module: Map<String, ModulePrototype> by this
 
-  public val `mouse-cursor`: Map<String, MouseCursor>? by fromJson()
+  public val `mouse-cursor`: Map<String, MouseCursor> by this
 
-  public val `movement-bonus-equipment`: Map<String, MovementBonusEquipmentPrototype>? by fromJson()
+  public val `movement-bonus-equipment`: Map<String, MovementBonusEquipmentPrototype> by this
 
-  public val `noise-expression`: Map<String, NamedNoiseExpression>? by fromJson()
+  public val `noise-expression`: Map<String, NamedNoiseExpression> by this
 
-  public val `night-vision-equipment`: Map<String, NightVisionEquipmentPrototype>? by fromJson()
+  public val `night-vision-equipment`: Map<String, NightVisionEquipmentPrototype> by this
 
-  public val `noise-layer`: Map<String, NoiseLayer>? by fromJson()
+  public val `noise-layer`: Map<String, NoiseLayer> by this
 
-  public val `offshore-pump`: Map<String, OffshorePumpPrototype>? by fromJson()
+  public val `offshore-pump`: Map<String, OffshorePumpPrototype> by this
 
-  public val `optimized-particle`: Map<String, ParticlePrototype>? by fromJson()
+  public val `optimized-particle`: Map<String, ParticlePrototype> by this
 
-  public val `particle-source`: Map<String, ParticleSourcePrototype>? by fromJson()
+  public val `particle-source`: Map<String, ParticleSourcePrototype> by this
 
-  public val pipe: Map<String, PipePrototype>? by fromJson()
+  public val pipe: Map<String, PipePrototype> by this
 
-  public val `pipe-to-ground`: Map<String, PipeToGroundPrototype>? by fromJson()
+  public val `pipe-to-ground`: Map<String, PipeToGroundPrototype> by this
 
-  public val `player-damaged-achievement`: Map<String, PlayerDamagedAchievementPrototype>? by
-      fromJson()
+  public val `player-damaged-achievement`: Map<String, PlayerDamagedAchievementPrototype> by this
 
-  public val `player-port`: Map<String, PlayerPortPrototype>? by fromJson()
+  public val `player-port`: Map<String, PlayerPortPrototype> by this
 
-  public val `power-switch`: Map<String, PowerSwitchPrototype>? by fromJson()
+  public val `power-switch`: Map<String, PowerSwitchPrototype> by this
 
-  public val `produce-achievement`: Map<String, ProduceAchievementPrototype>? by fromJson()
+  public val `produce-achievement`: Map<String, ProduceAchievementPrototype> by this
 
-  public val `produce-per-hour-achievement`: Map<String, ProducePerHourAchievementPrototype>? by
-      fromJson()
+  public val `produce-per-hour-achievement`: Map<String, ProducePerHourAchievementPrototype> by this
 
-  public val `programmable-speaker`: Map<String, ProgrammableSpeakerPrototype>? by fromJson()
+  public val `programmable-speaker`: Map<String, ProgrammableSpeakerPrototype> by this
 
-  public val projectile: Map<String, ProjectilePrototype>? by fromJson()
+  public val projectile: Map<String, ProjectilePrototype> by this
 
-  public val pump: Map<String, PumpPrototype>? by fromJson()
+  public val pump: Map<String, PumpPrototype> by this
 
-  public val radar: Map<String, RadarPrototype>? by fromJson()
+  public val radar: Map<String, RadarPrototype> by this
 
-  public val `rail-chain-signal`: Map<String, RailChainSignalPrototype>? by fromJson()
+  public val `rail-chain-signal`: Map<String, RailChainSignalPrototype> by this
 
-  public val `rail-planner`: Map<String, RailPlannerPrototype>? by fromJson()
+  public val `rail-planner`: Map<String, RailPlannerPrototype> by this
 
-  public val `rail-remnants`: Map<String, RailRemnantsPrototype>? by fromJson()
+  public val `rail-remnants`: Map<String, RailRemnantsPrototype> by this
 
-  public val `rail-signal`: Map<String, RailSignalPrototype>? by fromJson()
+  public val `rail-signal`: Map<String, RailSignalPrototype> by this
 
-  public val reactor: Map<String, ReactorPrototype>? by fromJson()
+  public val reactor: Map<String, ReactorPrototype> by this
 
-  public val `recipe-category`: Map<String, RecipeCategory>? by fromJson()
+  public val `recipe-category`: Map<String, RecipeCategory> by this
 
-  public val recipe: Map<String, RecipePrototype>? by fromJson()
+  public val recipe: Map<String, RecipePrototype> by this
 
-  public val `repair-tool`: Map<String, RepairToolPrototype>? by fromJson()
+  public val `repair-tool`: Map<String, RepairToolPrototype> by this
 
-  public val `research-achievement`: Map<String, ResearchAchievementPrototype>? by fromJson()
+  public val `research-achievement`: Map<String, ResearchAchievementPrototype> by this
 
-  public val `resource-category`: Map<String, ResourceCategory>? by fromJson()
+  public val `resource-category`: Map<String, ResourceCategory> by this
 
-  public val resource: Map<String, ResourceEntityPrototype>? by fromJson()
+  public val resource: Map<String, ResourceEntityPrototype> by this
 
-  public val `roboport-equipment`: Map<String, RoboportEquipmentPrototype>? by fromJson()
+  public val `roboport-equipment`: Map<String, RoboportEquipmentPrototype> by this
 
-  public val roboport: Map<String, RoboportPrototype>? by fromJson()
+  public val roboport: Map<String, RoboportPrototype> by this
 
-  public val `rocket-silo`: Map<String, RocketSiloPrototype>? by fromJson()
+  public val `rocket-silo`: Map<String, RocketSiloPrototype> by this
 
-  public val `rocket-silo-rocket`: Map<String, RocketSiloRocketPrototype>? by fromJson()
+  public val `rocket-silo-rocket`: Map<String, RocketSiloRocketPrototype> by this
 
-  public val `rocket-silo-rocket-shadow`: Map<String, RocketSiloRocketShadowPrototype>? by
-      fromJson()
+  public val `rocket-silo-rocket-shadow`: Map<String, RocketSiloRocketShadowPrototype> by this
 
-  public val `selection-tool`: Map<String, SelectionToolPrototype>? by fromJson()
+  public val `selection-tool`: Map<String, SelectionToolPrototype> by this
 
-  public val shortcut: Map<String, ShortcutPrototype>? by fromJson()
+  public val shortcut: Map<String, ShortcutPrototype> by this
 
-  public val `simple-entity`: Map<String, SimpleEntityPrototype>? by fromJson()
+  public val `simple-entity`: Map<String, SimpleEntityPrototype> by this
 
-  public val `simple-entity-with-force`: Map<String, SimpleEntityWithForcePrototype>? by fromJson()
+  public val `simple-entity-with-force`: Map<String, SimpleEntityWithForcePrototype> by this
 
-  public val `simple-entity-with-owner`: Map<String, SimpleEntityWithOwnerPrototype>? by fromJson()
+  public val `simple-entity-with-owner`: Map<String, SimpleEntityWithOwnerPrototype> by this
 
-  public val smoke: Map<String, SimpleSmokePrototype>? by fromJson()
+  public val smoke: Map<String, SimpleSmokePrototype> by this
 
-  public val `smoke-with-trigger`: Map<String, SmokeWithTriggerPrototype>? by fromJson()
+  public val `smoke-with-trigger`: Map<String, SmokeWithTriggerPrototype> by this
 
-  public val `solar-panel-equipment`: Map<String, SolarPanelEquipmentPrototype>? by fromJson()
+  public val `solar-panel-equipment`: Map<String, SolarPanelEquipmentPrototype> by this
 
-  public val `solar-panel`: Map<String, SolarPanelPrototype>? by fromJson()
+  public val `solar-panel`: Map<String, SolarPanelPrototype> by this
 
-  public val sound: Map<String, SoundPrototype>? by fromJson()
+  public val sound: Map<String, SoundPrototype> by this
 
-  public val `spectator-controller`: Map<String, SpectatorControllerPrototype>? by fromJson()
+  public val `spectator-controller`: Map<String, SpectatorControllerPrototype> by this
 
-  public val `speech-bubble`: Map<String, SpeechBubblePrototype>? by fromJson()
+  public val `speech-bubble`: Map<String, SpeechBubblePrototype> by this
 
-  public val `spider-leg`: Map<String, SpiderLegPrototype>? by fromJson()
+  public val `spider-leg`: Map<String, SpiderLegPrototype> by this
 
-  public val `spider-vehicle`: Map<String, SpiderVehiclePrototype>? by fromJson()
+  public val `spider-vehicle`: Map<String, SpiderVehiclePrototype> by this
 
-  public val `spidertron-remote`: Map<String, SpidertronRemotePrototype>? by fromJson()
+  public val `spidertron-remote`: Map<String, SpidertronRemotePrototype> by this
 
-  public val splitter: Map<String, SplitterPrototype>? by fromJson()
+  public val splitter: Map<String, SplitterPrototype> by this
 
-  public val sprite: Map<String, SpritePrototype>? by fromJson()
+  public val sprite: Map<String, SpritePrototype> by this
 
-  public val sticker: Map<String, StickerPrototype>? by fromJson()
+  public val sticker: Map<String, StickerPrototype> by this
 
-  public val `storage-tank`: Map<String, StorageTankPrototype>? by fromJson()
+  public val `storage-tank`: Map<String, StorageTankPrototype> by this
 
-  public val `straight-rail`: Map<String, StraightRailPrototype>? by fromJson()
+  public val `straight-rail`: Map<String, StraightRailPrototype> by this
 
-  public val technology: Map<String, TechnologyPrototype>? by fromJson()
+  public val technology: Map<String, TechnologyPrototype> by this
 
-  public val `tile-effect`: Map<String, TileEffectDefinition>? by fromJson()
+  public val `tile-effect`: Map<String, TileEffectDefinition> by this
 
-  public val `tile-ghost`: Map<String, TileGhostPrototype>? by fromJson()
+  public val `tile-ghost`: Map<String, TileGhostPrototype> by this
 
-  public val tile: Map<String, TilePrototype>? by fromJson()
+  public val tile: Map<String, TilePrototype> by this
 
-  public val `tips-and-tricks-item`: Map<String, TipsAndTricksItem>? by fromJson()
+  public val `tips-and-tricks-item`: Map<String, TipsAndTricksItem> by this
 
-  public val `tips-and-tricks-item-category`: Map<String, TipsAndTricksItemCategory>? by fromJson()
+  public val `tips-and-tricks-item-category`: Map<String, TipsAndTricksItemCategory> by this
 
-  public val tool: Map<String, ToolPrototype>? by fromJson()
+  public val tool: Map<String, ToolPrototype> by this
 
-  public val `train-path-achievement`: Map<String, TrainPathAchievementPrototype>? by fromJson()
+  public val `train-path-achievement`: Map<String, TrainPathAchievementPrototype> by this
 
-  public val `train-stop`: Map<String, TrainStopPrototype>? by fromJson()
+  public val `train-stop`: Map<String, TrainStopPrototype> by this
 
-  public val `transport-belt`: Map<String, TransportBeltPrototype>? by fromJson()
+  public val `transport-belt`: Map<String, TransportBeltPrototype> by this
 
-  public val tree: Map<String, TreePrototype>? by fromJson()
+  public val tree: Map<String, TreePrototype> by this
 
-  public val `trigger-target-type`: Map<String, TriggerTargetType>? by fromJson()
+  public val `trigger-target-type`: Map<String, TriggerTargetType> by this
 
-  public val `trivial-smoke`: Map<String, TrivialSmokePrototype>? by fromJson()
+  public val `trivial-smoke`: Map<String, TrivialSmokePrototype> by this
 
-  public val turret: Map<String, TurretPrototype>? by fromJson()
+  public val turret: Map<String, TurretPrototype> by this
 
-  public val tutorial: Map<String, TutorialDefinition>? by fromJson()
+  public val tutorial: Map<String, TutorialDefinition> by this
 
-  public val `underground-belt`: Map<String, UndergroundBeltPrototype>? by fromJson()
+  public val `underground-belt`: Map<String, UndergroundBeltPrototype> by this
 
-  public val unit: Map<String, UnitPrototype>? by fromJson()
+  public val unit: Map<String, UnitPrototype> by this
 
-  public val `upgrade-item`: Map<String, UpgradeItemPrototype>? by fromJson()
+  public val `upgrade-item`: Map<String, UpgradeItemPrototype> by this
 
-  public val `utility-constants`: Map<String, UtilityConstants>? by fromJson()
+  public val `utility-constants`: Map<String, UtilityConstants> by this
 
-  public val `utility-sounds`: Map<String, UtilitySounds>? by fromJson()
+  public val `utility-sounds`: Map<String, UtilitySounds> by this
 
-  public val `utility-sprites`: Map<String, UtilitySprites>? by fromJson()
+  public val `utility-sprites`: Map<String, UtilitySprites> by this
 
-  public val `virtual-signal`: Map<String, VirtualSignalPrototype>? by fromJson()
+  public val `virtual-signal`: Map<String, VirtualSignalPrototype> by this
 
-  public val wall: Map<String, WallPrototype>? by fromJson()
+  public val wall: Map<String, WallPrototype> by this
 
-  public val `wind-sound`: Map<String, WindSound>? by fromJson()
-
-  public object Serializer : JsonReaderSerializer<PrototypeData>(PrototypeData::class)
+  public val `wind-sound`: Map<String, WindSound> by this
 }

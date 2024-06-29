@@ -60,7 +60,7 @@ public abstract class JsonReader {
             return null
         }
 
-        tryManuallyDeserializing(factorioPrototypeJson, name, el, serializer)?.let { return it }
+        tryManuallyDeserializing(factorioPrototypeJson, el, serializer)?.let { return it }
 
         return factorioPrototypeJson.decodeFromJsonElement(serializer, el)
     }
@@ -125,17 +125,11 @@ private val inlineTypes = setOf(
 )
 
 @OptIn(ExperimentalSerializationApi::class)
-private fun JsonReader.tryManuallyDeserializing(
+private fun tryManuallyDeserializing(
     json: Json,
-    name: String,
     el: JsonElement,
     serializer: KSerializer<*>
 ): Any? {
-    // workaround for now??
-    if (el is JsonObject && el.isNotEmpty() && name == "variations" && this is SoundValues) {
-        val arrayWrap = JsonArray(listOf(el))
-        return json.decodeFromJsonElement(serializer, arrayWrap)
-    }
     val descriptor = serializer.descriptor.nonNullOriginal
     return when {
         descriptor.kind == StructureKind.LIST && el is JsonObject && (el.isEmpty() || "1" in el || "2" in el) -> {
@@ -143,7 +137,7 @@ private fun JsonReader.tryManuallyDeserializing(
                 var i = 1
                 while (true) {
                     val element = el[i.toString()]
-                    if (element != null) add(element)
+                    if (element != null) this.add(element)
                     else {
                         if (i != 1) break
                     }
@@ -302,9 +296,9 @@ public open class UnionSerializer<T : Any>(
         fun matches(element: JsonElement): Boolean
     }
 
-    private data class ClassMatcher<T : JsonReader>(
+    private data class ClassMatcher<T>(
         val keys: List<String>,
-        override val serializer: JsonReaderSerializer<T>,
+        override val serializer: KSerializer<T>,
     ) : JsonMatcher {
         override fun matches(element: JsonElement): Boolean =
             element is JsonObject &&
@@ -371,8 +365,9 @@ public open class UnionSerializer<T : Any>(
 
     init {
 
-        fun isJsonReader(klass: KClass<*>): Boolean {
-            return klass.isSubclassOf(JsonReader::class)
+        fun isClass(klass: KClass<*>): Boolean {
+            return klass.isSubclassOf(JsonReader::class) || 
+                    klass.isData && klass.objectInstance == null && !klass.isSubclassOf(ArrayValue::class)
         }
 
         fun isInnerInline(thisClass: KClass<*>): Boolean {
@@ -397,10 +392,9 @@ public open class UnionSerializer<T : Any>(
         }
 
         val jsonReaderSerializer = subclasses
-            .filter { isJsonReader(it) }
+            .filter { isClass(it) }
             .associateWith {
-                @Suppress("UNCHECKED_CAST")
-                (JsonReaderSerializer(it as KClass<out JsonReader>))
+                it.serializer()
             }
         // for each class, find keys that are _unique_ to that class (not shared with any other class)
         val classKeyCount = mutableMapOf<String, Int>()
@@ -413,13 +407,12 @@ public open class UnionSerializer<T : Any>(
         }
         val matchers = mutableListOf<JsonMatcher>()
         outer@ for (subclass in subclasses) {
-            if (isJsonReader(subclass)) {
+            if (isClass(subclass)) {
                 val serializer = jsonReaderSerializer[subclass]!!
                 val descriptor = serializer.descriptor
                 for (i in 0..<descriptor.elementsCount) {
                     val elDescriptor = descriptor.getElementDescriptor(i)
                     if (!elDescriptor.isNullable) {
-//                            return@map ClassMatcher(listOf(descriptor.getElementName(i)), serializer)
                         matchers.add(ClassMatcher(listOf(descriptor.getElementName(i)), serializer))
                         continue@outer
                     }

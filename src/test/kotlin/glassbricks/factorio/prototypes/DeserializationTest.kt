@@ -2,6 +2,7 @@ package glassbricks.factorio.prototypes
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import java.io.File
+import kotlin.reflect.full.declaredMemberProperties
 import kotlin.test.Test
 import kotlin.time.measureTime
 
@@ -66,19 +67,27 @@ class DeserializationTest {
         )
         assert(noiseFunction is NoiseFunctionCos)
     }
+    
+    @Test
+    fun getCollisionMaskSerializer() {
+        val serializer = CollisionMaskValues.serializer()
+        println(serializer)
+    }
 
 
     @Test
     fun testDataRaw() {
-        val sound = """
-            {"variations": {"filename": "foo", "volume": 1.0}}
-        """.trimIndent()
-        val soundObject = factorioPrototypeJson.decodeFromString(Sound.serializer(), sound)
-        assert(soundObject is SoundValues)
         val dataRaw = javaClass.getResource("/data-raw-dump.json")!!
         eagerInit = true
+        val properties = PrototypeData::class.declaredMemberProperties
+            .associateBy { it.name }
         val time = measureTime {
-            loadFactorioPrototypesFromStream(dataRaw.openStream())
+            val result = loadFactorioPrototypesFromStream(dataRaw.openStream())
+            for (key in result.json.keys) {
+                val prop = properties[key]!!
+                val value = prop.getter.call(result)
+                assert(value is Map<*, *>)
+            }
         }
         println(time)
     }

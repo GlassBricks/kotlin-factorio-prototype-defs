@@ -5,23 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
-public const val packageName = "glassbricks.factorio.prototypes"
-
-private val manuallySerialized = setOf(
-    "ItemIngredientPrototype",
-    "IngredientPrototype",
-    "ItemProductPrototype",
-    "ProductPrototype",
-    "SpawnPoint",
-    "UnitSpawnDefinition"
-)
-
-private val flattenStructType = setOf(
-    "ItemIngredientPrototype",
-    "ItemProductPrototype",
-    "SpawnPoint",
-    "UnitSpawnDefinition"
-)
+const val packageName = "glassbricks.factorio.prototypes"
 
 private val replaceType = mapOf("MapPosition" to BasicType("Vector"))
 
@@ -41,6 +25,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     fun generate(): FileSpec {
         setupFile()
+        findWithShorthand()
         findUnionTypes()
         findPropertyInnerUnions()
         findOverrides()
@@ -113,8 +98,26 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         file.addAnnotation(
             AnnotationSpec.builder(Suppress::class)
                 .addMember("%S", "PropertyName")
+                .addMember("%S", "EnumEntryName")
+                .addMember("%S", "ClassName")
+                .addMember("%S", "KDocUnresolvedReference")
                 .build()
         )
+    }
+
+    private val withShorthandConcepts = mutableSetOf<Concept>()
+
+    private fun findWithShorthand() {
+        for (concept in docs.types) {
+            if (concept.name in predefined) continue
+            val type = concept.type.innerType()
+            if (type is UnionType && type.options.size == 2 &&
+                type.options[0] is StructType && type.options[1] is TupleType
+            ) {
+                withShorthandConcepts += concept
+                println(concept.name)
+            }
+        }
     }
 
 
@@ -280,9 +283,9 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private fun findUnionTypes() {
         for (concept in typePartialOrder) {
             if (concept !is Concept || concept.name in toIgnore || concept.name in replaceType || concept.name in predefined) continue
-            val innerType = concept.type.innerType()
-            when {
-                innerType is StructType || concept.name in flattenStructType -> {
+            val type = if (concept in withShorthandConcepts) StructType else concept.type
+            when (val innerType = type.innerType()) {
+                is StructType -> {
                     val properties = concept.properties ?: continue
                     val discriminatorField = getDiscriminatorPropName(concept)
                     val discriminatorValue = properties.find { it.name == discriminatorField }?.type?.innerType()
@@ -292,14 +295,14 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                     }
                 }
 
-                innerType is BasicType -> {
+                is BasicType -> {
                     val referenced = byName[innerType.value] ?: continue
                     if (referenced in conceptCanBeAutomaticUnionMember) {
                         conceptCanBeAutomaticUnionMember.add(concept)
                     }
                 }
 
-                innerType is UnionType -> {
+                is UnionType -> {
                     val itemOrList = tryGetItemOrList(innerType)?.first
                     if (itemOrList != null) {
                         tryAddInnerUnion(itemOrList, concept, "Values", false)
@@ -477,24 +480,8 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         }
     }
 
-    private fun TypeSpec.Builder.setupClass(value: ProtoOrConceptGen, isObject: Boolean) {
-
-    }
-
-    private fun TypeSpec.Builder.addManualSerializerAnnotation(className: ClassName) {
-        addAnnotation(
-            AnnotationSpec.builder(Serializable::class)
-                .addMember("%TSerializer::class", className)
-                .build()
-        )
-    }
-
-    private fun TypeSpec.Builder.addJsonReaderSerializer(className: String) {
-        if (className in manuallySerialized) {
-            addManualSerializerAnnotation(ClassName(packageName, className))
-            return
-        }
-        addSubclassSerializer(ClassName(packageName, className), "JsonReaderSerializer")
+    private fun TypeSpec.Builder.addJsonReaderSerializer(className: ClassName) {
+        addSubclassSerializer(className, "JsonReaderSerializer")
     }
 
     private fun TypeSpec.Builder.addSubclassSerializer(
@@ -534,7 +521,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
             addDescription(value.inner.description)
             if (!value.inner.abstract && useJsonReader) {
-                addJsonReaderSerializer(value.className.simpleName)
+                addJsonReaderSerializer(value.className)
             } else if (!useJsonReader) {
                 addAnnotation(Serializable::class)
             }
@@ -572,7 +559,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             for (property in value.inner.properties!!.sortedBy { it.order }) {
                 if (overrides[value.inner]?.get(property.name) == OverrideType.Ignore) continue
                 if (discriminatorValue != null && property.name == "type") continue
-                val (propertySpec, parameter) = mapProperty(value, property, useJsonReader)
+                val (propertySpec, parameter) = generateProperty(value, property, useJsonReader)
                 addProperty(propertySpec)
                 primaryConstructorBuilder?.addParameter(parameter!!)
             }
@@ -590,12 +577,12 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private fun generateConcept(concept: Concept) {
         if (concept.name in predefined || concept.name in toIgnore) return
         val type = replaceType[concept.name] ?: concept.type
-        val isSimpleStructType = type is StructType || concept.name in flattenStructType
+        val isSimpleStructType = type is StructType || concept in withShorthandConcepts
         if (concept.properties != null && concept.name !in replaceType) {
             val genType = if (isSimpleStructType) MainType(concept) else ConceptValues(concept)
             generateClass(genType)
         }
-        if (!isSimpleStructType) {
+        if (!isSimpleStructType || concept.name in replaceType) {
             val mainType = mapTypeDefinition(type, MainType(concept), null, isRoot = true)
             if (mainType.declaration == null) {
                 val result = TypeAliasSpec.builder(concept.name, mainType.typeName).apply {
@@ -738,9 +725,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 }
             })
             for (member in union.members) addUnionMember(member, union, concept)
-            if (union.name in manuallySerialized) {
-                addManualSerializerAnnotation(union.className)
-            } else if (union.canBeAutomaticallySerialized()) {
+            if (union.canBeAutomaticallySerialized()) {
                 addAnnotation(Serializable::class)
             } else {
                 addSubclassSerializer(union.className, "UnionSerializer") {
@@ -961,7 +946,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     }
 
 
-    private fun mapProperty(
+    private fun generateProperty(
         source: ProtoOrConceptGen, property: Property,
         useJsonReader: Boolean,
     ): Pair<PropertySpec, ParameterSpec?> {
@@ -973,10 +958,15 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 childOverrideType == OverrideType.Unknown
         val laterOverridden = childOverrides[source.inner]?.contains(property.name) == true
 
-        val mainType = if (!isUnknown)
-            mapTypeDefinition(property.type, source, property).typeName // allow declaration here
-        else
+        val mainType = if (isUnknown) {
             ClassName(packageName, "UnknownOverriddenType")
+        } else if (source is ConceptValues && source.inner.name == "Sound" && property.name == "variations") {
+            val type = property.type as ArrayType
+            val inner = mapTypeDefinition(type.value, source, property).typeName
+            ClassName(packageName, "ItemOrList").parameterizedBy(inner)
+        } else {
+            mapTypeDefinition(property.type, source, property).typeName // allow declaration here
+        }
         val type = mainType.copy(nullable = nullable)
 
 
@@ -1010,20 +1000,21 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private fun generatePrototypeDataClass() {
         val result = TypeSpec.classBuilder("PrototypeData").apply {
-            superclass(ClassName(packageName, "JsonReader"))
-            addJsonReaderSerializer("PrototypeData")
+            superclass(ClassName(packageName, "PrototypeDataBase"))
+            primaryConstructor(FunSpec.constructorBuilder()
+                .addParameter("json", JsonObject::class).build())
+            addSuperclassConstructorParameter("json")
 
             for (prototype in docs.prototypes.sortedBy { it.order }) {
                 val typename = prototype.typename ?: continue
-                // val `typename`: Map<String, Type> by fromJson()
                 addProperty(
                     PropertySpec.builder(
                         typename, Map::class.asClassName().parameterizedBy(
                             String::class.asClassName(),
                             ClassName(packageName, prototype.name)
-                        ).copy(nullable = true)
+                        )
                     )
-                        .delegate("fromJson()")
+                        .delegate("this")
                         .build()
                 )
 
