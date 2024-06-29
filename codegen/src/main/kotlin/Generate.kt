@@ -108,6 +108,13 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                 .addMember("%T::class", ClassName("kotlinx.serialization", "ExperimentalSerializationApi"))
                 .build()
         )
+
+//        @file:Suppress("PropertyName")
+        file.addAnnotation(
+            AnnotationSpec.builder(Suppress::class)
+                .addMember("%S", "PropertyName")
+                .build()
+        )
     }
 
 
@@ -164,7 +171,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private data class ConceptUnion(
         val concept: Concept,
-        override val members: Set<UnionMember>
+        override val members: Set<UnionMember>,
     ) : Union {
         init {
             require(concept.type.innerType() is UnionType)
@@ -175,7 +182,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private data class InnerUnion(
         override val name: String,
-        override val members: Set<UnionMember>
+        override val members: Set<UnionMember>,
     ) : Union {
         var generated = false
     }
@@ -323,7 +330,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         type: TypeDefinition,
         source: ProtoOrConcept,
         subName: String,
-        tryGetNameFromMembers: Boolean = true
+        tryGetNameFromMembers: Boolean = true,
     ) {
         fun tryGetNameByLetterPrefix(options: Set<UnionMember>): String? {
             if (!options.all { it is ProtoOrConceptGen }) return null
@@ -384,10 +391,12 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private val overrides = mutableMapOf<ProtoOrConcept, MutableMap<String, OverrideType>>()
     private val childOverrides = mutableMapOf<ProtoOrConcept, MutableMap<String, OverrideType>>()
+
+    private val hasChildren = mutableSetOf<ProtoOrConcept>()
     private fun findOverrides() {
         tailrec fun findParentProp(
             prototype: ProtoOrConcept,
-            propName: String
+            propName: String,
         ): Pair<ProtoOrConcept, Property> {
             prototype.properties!!.find { it.name == propName }?.let { return prototype to it }
             return findParentProp(
@@ -403,12 +412,14 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
             val parentName = prototype.parent ?: return
             val parent = byName[parentName]!!
+            hasChildren.add(parent)
             visit(parent)
             val properties = prototype.properties ?: return
+
             @Suppress("NAME_SHADOWING")
             fun isSubtype(
                 parentType: TypeDefinition,
-                childType: TypeDefinition
+                childType: TypeDefinition,
             ): Boolean {
                 val parentType = parentType.followTypeAliases()
                 val childType = childType.followTypeAliases()
@@ -466,38 +477,8 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         }
     }
 
-    private fun TypeSpec.Builder.setupClass(value: ProtoOrConceptGen) {
-        if (value.inner.abstract) {
-            addModifiers(KModifier.ABSTRACT)
-        } else {
-            addModifiers(KModifier.OPEN)
-        }
-        val parent = value.inner.parent
-        if (parent != null) {
-            superclass(ClassName(packageName, parent))
-        } else {
-            superclass(ClassName(packageName, "JsonReader"))
-        }
-        for (superType in unionSupertypes[(value)] ?: emptyList()) {
-            addSuperinterface(superType.className)
-        }
-        addDescription(value.inner.description)
-        if (!value.inner.abstract) {
-            addJsonReaderSerializer(this@setupClass.build().name!!)
-        }
-        val discriminatorValue = getDiscriminatorValue(value.inner)
-        if (discriminatorValue != null) {
-            addAnnotation(
-                AnnotationSpec.builder(SerialName::class)
-                    .addMember("%S", discriminatorValue)
-                    .build()
-            )
-        }
+    private fun TypeSpec.Builder.setupClass(value: ProtoOrConceptGen, isObject: Boolean) {
 
-        for (property in value.inner.properties!!.sortedBy { it.order }) {
-            if (overrides[value.inner]?.get(property.name) == OverrideType.Ignore) continue
-            addProperty(mapProperty(value, property))
-        }
     }
 
     private fun TypeSpec.Builder.addManualSerializerAnnotation(className: ClassName) {
@@ -519,7 +500,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private fun TypeSpec.Builder.addSubclassSerializer(
         className: ClassName,
         serializerType: String,
-        buildSerializerObject: TypeSpec.Builder.() -> Unit = {}
+        buildSerializerObject: TypeSpec.Builder.() -> Unit = {},
     ) {
         addAnnotation(
             AnnotationSpec.builder(Serializable::class).addMember(
@@ -537,9 +518,68 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     }
 
     private fun generateClass(
-        type: ProtoOrConceptGen,
+        value: ProtoOrConceptGen,
     ) {
-        val result = TypeSpec.classBuilder(type.className).apply { setupClass(type) }.build()
+        val parent = value.inner.parent
+        val useJsonReader =
+            value.inner is Prototype || value.inner.abstract || value.inner in hasChildren || parent != null
+        val isObject = !useJsonReader && value.inner.properties!!.singleOrNull()?.name == "type"
+        val builder = if (isObject) {
+            TypeSpec.objectBuilder(value.className)
+        } else {
+            TypeSpec.classBuilder(value.className)
+        }
+
+        val result = builder.apply {
+
+            addDescription(value.inner.description)
+            if (!value.inner.abstract && useJsonReader) {
+                addJsonReaderSerializer(value.className.simpleName)
+            } else if (!useJsonReader) {
+                addAnnotation(Serializable::class)
+            }
+            val discriminatorValue = getDiscriminatorValue(value.inner)
+            if (discriminatorValue != null) {
+                addAnnotation(
+                    AnnotationSpec.builder(SerialName::class)
+                        .addMember("%S", discriminatorValue)
+                        .build()
+                )
+            }
+            if (value.inner.abstract) {
+                addModifiers(KModifier.ABSTRACT)
+            } else if (value.inner in hasChildren) {
+                addModifiers(KModifier.OPEN)
+            } else if (!useJsonReader) {
+                addModifiers(KModifier.DATA)
+            }
+
+            if (parent != null) {
+                superclass(ClassName(packageName, parent))
+            } else if (useJsonReader) {
+                superclass(ClassName(packageName, "JsonReader"))
+            }
+            for (superType in unionSupertypes[(value)] ?: emptyList()) {
+                addSuperinterface(superType.className)
+            }
+
+            if (isObject) {
+                check(!useJsonReader)
+                return@apply
+            }
+
+            val primaryConstructorBuilder = if (!useJsonReader) FunSpec.constructorBuilder() else null
+            for (property in value.inner.properties!!.sortedBy { it.order }) {
+                if (overrides[value.inner]?.get(property.name) == OverrideType.Ignore) continue
+                if (discriminatorValue != null && property.name == "type") continue
+                val (propertySpec, parameter) = mapProperty(value, property, useJsonReader)
+                addProperty(propertySpec)
+                primaryConstructorBuilder?.addParameter(parameter!!)
+            }
+            if (primaryConstructorBuilder != null) {
+                primaryConstructor(primaryConstructorBuilder.build())
+            }
+        }.build()
         file.addType(result)
     }
 
@@ -568,7 +608,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private data class TypeNameWithDecl(
         val typeName: TypeName,
-        val declaration: TypeSpec?
+        val declaration: TypeSpec?,
     )
 
     private fun TypeName.withNoDec(): TypeNameWithDecl = TypeNameWithDecl(this, null)
@@ -576,7 +616,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         typeDefinition: TypeDefinition,
         source: ProtoOrConceptGen,
         property: Property?,
-        isRoot: Boolean = false
+        isRoot: Boolean = false,
     ): TypeNameWithDecl {
         return when (typeDefinition) {
             is BasicType -> {
@@ -650,7 +690,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private fun tryMakeItemOrList(
         source: ProtoOrConceptGen,
         property: Property?,
-        typeDefinition: UnionType
+        typeDefinition: UnionType,
     ): TypeNameWithDecl? {
         val (first, innerName) = tryGetItemOrList(typeDefinition) ?: return null
         return ClassName(packageName, innerName).parameterizedBy(
@@ -660,7 +700,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
 
     private fun tryGenerateUnion(
         source: ProtoOrConceptGen, property: Property?,
-        typeDefinition: UnionType, isRoot: Boolean
+        typeDefinition: UnionType, isRoot: Boolean,
     ): TypeNameWithDecl? {
         if (property == null && isRoot) {
             if (source is MainType && source.inner is Concept) {
@@ -688,7 +728,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
             addModifiers(KModifier.SEALED)
 
             addDescription(concept?.description)
-            if(kdoc.isNotEmpty()){
+            if (kdoc.isNotEmpty()) {
                 addKdoc("\n\n")
             }
             addKdoc(buildCodeBlock {
@@ -697,6 +737,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                     add(" - [%L]\n", member.getClassName(union).simpleNames.joinToString("."))
                 }
             })
+            for (member in union.members) addUnionMember(member, union, concept)
             if (union.name in manuallySerialized) {
                 addManualSerializerAnnotation(union.className)
             } else if (union.canBeAutomaticallySerialized()) {
@@ -718,8 +759,6 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
                     }
                 }
             }
-
-            for (member in union.members) addUnionMember(member, union, concept)
 
             if (concept == noiseFunctionApplication) {
                 addAnnotation(
@@ -747,7 +786,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     private fun TypeSpec.Builder.addUnionMember(
         member: UnionMember,
         union: Union,
-        concept: Concept?
+        concept: Concept?,
     ) {
         if (member !is UnionSubtype) return
         fun TypeSpec.Builder.addSuperInterfaces() {
@@ -828,7 +867,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         source: ProtoOrConceptGen,
         property: Property?,
         typeDefinition: UnionType,
-        isRoot: Boolean
+        isRoot: Boolean,
     ): TypeNameWithDecl? {
         if (canBeEnum(typeDefinition)) {
             return makeEnum(source, property, typeDefinition, isRoot)
@@ -852,7 +891,7 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         source: ProtoOrConceptGen,
         property: Property?,
         typeDefinition: UnionType,
-        isRoot: Boolean
+        isRoot: Boolean,
     ): TypeNameWithDecl {
         val values = typeDefinition.options.map { (it as LiteralType).value.content }.toSet()
         val typeDescriptions = typeDefinition.options.associate {
@@ -875,9 +914,14 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         } else {
             if (values in innerStringUnions) return TypeNameWithDecl(innerStringUnions[values]!!, null)
 
+            val sourceName = source.inner.name.let {
+                // hardcoded for now
+                if (it == "SignalColorMapping") "SignalIDConnector" else it
+            }
+
             val noPrefix = noSourcePrefix.any { property.name.endsWith(it) }
             val name = if (noPrefix) property.name.toCamelCase()
-            else source.inner.name + property.name.toCamelCase()
+            else sourceName + property.name.toCamelCase()
             className = ClassName(packageName, name)
             superTypes = null
         }
@@ -917,7 +961,10 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
     }
 
 
-    private fun mapProperty(source: ProtoOrConceptGen, property: Property): PropertySpec {
+    private fun mapProperty(
+        source: ProtoOrConceptGen, property: Property,
+        useJsonReader: Boolean,
+    ): Pair<PropertySpec, ParameterSpec?> {
         require(property.visibility == null)
         val childOverrideType = childOverrides[source.inner]?.get(property.name)
         val nullable = property.optional ||
@@ -933,17 +980,32 @@ class DeclarationsGenerator(private val docs: ApiDocs) {
         val type = mainType.copy(nullable = nullable)
 
 
-        return PropertySpec.builder(property.name, type).apply {
+        val propertySpec = PropertySpec.builder(property.name, type).apply {
             addDescription(property.description)
             if (property.override) addModifiers(KModifier.OVERRIDE)
-            if (laterOverridden) addModifiers(KModifier.OPEN)
+            else if (laterOverridden) addModifiers(KModifier.OPEN)
             val altName = property.alt_name
-            if (altName != null) {
-                delegate("fromJson(%S)", altName)
+            if (useJsonReader) {
+                if (altName != null) {
+                    delegate("fromJson(%S)", altName)
+                } else {
+                    delegate("fromJson()")
+                }
             } else {
-                delegate("fromJson()")
+                initializer(property.name)
+                if (altName != null) {
+                    addAnnotation(AnnotationSpec.builder(JsonNames::class).addMember("%S", altName).build())
+                }
             }
         }.build()
+
+        val parameter: ParameterSpec? = if (useJsonReader) {
+            null
+        } else ParameterSpec.builder(propertySpec.name, type).apply {
+            if (nullable) defaultValue("null")
+        }.build()
+
+        return propertySpec to parameter
     }
 
     private fun generatePrototypeDataClass() {
